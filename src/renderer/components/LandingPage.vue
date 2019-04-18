@@ -14,6 +14,14 @@
         <div class="log-list">
           <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
         </div>
+        <div class="result-list">
+          <details v-for="(v, i) in treeTitleArr" :key="i">
+            <summary>{{v}}</summary>
+            <ul>
+              <li v-for="(u, i) in treeObj[v]" :key="i">{{u}}</li>
+            </ul>
+          </details>
+        </div>
       </div>
     </main>
   </div>
@@ -34,7 +42,8 @@ export default {
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
       selectAttr: 'href',
       logs: [],
-      treeObj: {}
+      treeObj: {},
+      treeTitleArr: []
     }
   },
   methods: {
@@ -56,7 +65,7 @@ export default {
       }
       this.writeLog(`go to ${this.mainUrl}`)
       this.writeLog(`use css selector ${this.linkRule}`)
-      let theUrls = await page.$$eval(this.linkRule, function (a) {
+      let theUrls = await page.$$eval(this.linkRule, (a) => {
         return a.map(v => {
           return v.href
         })
@@ -79,11 +88,10 @@ export default {
         this.treeObj[pageUrl] = urls
         this.writeLog(urls.join('\n'))
       }
-      page.close()
-      this.writeLog('关闭页面')
-      page = null
+
       browser.close()
-      this.writeLog('关闭浏览器')
+      this.writeLog('结束, 关闭浏览器')
+      page = null
       browser = null
     },
     /**
@@ -97,6 +105,7 @@ export default {
     },
     seeTree () {
       console.log(this.treeObj)
+      this.treeTitleArr = Object.keys(this.treeObj)
     }
   }
 }
@@ -113,6 +122,12 @@ export default {
 
   body { font-family: 'Source Sans Pro', sans-serif; }
 
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
   #wrapper {
     background:
       radial-gradient(
@@ -120,7 +135,7 @@ export default {
         rgba(255, 255, 255, 1) 40%,
         rgba(229, 229, 229, .9) 100%
       );
-    height: 100vh;
+    min-height: 100vh;
     padding: 60px 80px;
     width: 100vw;
   }
@@ -154,5 +169,10 @@ export default {
       padding-left: 20px;
       color: antiquewhite;
     }
+  }
+
+  .result-list {
+    max-height: 250px;
+    overflow: auto;
   }
 </style>
