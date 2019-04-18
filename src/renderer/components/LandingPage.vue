@@ -30,6 +30,7 @@
 <script>
 import SystemInformation from './LandingPage/SystemInformation'
 const puppeteer = require('puppeteer')
+const { remote } = require('electron')
 let browser = null
 let page = null
 export default {
@@ -72,7 +73,7 @@ export default {
       })
       this.treeObj[this.mainUrl] = theUrls
       this.writeLog(theUrls.join('\n'))
-      for (let i = 2; i < 5; i++) {
+      for (let i = 2; i < 140; i++) {
         const pageUrl = `${this.mainUrl}dl_p${i}.html`
         this.writeLog(`go to ${pageUrl}`)
         try {
@@ -104,7 +105,19 @@ export default {
       this.logs.push(v)
     },
     seeTree () {
-      console.log(this.treeObj)
+      if (JSON.stringify(this.treeObj) === '{}') {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: '提示',
+          message: '暂无数据, 是否开始采集?',
+          buttons: ['ok', 'no']
+        }, index => {
+          if (!index) {
+            this.start()
+          }
+        })
+        return
+      }
       this.treeTitleArr = Object.keys(this.treeObj)
     }
   }
@@ -126,6 +139,9 @@ export default {
     padding: 0;
     margin: 0;
     list-style-type: none;
+    li {
+      padding-left: 20px;
+    }
   }
 
   #wrapper {
