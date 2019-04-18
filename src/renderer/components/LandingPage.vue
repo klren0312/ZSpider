@@ -7,6 +7,7 @@
 
       <div class="right-side">
         <input type="text" v-model="mainUrl">
+        <button @click="openInBrowser">open in browser</button>
         <input type="text" v-model="linkRule">
         <input type="text" v-model="selectAttr">
         <button @click="start">start</button>
@@ -31,6 +32,8 @@
 import SystemInformation from './LandingPage/SystemInformation'
 const puppeteer = require('puppeteer')
 const { remote } = require('electron')
+const BrowserWindow = require('electron').remote.BrowserWindow
+
 let browser = null
 let page = null
 export default {
@@ -119,6 +122,14 @@ export default {
         return
       }
       this.treeTitleArr = Object.keys(this.treeObj)
+    },
+    openInBrowser () {
+      let win = new BrowserWindow({ width: 800, height: 600, show: false })
+      win.on('closed', function () {
+        win = null
+      })
+      win.loadURL(this.mainUrl)
+      win.show()
     }
   }
 }
