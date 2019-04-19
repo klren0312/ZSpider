@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="title">Information</div>
+    <h3 class="title">系统信息</h3>
     <div class="items">
       <div class="item">
-        <div class="name">Memory:</div>
+        <div class="name">内存占用:</div>
         <div class="value">{{ usemem | byteFormat }} / {{ totalmem | byteFormat }}</div>
       </div>
       <div class="item">
-        <div class="name">Platform:</div>
+        <div class="name">系统平台:</div>
         <div class="value">{{ platform }}</div>
       </div>
     </div>
@@ -59,13 +59,13 @@
 </script>
 
 <style scoped>
-  .title {
+  /* .title {
     color: #888;
     font-size: 18px;
     font-weight: initial;
     letter-spacing: .25px;
     margin-top: 10px;
-  }
+  } */
 
   .items { margin-top: 8px; }
 

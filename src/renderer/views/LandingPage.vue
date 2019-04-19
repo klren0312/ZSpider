@@ -24,7 +24,8 @@
             <el-input-number v-model="pages" size="mini"/>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="start" size="mini">开始</el-button>
+            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
+            <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
             <el-button :disabled="JSON.stringify(treeObj) === '{}'" @click="seeTree" size="mini">查看数据</el-button>
           </el-form-item>
         </el-form>
@@ -32,7 +33,7 @@
           title="查看数据"
           :visible.sync="dataDialog"
           width="700px">
-          <el-button circle icon="el-icon-refresh"></el-button>
+          <el-button circle icon="el-icon-refresh" @click="refreshData"></el-button>
           <div class="result-list">
             <details v-for="(v, i) in treeTitleArr" :key="i">
               <summary>{{v}}</summary>
@@ -48,7 +49,7 @@
 </template>
 
 <script>
-import SystemInformation from './LandingPage/SystemInformation'
+import SystemInformation from '@/components/LandingPage/SystemInformation'
 const puppeteer = require('puppeteer')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
@@ -67,11 +68,24 @@ export default {
       pages: 140,
       logs: [],
       treeObj: {},
-      treeTitleArr: []
+      treeTitleArr: [],
+      startStatus: false
     }
   },
   methods: {
+    refreshData () {
+      this.treeTitleArr = Object.keys(this.treeObj)
+    },
+    stop () {
+      browser.close()
+      this.writeLog('结束, 关闭浏览器')
+      page = null
+      browser = null
+      this.startStatus = false
+    },
     async start () {
+      this.startStatus = true
+      this.treeObj = {}
       browser = await puppeteer.launch({
         headless: true
       })
@@ -118,6 +132,7 @@ export default {
       this.writeLog('结束, 关闭浏览器')
       page = null
       browser = null
+      this.startStatus = false
     },
     /**
      * 打印日志
