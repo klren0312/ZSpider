@@ -3,27 +3,45 @@
     <main>
       <div class="left-side">
         <system-information></system-information>
+        <div class="run-logs">
+          <h3>运行日志</h3>
+          <div class="log-list" ref="logList">
+            <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
+          </div>
+        </div>
       </div>
 
       <div class="right-side">
-        <input type="text" v-model="mainUrl">
-        <button @click="openInBrowser">open in browser</button>
-        <input type="text" v-model="linkRule">
-        <input type="text" v-model="selectAttr">
-        <button @click="start">start</button>
-        <el-button @click="start">start</el-button>
-        <button @click="seeTree">see details</button>
-        <div class="log-list">
-          <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
-        </div>
-        <div class="result-list">
-          <details v-for="(v, i) in treeTitleArr" :key="i">
-            <summary>{{v}}</summary>
-            <ul>
-              <li v-for="(u, i) in treeObj[v]" :key="i">{{u}}</li>
-            </ul>
-          </details>
-        </div>
+        <el-form label-width="80px">
+          <el-form-item label="页面地址">
+            <el-input type="text" v-model="mainUrl"  size="mini"/>
+            <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
+          </el-form-item>
+          <el-form-item label="选择器">
+            <el-input v-model="linkRule" size="mini"/>
+          </el-form-item>
+          <el-form-item label="爬取页数">
+            <el-input-number v-model="pages" size="mini"/>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="start" size="mini">开始</el-button>
+            <el-button :disabled="JSON.stringify(treeObj) === '{}'" @click="seeTree" size="mini">查看数据</el-button>
+          </el-form-item>
+        </el-form>
+        <el-dialog
+          title="查看数据"
+          :visible.sync="dataDialog"
+          width="700px">
+          <el-button circle icon="el-icon-refresh"></el-button>
+          <div class="result-list">
+            <details v-for="(v, i) in treeTitleArr" :key="i">
+              <summary>{{v}}</summary>
+              <ul>
+                <li v-for="(u, i) in treeObj[v]" :key="i">{{u}}</li>
+              </ul>
+            </details>
+          </div>
+        </el-dialog>
       </div>
     </main>
   </div>
@@ -42,10 +60,11 @@ export default {
   components: { SystemInformation },
   data () {
     return {
+      dataDialog: false,
       mainUrl: 'http://hf.rent.house365.com/district/',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
-      selectAttr: 'href',
+      pages: 140,
       logs: [],
       treeObj: {},
       treeTitleArr: []
@@ -77,7 +96,8 @@ export default {
       })
       this.treeObj[this.mainUrl] = theUrls
       this.writeLog(theUrls.join('\n'))
-      for (let i = 2; i < 140; i++) {
+      if (this.pages < 2) return
+      for (let i = 2; i < this.pages; i++) {
         const pageUrl = `${this.mainUrl}dl_p${i}.html`
         this.writeLog(`go to ${pageUrl}`)
         try {
@@ -106,6 +126,8 @@ export default {
       if (this.logs.length > 30) {
         this.logs.shift()
       }
+      const el = this.$refs.logList
+      el.scrollTop = el.scrollHeight
       this.logs.push(v)
     },
     seeTree () {
@@ -123,6 +145,9 @@ export default {
         return
       }
       this.treeTitleArr = Object.keys(this.treeObj)
+      this.$nextTick(_ => {
+        this.dataDialog = true
+      })
     },
     openInBrowser () {
       let win = new BrowserWindow({ width: 800, height: 600, show: false })
@@ -186,6 +211,9 @@ export default {
     flex-direction: column;
   }
 
+  .run-logs {
+    margin-top: 20px;
+  }
   .log-list {
     max-height: 150px;
     padding-top: 10px;
