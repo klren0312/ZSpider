@@ -11,6 +11,7 @@
         <input type="text" v-model="linkRule">
         <input type="text" v-model="selectAttr">
         <button @click="start">start</button>
+        <el-button @click="start">start</el-button>
         <button @click="seeTree">see details</button>
         <div class="log-list">
           <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
