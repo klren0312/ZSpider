@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/views/LandingPage').default
     },
     {
+      path: '/details',
+      name: 'detailsPage',
+      component: require('@/views/DetailsPage').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
