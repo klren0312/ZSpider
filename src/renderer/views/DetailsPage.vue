@@ -165,7 +165,8 @@ export default {
 
     },
     gotoHome () {
-      this.$router.push('/')
+      // this.$router.push('/')
+      this.$router.back()
     },
     /**
      * 打印日志
