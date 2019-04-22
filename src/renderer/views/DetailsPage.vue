@@ -20,12 +20,16 @@
           </el-form-item>
           <el-form-item label="字段配置">
             <el-row  v-for="(v, i) in contentForm.paramsInput" :key="i">
-              <el-col :span="10">
+              <el-col :span="6">
                 <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
               </el-col>
               <el-col class="line" :span="1">-</el-col>
-              <el-col :span="10">
+              <el-col :span="6">
                 <el-input v-model="v.param" placeholder="请输入参数选择器" size="mini"></el-input>
+              </el-col>
+              <el-col class="line" :span="1">-</el-col>
+              <el-col :span="6">
+                <el-input v-model="v.value" placeholder="获取值" size="mini"></el-input>
               </el-col>
               <el-col :span="3" class="close-btn">
                 <el-button type="danger" @click="deleteParam(v)" icon="el-icon-close" circle size="mini"></el-button>
@@ -34,7 +38,7 @@
             <el-button type="primary" @click="addParam" size="mini">添加参数</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
+            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
           </el-form-item>
           <el-form-item>
@@ -65,7 +69,8 @@ export default {
         url: '',
         paramsInput: [{
           name: '',
-          param: ''
+          param: '',
+          value: ''
         }]
       }
     }
@@ -114,6 +119,7 @@ export default {
         let house = {}
         this.contentForm.paramsInput.length > 0 && this.contentForm.paramsInput.forEach(async v => {
           house[v.name] = await page.$eval(v.param, a => a.innerHTML)
+          v.value = house[v.name]
           this.writeLog(`${v.name}: ${house[v.name]}`)
         })
         this.startStatus = false
