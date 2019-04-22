@@ -151,7 +151,7 @@ export default {
       }
       const el = this.$refs.logList
       el.scrollTop = el.scrollHeight
-      this.logs.push(v)
+      this.logs.push(`${new Date().toLocaleString()}: ${v}`)
     },
     seeTree () {
       if (JSON.stringify(this.treeObj) === '{}') {
