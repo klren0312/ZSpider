@@ -40,9 +40,9 @@
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
+            <el-button type="warning" @click="gotoHome" size="mini">返回首页</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="gotoHome" size="mini">返回首页</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -231,7 +231,8 @@
         win.show()
       },
       deleteParam (v) {
-
+        console.log(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)))
+        this.contentForm.paramsInput.splice(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)), 1)
       },
       gotoHome () {
         // this.$router.push('/')
