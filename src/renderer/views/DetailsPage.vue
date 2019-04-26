@@ -19,7 +19,7 @@
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
           <el-form-item label="字段配置">
-            <el-row  v-for="(v, i) in contentForm.paramsInput" :key="i">
+            <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
               <el-col :span="6">
                 <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
               </el-col>
@@ -50,146 +50,216 @@
   </div>
 </template>
 <script>
-import SystemInformation from '@/components/LandingPage/SystemInformation'
-const puppeteer = require('puppeteer')
-const { remote } = require('electron')
-const BrowserWindow = require('electron').remote.BrowserWindow
-let browser = null
-let page = null
+  import SystemInformation from '@/components/LandingPage/SystemInformation'
+  const puppeteer = require('puppeteer')
+  const {
+    remote
+  } = require('electron')
+  const BrowserWindow = require('electron').remote.BrowserWindow
+  let browser = null
+  let page = null
 
-export default {
-  name: 'DetailsPage',
-  components: { SystemInformation },
-  data () {
-    return {
-      url: [],
-      logs: [],
-      startStatus: false,
-      contentForm: {
-        url: '',
-        paramsInput: [{
-          name: '',
-          param: '',
-          value: ''
-        }]
+  export default {
+    name: 'DetailsPage',
+    components: {
+      SystemInformation
+    },
+    data () {
+      return {
+        url: ['http://hf.rent.house365.com/r_1255591.html'],
+        logs: [],
+        startStatus: false,
+        contentForm: {
+          url: '',
+          /* eslint-disable */
+          paramsInput: [{
+              name: 'title',
+              param: '#personal > p.name',
+              value: ''
+            }, {
+              name: 'no',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.titleT > p',
+              value: ''
+            },
+            {
+              name: 'price',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(1) > dd > span',
+              value: ''
+            },
+            {
+              name: 'size',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(2) > dd',
+              value: ''
+            },
+            {
+              name: 'decoration',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(3) > dd',
+              value: ''
+            },
+            {
+              name: 'floor',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(5) > dd',
+              value: ''
+            },
+            {
+              name: 'location',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(7) > dd',
+              value: ''
+            },
+            {
+              name: 'community',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(8) > dd > a:nth-child(1)',
+              value: ''
+            },
+            {
+              name: 'time',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.time',
+              value: ''
+            },
+            {
+              name: 'phone',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.telephoneBox > div > div > div > p.tel.fd_telephone',
+              value: ''
+            },
+            {
+              name: 'name',
+              param: '#personal > p.name',
+              value: ''
+            }
+          ]
+          /* eslint-enable */
+        }
       }
-    }
-  },
-  mounted () {
-    if (this.$store.state.siteObj) {
-      const arr = Object.keys(this.$store.state.siteObj)
-      arr.forEach(v => {
-        this.url = [...this.url, ...this.$store.state.siteObj[v]]
-      })
-      if (this.url.length > 50) {
-        this.url.length = 50
-      }
-    }
-  },
-  methods: {
-    async start () {
-      if (this.contentForm.url === '') {
-        remote.dialog.showMessageBox({
-          type: 'info',
-          title: '提示',
-          message: '请选择链接',
-          buttons: ['ok']
+    },
+    mounted () {
+      if (this.$store.state.siteObj) {
+        const arr = Object.keys(this.$store.state.siteObj)
+        arr.forEach(v => {
+          this.url = [...this.url, ...this.$store.state.siteObj[v]]
         })
-        return
+        if (this.url.length > 50) {
+          this.url.length = 50
+        }
       }
-      if (this.contentForm.paramsInput.length === 0) {
-        remote.dialog.showMessageBox({
-          type: 'info',
-          title: '提示',
-          message: '请配置参数',
-          buttons: ['ok']
+    },
+    methods: {
+      async start () {
+        if (this.contentForm.url === '') {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '提示',
+            message: '请选择链接',
+            buttons: ['ok']
+          })
+          return
+        }
+        if (this.contentForm.paramsInput.length === 0) {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '提示',
+            message: '请配置参数',
+            buttons: ['ok']
+          })
+          return
+        }
+        this.startStatus = true
+        browser = await puppeteer.launch({
+          headless: true
         })
-        return
-      }
-      this.startStatus = true
-      browser = await puppeteer.launch({
-        headless: true
-      })
-      this.writeLog('browser init')
-      page = await browser.newPage()
-      this.writeLog('open new page')
-      try {
-        await page.goto(this.contentForm.url)
-        this.writeLog(`go to ${this.contentForm.url}`)
-        let house = {}
-        this.contentForm.paramsInput.length > 0 && this.contentForm.paramsInput.forEach(async v => {
-          house[v.name] = await page.$eval(v.param, a => a.innerHTML)
-          v.value = house[v.name]
-          this.writeLog(`${v.name}: ${house[v.name]}`)
-        })
-        this.startStatus = false
+        this.writeLog('browser init')
+        page = await browser.newPage()
+        this.writeLog('open new page')
+        try {
+          await page.goto(this.contentForm.url)
+          this.writeLog(`go to ${this.contentForm.url}`)
+          let arr = this.contentForm.paramsInput
+          let house = await page.evaluate((arr) => {
+            let obj = {}
+            arr.length > 0 && arr.forEach(v => {
+              obj[v.name] = (document.querySelector(v.param).innerHTML).trim().replace(/\s/g, '').replace(/<\/?.+?\/?>/g, '')
+              v.value = obj[v.name]
+              // that.writeLog(`${v.name}: ${obj[v.name]}`)
+            })
+            return obj
+          }, arr)
+          this.contentForm.paramsInput.forEach(v => {
+            v.value = house[v.name]
+            this.writeLog(`${v.name}: ${house[v.name]}`)
+          })
+          console.log(house)
+          this.startStatus = false
+          browser.close()
+          this.writeLog('结束, 关闭浏览器')
+          page = null
+          browser = null
+        } catch (e) {
+          this.writeLog(e)
+        }
+      },
+      stop () {
         browser.close()
         this.writeLog('结束, 关闭浏览器')
         page = null
         browser = null
-      } catch (e) {
-        this.writeLog(e)
-      }
-    },
-    stop () {
-      browser.close()
-      this.writeLog('结束, 关闭浏览器')
-      page = null
-      browser = null
-      this.startStatus = false
-    },
-    addParam () {
-      this.contentForm.paramsInput.push({
-        name: '',
-        param: ''
-      })
-    },
-    openInBrowser () {
-      if (this.contentForm.url === '') {
-        remote.dialog.showMessageBox({
-          type: 'info',
-          title: '提示',
-          message: '请选择链接',
-          buttons: ['ok']
+        this.startStatus = false
+      },
+      addParam () {
+        this.contentForm.paramsInput.push({
+          name: '',
+          param: ''
         })
-        return
-      }
-      let win = new BrowserWindow({ width: 800, height: 600, show: false })
-      win.on('closed', function () {
-        win = null
-      })
-      win.loadURL(this.contentForm.url)
-      win.show()
-    },
-    deleteParam (v) {
+      },
+      openInBrowser () {
+        if (this.contentForm.url === '') {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '提示',
+            message: '请选择链接',
+            buttons: ['ok']
+          })
+          return
+        }
+        let win = new BrowserWindow({
+          width: 800,
+          height: 600,
+          show: false
+        })
+        win.on('closed', function () {
+          win = null
+        })
+        win.loadURL(this.contentForm.url)
+        win.show()
+      },
+      deleteParam (v) {
 
-    },
-    gotoHome () {
-      // this.$router.push('/')
-      this.$router.back()
-    },
-    /**
-     * 打印日志
-     */
-    writeLog (v) {
-      if (this.logs.length > 30) {
-        this.logs.shift()
+      },
+      gotoHome () {
+        // this.$router.push('/')
+        this.$router.back()
+      },
+      /**
+       * 打印日志
+       */
+      writeLog (v) {
+        if (this.logs.length > 30) {
+          this.logs.shift()
+        }
+        const el = this.$refs.logList
+        el.scrollTop = el.scrollHeight
+        this.logs.push(`${new Date().toLocaleString()}: ${v}`)
       }
-      const el = this.$refs.logList
-      el.scrollTop = el.scrollHeight
-      this.logs.push(v)
     }
   }
-}
 </script>
 <style lang="scss" scoped>
-main {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-}
-.line,
-.close-btn {
-  text-align: center;
-}
+  main {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+
+  .line,
+  .close-btn {
+    text-align: center;
+  }
 </style>

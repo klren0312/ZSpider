@@ -1,0 +1,51 @@
+,
+            {
+              name: 'no',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.titleT > p',
+              value: ''
+            },
+            {
+              name: 'price',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(1) > dd > span',
+              value: ''
+            },
+            {
+              name: 'size',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(2) > dd',
+              value: ''
+            },
+            {
+              name: 'decoration',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(3) > dd',
+              value: ''
+            },
+            {
+              name: 'floor',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(5) > dd',
+              value: ''
+            },
+            {
+              name: 'location',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(7) > dd',
+              value: ''
+            },
+            {
+              name: 'community',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(8) > dd > a:nth-child(1)',
+              value: ''
+            },
+            {
+              name: 'time',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.time',
+              value: ''
+            },
+            {
+              name: 'phone',
+              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.telephoneBox > div > div > div > p.tel.fd_telephone',
+              value: ''
+            },
+            {
+              name: 'name',
+              param: '#personal > p.name',
+              value: ''
+            }
