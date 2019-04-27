@@ -16,6 +16,11 @@ export default new Router({
       component: require('@/views/DetailsPage').default
     },
     {
+      path: '/start',
+      name: 'startSpider',
+      component: require('@/views/StartSpider').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

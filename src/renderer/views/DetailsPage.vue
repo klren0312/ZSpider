@@ -18,7 +18,7 @@
             </el-select>
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
-          <el-form-item label="字段配置">
+          <el-form-item label="字段配置" class="params-list">
             <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
               <el-col :span="6">
                 <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
@@ -40,6 +40,7 @@
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
+            <el-button type="success" @click="startAll" size="mini">进入采集准备</el-button>
             <el-button type="warning" @click="gotoHome" size="mini">返回首页</el-button>
           </el-form-item>
           <el-form-item>
@@ -231,12 +232,15 @@
         win.show()
       },
       deleteParam (v) {
-        console.log(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)))
+        // console.log(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)))
         this.contentForm.paramsInput.splice(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)), 1)
       },
       gotoHome () {
         // this.$router.push('/')
         this.$router.back()
+      },
+      startAll () {
+        this.$router.push('/start')
       },
       /**
        * 打印日志
@@ -257,6 +261,11 @@
     display: flex;
     justify-content: space-between;
     padding: 20px;
+  }
+
+  .params-list {
+    height: 400px;
+    overflow-y: auto;
   }
 
   .line,
