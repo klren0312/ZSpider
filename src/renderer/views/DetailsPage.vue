@@ -240,6 +240,7 @@
         this.$router.back()
       },
       startAll () {
+        this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
         this.$router.push('/start')
       },
       /**

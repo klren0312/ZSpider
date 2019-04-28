@@ -79,6 +79,10 @@ export default {
   methods: {
     gotoDetails () {
       this.$store.dispatch('SET_SITE', this.treeObj)
+      this.$store.dispatch('SET_RULE', {
+        mainUrl: this.mainUrl,
+        page: this.pages
+      })
       this.$router.push('/details')
     },
     refreshData () {

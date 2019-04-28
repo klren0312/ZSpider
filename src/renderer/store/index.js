@@ -7,9 +7,9 @@ const state = {
   siteObj: {},
   rule: {
     mainUrl: '',
-    page: 0,
-    contentParams: []
-  }
+    page: 0
+  },
+  contentParams: []
 }
 
 const mutations = {
@@ -18,6 +18,9 @@ const mutations = {
   },
   SET_RULE (state, rule) {
     state.rule = rule
+  },
+  SET_PARAM (state, params) {
+    state.contentParams = params
   }
 }
 
@@ -27,6 +30,9 @@ const actions = {
   },
   SET_RULE (store, rule) {
     store.commit('SET_RULE', rule)
+  },
+  SET_PARAM (store, params) {
+    store.commit('SET_PARAM', params)
   }
 }
 export default new Vuex.Store({
