@@ -30,7 +30,7 @@
             <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
               <el-button  type="primary" plain :disabled="JSON.stringify(treeObj) === '{}'" @click="gotoDetails" size="mini">配置详情页</el-button>
             </el-tooltip>
-            <el-button  type="primary" plain @click="gotoDetails" size="mini">配置详情页</el-button>
+            <!-- <el-button  type="primary" plain @click="gotoDetails" size="mini">配置详情页</el-button> -->
           </el-form-item>
         </el-form>
         <el-dialog
