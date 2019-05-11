@@ -18,24 +18,27 @@
             </el-select>
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
-          <el-form-item label="字段配置" class="params-list">
-            <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
-              <el-col :span="6">
-                <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
-              </el-col>
-              <el-col class="line" :span="1">-</el-col>
-              <el-col :span="6">
-                <el-input v-model="v.param" placeholder="请输入参数选择器" size="mini"></el-input>
-              </el-col>
-              <el-col class="line" :span="1">-</el-col>
-              <el-col :span="6">
-                <el-input v-model="v.value" placeholder="获取值" size="mini"></el-input>
-              </el-col>
-              <el-col :span="3" class="close-btn">
-                <el-button type="danger" @click="deleteParam(v)" icon="el-icon-close" circle size="mini"></el-button>
-              </el-col>
-            </el-row>
+          <el-form-item label="字段配置" >
             <el-button type="primary" @click="addParam" size="mini">添加参数</el-button>
+            <el-button type="danger" @click="contentForm.paramsInput = []" size="mini">清空参数</el-button>
+            <div class="params-list">
+              <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
+                <el-col :span="6">
+                  <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                  <el-input v-model="v.param" placeholder="请输入参数选择器" size="mini"></el-input>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                  <el-input v-model="v.value" placeholder="获取值" size="mini"></el-input>
+                </el-col>
+                <el-col :span="3" class="close-btn">
+                  <el-button type="danger" @click="deleteParam(v)" icon="el-icon-close" circle size="mini"></el-button>
+                </el-col>
+              </el-row>
+            </div>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
@@ -67,7 +70,7 @@
     },
     data () {
       return {
-        url: ['http://hf.rent.house365.com/r_1255591.html'],
+        url: [],
         logs: [],
         startStatus: false,
         contentForm: {
