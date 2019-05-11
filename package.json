@@ -53,8 +53,10 @@
     }
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "element-ui": "^2.7.2",
+    "fs-extra": "^7.0.1",
+    "lodash-id": "^0.14.0",
+    "lowdb": "^1.0.0",
     "puppeteer": "^1.14.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",

@@ -40,8 +40,8 @@
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
-            <el-button type="success" @click="startAll" size="mini">进入采集准备</el-button>
-            <el-button type="warning" @click="gotoHome" size="mini">返回首页</el-button>
+            <el-button type="success" @click="startAll" size="mini" :disabled="startStatus">进入采集准备</el-button>
+            <el-button type="warning" @click="gotoHome" size="mini" :disabled="startStatus">返回首页</el-button>
           </el-form-item>
           <el-form-item>
           </el-form-item>
@@ -236,8 +236,7 @@
         this.contentForm.paramsInput.splice(this.contentForm.paramsInput.findIndex(u => JSON.stringify(u) === JSON.stringify(v)), 1)
       },
       gotoHome () {
-        // this.$router.push('/')
-        this.$router.back()
+        this.$router.push('/')
       },
       startAll () {
         this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
