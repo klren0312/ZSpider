@@ -14,8 +14,9 @@ let mainWindow
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
-
+const Menu = electron.Menu
 function createWindow () {
+  Menu.setApplicationMenu(null)
   /**
    * Initial window options
    */
