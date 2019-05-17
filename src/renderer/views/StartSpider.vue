@@ -15,11 +15,12 @@
           <el-button size="mini" @click="goBack">返回上一页</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" @click="start">开始采集</el-button>
+          <el-button type="primary" size="mini" @click="startSpider" v-if="!isStart">开始采集</el-button>
+          <el-button type="danger" size="mini" @click="endSpider" v-else>停止采集</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="params">
+    <el-table :data="params" border height="400px">
       <el-table-column label="参数名" prop="name"></el-table-column>
       <el-table-column label="参数" prop="param"></el-table-column>
       <el-table-column label="参数参考值" prop="value"></el-table-column>
@@ -31,7 +32,9 @@ import { mapState } from 'vuex'
 export default {
   name: 'StartSpider',
   data () {
-    return {}
+    return {
+      isStart: false
+    }
   },
   computed: mapState({
     params: state => state.contentParams,
@@ -47,21 +50,21 @@ export default {
     },
     goBack () {
       this.$router.back()
+    },
+    startSpider () {
+      this.isStart = true
+    },
+    endSpider () {
+      this.isStart = false
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 #wrapper {
-  background:
-    radial-gradient(
-      ellipse at top left,
-      rgba(255, 255, 255, 1) 40%,
-      rgba(229, 229, 229, .9) 100%
-    );
   min-height: 100vh;
   padding: 60px 80px;
-  width: 100vw;
+  // width: 100vw;
 }
 </style>
 

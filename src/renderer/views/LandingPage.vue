@@ -77,6 +77,9 @@ export default {
     }
   },
   methods: {
+    /**
+     * 前往详情页
+     */
     gotoDetails () {
       this.$store.dispatch('SET_SITE', this.treeObj)
       this.$store.dispatch('SET_RULE', {
@@ -95,9 +98,13 @@ export default {
       browser = null
       this.startStatus = false
     },
+    /**
+     * 开始爬
+     */
     async start () {
       this.startStatus = true
       this.treeObj = {}
+      this.$store.dispatch('SET_SITE', this.treeObj) // 清理旧数据
       browser = await puppeteer.launch({
         headless: true
       })
@@ -106,6 +113,9 @@ export default {
       this.writeLog('open new page')
       this.gotoMain()
     },
+    /**
+     * 前往主页面
+     */
     async gotoMain () {
       if (this.mainUrl === '') return
       try {
@@ -209,15 +219,8 @@ export default {
   }
 
   #wrapper {
-    background:
-      radial-gradient(
-        ellipse at top left,
-        rgba(255, 255, 255, 1) 40%,
-        rgba(229, 229, 229, .9) 100%
-      );
     min-height: 100vh;
     padding: 60px 80px;
-    width: 100vw;
   }
 
   #logo {

@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import axios from 'axios'
-
 import App from './App'
 import router from './router'
 import store from './store'
+import db from './dataStore'
 import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn } from 'element-ui'
 
 [Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn].forEach(v => {
@@ -12,7 +11,7 @@ import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$store = store
-Vue.http = Vue.prototype.$http = axios
+Vue.prototype.$db = db
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
