@@ -60,11 +60,4 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-#wrapper {
-  min-height: 100vh;
-  padding: 60px 80px;
-  // width: 100vw;
-}
-</style>
 

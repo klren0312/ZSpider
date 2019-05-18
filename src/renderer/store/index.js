@@ -10,7 +10,8 @@ const state = {
     mainUrl: '',
     page: 0
   },
-  contentParams: []
+  contentParams: [],
+  logCtrl: false
 }
 
 const mutations = {
@@ -22,6 +23,9 @@ const mutations = {
   },
   SET_PARAM (state, params) {
     state.contentParams = params
+  },
+  CTRL_LOG (store, ctrl) {
+    state.logCtrl = ctrl
   }
 }
 
@@ -38,6 +42,9 @@ const actions = {
   SET_PARAM (store, params) {
     db.set('config.params', params).write()
     store.commit('SET_PARAM', params)
+  },
+  CTRL_LOG (store, ctrl) {
+    store.commit('CTRL_LOG', ctrl)
   }
 }
 export default new Vuex.Store({

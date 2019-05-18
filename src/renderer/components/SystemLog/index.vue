@@ -1,0 +1,52 @@
+<template>
+  <div class="run-logs">
+    <div class="ctrl-btn" @click="ctrlLog">
+      <i class="el-icon-arrow-down" v-if="ctrl"></i>
+      <i class="el-icon-arrow-up" v-else></i>
+    </div>
+    <div class="log-list" :class="ctrl ? '' : 'close'" ref="logList">
+      <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
+    </div>
+  </div>
+</template>
+<script>
+import { mapState } from 'vuex'
+export default {
+  name: 'SystemLog',
+  computed: mapState({
+    ctrl: state => state.logCtrl
+  }),
+  methods: {
+    ctrlLog () {
+      this.$store.dispatch('CTRL_LOG', !this.ctrl)
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.run-logs {
+  .ctrl-btn {
+    border: 1px solid #dfdfdf;
+    text-align: center;
+    cursor: pointer;
+    &:hover {
+      background: #dfdfdf
+    }
+  }
+}
+.log-list {
+  height: 200px;
+  overflow-y: auto;
+  list-style-type: none;
+  background: #323232;
+  // transition: all .1s linear;
+  &.close {
+    height: 0;
+  }
+  .log-line {
+    margin-bottom: 0;
+    padding-left: 20px;
+    color: antiquewhite;
+  }
+}
+</style>

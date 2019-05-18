@@ -7,18 +7,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'landing-page',
-      component: require('@/views/LandingPage').default
-    },
-    {
-      path: '/details',
-      name: 'detailsPage',
-      component: require('@/views/DetailsPage').default
-    },
-    {
-      path: '/start',
-      name: 'startSpider',
-      component: require('@/views/StartSpider').default
+      name: 'rule-setting',
+      component: require('@/views/ruleSetting/index').default
     },
     {
       path: '*',
