@@ -143,7 +143,8 @@
     },
     methods: {
       ...mapActions({
-        pushLogs: 'SAVE_LOGS'
+        pushLogs: 'SAVE_LOGS',
+        popLogs: 'POP_LOGS'
       }),
       async start () {
         if (this.contentForm.url === '') {
@@ -248,7 +249,7 @@
        */
       writeLog (v) {
         if (this.$store.state.logs && this.$store.state.logs.length > 30) {
-          this.$store.state.logs.pop()
+          this.popLogs()
         }
         this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
       }
