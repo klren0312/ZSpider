@@ -3,12 +3,6 @@
     <main>
       <div class="left-side">
         <system-information></system-information>
-        <div class="run-logs">
-          <h3>运行日志</h3>
-          <div class="log-list" ref="logList">
-            <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
-          </div>
-        </div>
       </div>
 
       <div class="right-side">
@@ -27,9 +21,9 @@
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
             <el-button :disabled="JSON.stringify(treeObj) === '{}'" @click="seeTree" size="mini">查看数据</el-button>
-            <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
+            <!-- <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
               <el-button  type="primary" plain :disabled="JSON.stringify(treeObj) === '{}'" @click="gotoDetails" size="mini">配置详情页</el-button>
-            </el-tooltip>
+            </el-tooltip> -->
             <!-- <el-button  type="primary" plain @click="gotoDetails" size="mini">配置详情页</el-button> -->
           </el-form-item>
         </el-form>
@@ -53,6 +47,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
 const puppeteer = require('puppeteer')
 const { remote } = require('electron')
@@ -77,6 +72,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      pushLogs: 'SAVE_LOGS'
+    }),
     /**
      * 前往详情页
      */
@@ -160,12 +158,10 @@ export default {
      * 打印日志
      */
     writeLog (v) {
-      if (this.logs.length > 30) {
-        this.logs.shift()
+      if (this.$store.state.logs && this.$store.state.logs.length > 30) {
+        this.$store.state.logs.pop()
       }
-      const el = this.$refs.logList
-      el.scrollTop = el.scrollHeight
-      this.logs.push(`${new Date().toLocaleString()}: ${v}`)
+      this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
     },
     seeTree () {
       if (JSON.stringify(this.treeObj) === '{}') {
@@ -218,11 +214,6 @@ export default {
     }
   }
 
-  #wrapper {
-    min-height: 100vh;
-    padding: 60px 80px;
-  }
-
   #logo {
     height: auto;
     margin-bottom: 20px;
@@ -234,27 +225,13 @@ export default {
     justify-content: space-between;
   }
 
-  main > div { flex-basis: 50%; }
-
   .left-side {
     display: flex;
     flex-direction: column;
   }
 
-  .run-logs {
-    margin-top: 20px;
-  }
-  .log-list {
-    max-height: 150px;
-    padding-top: 10px;
-    overflow-y: auto;
-    list-style-type: none;
-    background: #323232;
-    .log-line {
-      margin-bottom: 0;
-      padding-left: 20px;
-      color: antiquewhite;
-    }
+  .right-side {
+    width: 65%;
   }
 
   .result-list {

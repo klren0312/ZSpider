@@ -3,12 +3,6 @@
     <main>
       <div class="left-side">
         <system-information></system-information>
-        <div class="run-logs">
-          <h3>运行日志</h3>
-          <div class="log-list" ref="logList">
-            <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
-          </div>
-        </div>
       </div>
       <div class="right-side">
         <el-form label-width="100px">
@@ -43,8 +37,8 @@
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">测试数据获取</el-button>
             <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
-            <el-button type="success" @click="startAll" size="mini" :disabled="startStatus">进入采集准备</el-button>
-            <el-button type="warning" @click="gotoHome" size="mini" :disabled="startStatus">返回首页</el-button>
+            <!-- <el-button type="success" @click="startAll" size="mini" :disabled="startStatus">进入采集准备</el-button>
+            <el-button type="warning" @click="gotoHome" size="mini" :disabled="startStatus">返回首页</el-button> -->
           </el-form-item>
           <el-form-item>
           </el-form-item>
@@ -54,6 +48,7 @@
   </div>
 </template>
 <script>
+  import { mapActions } from 'vuex'
   import SystemInformation from '@/components/LandingPage/SystemInformation'
   const puppeteer = require('puppeteer')
   const {
@@ -147,6 +142,9 @@
       }
     },
     methods: {
+      ...mapActions({
+        pushLogs: 'SAVE_LOGS'
+      }),
       async start () {
         if (this.contentForm.url === '') {
           remote.dialog.showMessageBox({
@@ -249,12 +247,10 @@
        * 打印日志
        */
       writeLog (v) {
-        if (this.logs.length > 30) {
-          this.logs.shift()
+        if (this.$store.state.logs && this.$store.state.logs.length > 30) {
+          this.$store.state.logs.pop()
         }
-        const el = this.$refs.logList
-        el.scrollTop = el.scrollHeight
-        this.logs.push(`${new Date().toLocaleString()}: ${v}`)
+        this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
       }
     }
   }

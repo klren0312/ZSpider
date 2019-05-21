@@ -9,12 +9,6 @@
           <div>{{page}}</div>
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" @click="goToHome">返回首页</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button size="mini" @click="goBack">返回上一页</el-button>
-        </el-form-item>
-        <el-form-item>
           <el-button type="primary" size="mini" @click="startSpider" v-if="!isStart">开始采集</el-button>
           <el-button type="danger" size="mini" @click="endSpider" v-else>停止采集</el-button>
         </el-form-item>
@@ -60,11 +54,4 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-#wrapper {
-  min-height: 100vh;
-  padding: 60px 80px;
-  // width: 100vw;
-}
-</style>
 
