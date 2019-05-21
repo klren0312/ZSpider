@@ -39,7 +39,7 @@ export default {
   overflow-y: auto;
   list-style-type: none;
   background: #323232;
-  // transition: all .1s linear;
+  transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
   &.close {
     height: 0;
   }

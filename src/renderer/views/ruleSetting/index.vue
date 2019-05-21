@@ -14,9 +14,6 @@
         <el-form-item>
           <el-button type="primary" size="mini">保存</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="mini">保存并退出</el-button>
-        </el-form-item>
       </el-form>
     </div>
   </div>
@@ -40,14 +37,14 @@ export default {
     align-items: center;
   }
   .steps {
-    width: 800px;
+    width: 600px;
     /*margin: 0 auto 20px;*/
     margin-bottom: 20px;
     overflow: hidden;
     display: block;
     .step {
       float: left;
-      width: 200px;
+      width: 130px;
       height: 40px;
       line-height: 40px;
       text-align: center;
@@ -60,10 +57,10 @@ export default {
       color: #fff;
       &.active {
         color: #fff;
-        background-color: #009688;
+        background-color: #573eb1;
         span {
           em {
-            border-color:transparent transparent transparent #009688;
+            border-color:transparent transparent transparent #573eb1;
           }
         }
       }

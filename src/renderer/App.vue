@@ -43,6 +43,7 @@ body {
   .content {
     height: calc(100vh - 48px);
     overflow-y: auto;
+    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
     &.small {
       height: calc(100vh - 28px - 220px);
     }
