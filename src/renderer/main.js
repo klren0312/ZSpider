@@ -3,9 +3,9 @@ import App from './App'
 import router from './router'
 import store from './store'
 import db from './dataStore'
-import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Steps, Step } from 'element-ui'
+import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn } from 'element-ui'
 
-[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Steps, Step].forEach(v => {
+[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn].forEach(v => {
   Vue.use(v)
 })
 
