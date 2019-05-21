@@ -30,6 +30,9 @@ const mutations = {
   },
   SAVE_LOGS (state, logs) {
     state.logs.unshift(logs)
+  },
+  POP_LOGS (state) {
+    state.logs.pop()
   }
 }
 
@@ -52,6 +55,9 @@ const actions = {
   },
   SAVE_LOGS ({ commit }, logs) {
     commit('SAVE_LOGS', logs)
+  },
+  POP_LOGS ({ commit }) {
+    commit('POP_LOGS')
   }
 }
 export default new Vuex.Store({

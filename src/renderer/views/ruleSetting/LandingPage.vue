@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
 const puppeteer = require('puppeteer')
 const { remote } = require('electron')
@@ -71,6 +72,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      pushLogs: 'SAVE_LOGS'
+    }),
     /**
      * 前往详情页
      */
@@ -154,12 +158,10 @@ export default {
      * 打印日志
      */
     writeLog (v) {
-      if (this.logs.length > 30) {
-        this.logs.shift()
+      if (this.$store.state.logs && this.$store.state.logs.length > 30) {
+        this.$store.state.logs.pop()
       }
-      const el = this.$refs.logList
-      el.scrollTop = el.scrollHeight
-      this.logs.push(`${new Date().toLocaleString()}: ${v}`)
+      this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
     },
     seeTree () {
       if (JSON.stringify(this.treeObj) === '{}') {
