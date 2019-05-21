@@ -41,17 +41,16 @@ body {
     text-align: right;
   }
   .content {
-    height: calc(100vh - 48px);
+    height: calc(100vh - 50px);
     overflow-y: auto;
     transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
     &.small {
-      height: calc(100vh - 28px - 220px);
+      height: calc(100vh - 30px - 220px);
     }
   }
-  // #wrapper {
-  //   min-height: 100vh;
-  //   padding: 60px 80px;
-  //   // width: 100vw;
-  // }
+  #wrapper {
+    min-height: 100vh;
+    padding: 20px 20px;
+  }
 }
 </style>

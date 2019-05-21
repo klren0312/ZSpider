@@ -3,12 +3,6 @@
     <main>
       <div class="left-side">
         <system-information></system-information>
-        <div class="run-logs">
-          <h3>运行日志</h3>
-          <div class="log-list" ref="logList">
-            <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
-          </div>
-        </div>
       </div>
       <div class="right-side">
         <el-form label-width="100px">

@@ -3,12 +3,6 @@
     <main>
       <div class="left-side">
         <system-information></system-information>
-        <div class="run-logs">
-          <h3>运行日志</h3>
-          <div class="log-list" ref="logList">
-            <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
-          </div>
-        </div>
       </div>
 
       <div class="right-side">
@@ -218,11 +212,6 @@ export default {
     }
   }
 
-  #wrapper {
-    min-height: 100vh;
-    padding: 60px 80px;
-  }
-
   #logo {
     height: auto;
     margin-bottom: 20px;
@@ -239,22 +228,6 @@ export default {
   .left-side {
     display: flex;
     flex-direction: column;
-  }
-
-  .run-logs {
-    margin-top: 20px;
-  }
-  .log-list {
-    max-height: 150px;
-    padding-top: 10px;
-    overflow-y: auto;
-    list-style-type: none;
-    background: #323232;
-    .log-line {
-      margin-bottom: 0;
-      padding-left: 20px;
-      color: antiquewhite;
-    }
   }
 
   .result-list {

@@ -14,7 +14,8 @@ import { mapState } from 'vuex'
 export default {
   name: 'SystemLog',
   computed: mapState({
-    ctrl: state => state.logCtrl
+    ctrl: state => state.logCtrl,
+    logs: state => state.logs
   }),
   methods: {
     ctrlLog () {

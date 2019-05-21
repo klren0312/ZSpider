@@ -4,26 +4,39 @@
       <div class="steps">
         <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
         <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
-        <div class="step" :class="{active: step > 2}" @click="step = 3"><span><em></em></span>3、确认规则</div>
-        <div class="step" :class="{active: step === 4}" @click="step = 4">4、其他设置</div>
+        <div class="step" :class="{active: step > 2}" @click="step = 3">3、其他设置</div>
       </div>
       <el-form :inline="true">
         <el-form-item label="任务规则名:">
-          <el-input size="mini" v-model="JobName"></el-input>
+          <el-input size="mini" v-model="jobName"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="mini">保存</el-button>
         </el-form-item>
       </el-form>
     </div>
+    <div class="setting-content">
+      <landing-page v-if="step === 1"></landing-page>
+      <details-page v-if="step === 2"></details-page>
+      <start-spider v-if="step === 3"></start-spider>
+    </div>
   </div>
 </template>
 <script>
+import LandingPage from './LandingPage.vue'
+import DetailsPage from './DetailsPage.vue'
+import StartSpider from './StartSpider.vue'
 export default {
   name: 'RuleSetting',
+  components: {
+    LandingPage,
+    DetailsPage,
+    StartSpider
+  },
   data () {
     return {
-      step: 1
+      step: 1,
+      jobName: ''
     }
   }
 }
@@ -36,6 +49,14 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
+  .setting-content {
+    overflow-y: auto;
+    height: calc(100vh - 50px - 63px);
+    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
+    &.small {
+      height: calc(100vh - 30px - 63px - 220px);
+    }
+  }
   .steps {
     width: 600px;
     /*margin: 0 auto 20px;*/
@@ -44,7 +65,7 @@ export default {
     display: block;
     .step {
       float: left;
-      width: 130px;
+      width: 150px;
       height: 40px;
       line-height: 40px;
       text-align: center;

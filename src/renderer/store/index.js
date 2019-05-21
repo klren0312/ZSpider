@@ -11,7 +11,8 @@ const state = {
     page: 0
   },
   contentParams: [],
-  logCtrl: false
+  logCtrl: false,
+  logs: []
 }
 
 const mutations = {
@@ -24,27 +25,33 @@ const mutations = {
   SET_PARAM (state, params) {
     state.contentParams = params
   },
-  CTRL_LOG (store, ctrl) {
+  CTRL_LOG (state, ctrl) {
     state.logCtrl = ctrl
+  },
+  SAVE_LOGS (state, logs) {
+    state.logs.unshift(logs)
   }
 }
 
 const actions = {
-  SET_SITE (store, siteObj) {
+  SET_SITE ({ commit }, siteObj) {
     db.set('config.siteObj', siteObj).write()
-    store.commit('SET_SITE', siteObj)
+    commit('SET_SITE', siteObj)
   },
-  SET_RULE (store, rule) {
+  SET_RULE ({ commit }, rule) {
     db.set('config.mainUrl', rule.mainUrl).write()
     db.set('config.page', rule.page).write()
-    store.commit('SET_RULE', rule)
+    commit('SET_RULE', rule)
   },
-  SET_PARAM (store, params) {
+  SET_PARAM ({ commit }, params) {
     db.set('config.params', params).write()
-    store.commit('SET_PARAM', params)
+    commit('SET_PARAM', params)
   },
-  CTRL_LOG (store, ctrl) {
-    store.commit('CTRL_LOG', ctrl)
+  CTRL_LOG ({ commit }, ctrl) {
+    commit('CTRL_LOG', ctrl)
+  },
+  SAVE_LOGS ({ commit }, logs) {
+    commit('SAVE_LOGS', logs)
   }
 }
 export default new Vuex.Store({
