@@ -3,16 +3,20 @@ import App from './App'
 import router from './router'
 import store from './store'
 import db from './dataStore'
-import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn } from 'element-ui'
+import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, MessageBox } from 'element-ui'
+import getChrome from './chromePath'
 
-[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn].forEach(v => {
+[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, MessageBox].forEach(v => {
   Vue.use(v)
 })
+Vue.prototype.$confirm = MessageBox.confirm
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$store = store
 Vue.prototype.$db = db
 Vue.config.productionTip = false
+
+store.dispatch('SET_CHROME', getChrome())
 
 /* eslint-disable no-new */
 new Vue({

@@ -16,6 +16,9 @@
 <script>
 import SystemLog from './components/SystemLog/index.vue'
 import { mapState } from 'vuex'
+const BrowserWindow = require('electron').remote.BrowserWindow
+const { shell } = require('electron')
+
 export default {
   name: 'spider-test',
   components: {
@@ -26,8 +29,25 @@ export default {
       isLight: true
     }
   },
+  mounted () {
+    this.$confirm('请确定您已安装Chrome?', '提示', {
+      confirmButtonText: '我安装了',
+      cancelButtonText: '我没安装',
+      type: 'warning'
+    }).then(() => {
+      shell.showItemInFolder(this.chromePath)
+    }).catch(() => {
+      let win = new BrowserWindow({ width: 800, height: 600, show: false })
+      win.on('closed', function () {
+        win = null
+      })
+      win.loadURL(`https://www.google.cn/chrome/`)
+      win.show()
+    })
+  },
   computed: mapState({
-    ctrl: state => state.logCtrl
+    ctrl: state => state.logCtrl,
+    chromePath: state => state.chromePath
   })
 }
 </script>

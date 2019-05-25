@@ -48,7 +48,7 @@
   </div>
 </template>
 <script>
-  import { mapActions } from 'vuex'
+  import { mapActions, mapState } from 'vuex'
   import SystemInformation from '@/components/LandingPage/SystemInformation'
   const puppeteer = require('puppeteer')
   const {
@@ -130,6 +130,9 @@
         }
       }
     },
+    computed: mapState({
+      chromePath: state => state.chromePath
+    }),
     mounted () {
       if (this.$store.state.siteObj) {
         const arr = Object.keys(this.$store.state.siteObj)
@@ -167,7 +170,8 @@
         }
         this.startStatus = true
         browser = await puppeteer.launch({
-          headless: true
+          headless: true,
+          executablePath: this.chromePath
         })
         this.writeLog('browser init')
         page = await browser.newPage()

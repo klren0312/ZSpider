@@ -5,6 +5,7 @@ import db from '@/dataStore'
 Vue.use(Vuex)
 
 const state = {
+  chromePath: '',
   siteObj: {}, // 爬取的内容页链接对象
   rule: {
     mainUrl: '',
@@ -33,6 +34,9 @@ const mutations = {
   },
   POP_LOGS (state) {
     state.logs.pop()
+  },
+  SET_CHROME (state, chromePath) {
+    state.chromePath = chromePath
   }
 }
 
@@ -58,6 +62,10 @@ const actions = {
   },
   POP_LOGS ({ commit }) {
     commit('POP_LOGS')
+  },
+  SET_CHROME ({ commit }, chromePath) {
+    db.set('config.chromePath', chromePath).write()
+    commit('SET_CHROME', chromePath)
   }
 }
 export default new Vuex.Store({

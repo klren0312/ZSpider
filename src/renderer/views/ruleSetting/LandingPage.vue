@@ -47,9 +47,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
 
@@ -71,6 +71,9 @@ export default {
       startStatus: false
     }
   },
+  computed: mapState({
+    chromePath: state => state.chromePath
+  }),
   methods: {
     ...mapActions({
       pushLogs: 'SAVE_LOGS',
@@ -105,7 +108,8 @@ export default {
       this.treeObj = {}
       this.$store.dispatch('SET_SITE', this.treeObj) // 清理旧数据
       browser = await puppeteer.launch({
-        headless: true
+        headless: true,
+        executablePath: this.chromePath
       })
       this.writeLog('browser init')
       page = await browser.newPage()
