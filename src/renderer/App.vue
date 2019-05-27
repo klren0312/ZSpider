@@ -31,12 +31,15 @@ export default {
     }
   },
   mounted () {
-    if (db.get('config.hasTips').value()) {
-      return
-    }
+    // this.$nextTick(_ => {
+    //   if (!db.get('config.hasTips').value()) {
+    //   }
+    // })
     this.$confirm('请确定您已安装Chrome?', '提示', {
       confirmButtonText: '我安装了',
       cancelButtonText: '我没安装',
+      closeOnPressEscape: false,
+      distinguishCancelAndClose: true,
       type: 'warning'
     }).then(() => {
       db.set('config.hasTips', true).write()

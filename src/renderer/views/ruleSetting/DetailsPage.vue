@@ -146,8 +146,7 @@
     },
     methods: {
       ...mapActions({
-        pushLogs: 'SAVE_LOGS',
-        popLogs: 'POP_LOGS'
+        pushLogs: 'SAVE_LOGS'
       }),
       async start () {
         if (this.contentForm.url === '') {
@@ -252,9 +251,6 @@
        * 打印日志
        */
       writeLog (v) {
-        if (this.$store.state.logs && this.$store.state.logs.length > 30) {
-          this.popLogs()
-        }
         this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
       }
     }

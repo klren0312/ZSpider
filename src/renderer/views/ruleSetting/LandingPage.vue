@@ -76,8 +76,7 @@ export default {
   }),
   methods: {
     ...mapActions({
-      pushLogs: 'SAVE_LOGS',
-      popLogs: 'POP_LOGS'
+      pushLogs: 'SAVE_LOGS'
     }),
     /**
      * 前往详情页
@@ -128,13 +127,15 @@ export default {
       }
       this.writeLog(`go to ${this.mainUrl}`)
       this.writeLog(`use css selector ${this.linkRule}`)
-      let theUrls = await page.$$eval(this.linkRule, (a) => {
+      let theUrls = await page.$$eval(this.linkRule, a => {
         return a.map(v => {
           return v.href
         })
       })
       this.treeObj[this.mainUrl] = theUrls
-      this.writeLog(theUrls.join('\n'))
+      theUrls.forEach(v => {
+        this.writeLog(v)
+      })
       if (this.pages < 2) return
       for (let i = 2; i < this.pages; i++) {
         const pageUrl = `${this.mainUrl}dl_p${i}.html`
@@ -163,9 +164,6 @@ export default {
      * 打印日志
      */
     writeLog (v) {
-      if (this.$store.state.logs && this.$store.state.logs.length > 30) {
-        this.popLogs()
-      }
       this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
     },
     seeTree () {

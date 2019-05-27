@@ -57,8 +57,12 @@ const actions = {
   CTRL_LOG ({ commit }, ctrl) {
     commit('CTRL_LOG', ctrl)
   },
-  SAVE_LOGS ({ commit }, logs) {
-    commit('SAVE_LOGS', logs)
+  SAVE_LOGS (state, logs) {
+    setTimeout(() => {
+      // 移除超出的消息
+      while (state.logs >= 30) state.logs.shift()
+      state.commit('SAVE_LOGS', logs)
+    }, 1000)
   },
   POP_LOGS ({ commit }) {
     commit('POP_LOGS')
