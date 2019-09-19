@@ -18,7 +18,7 @@ import SystemLog from './components/SystemLog/index.vue'
 import { mapState } from 'vuex'
 import db from '@/dataStore'
 const BrowserWindow = require('electron').remote.BrowserWindow
-const { shell } = require('electron')
+// const { shell } = require('electron')
 
 export default {
   name: 'spider-test',
@@ -43,7 +43,7 @@ export default {
       type: 'warning'
     }).then(() => {
       db.set('config.hasTips', true).write()
-      shell.showItemInFolder(this.chromePath)
+      // shell.showItemInFolder(this.chromePath)
     }).catch(() => {
       let win = new BrowserWindow({ width: 800, height: 600, show: false })
       win.on('closed', function () {

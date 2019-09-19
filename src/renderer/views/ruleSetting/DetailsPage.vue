@@ -131,18 +131,11 @@
       }
     },
     computed: mapState({
-      chromePath: state => state.chromePath
+      chromePath: state => state.chromePath,
+      siteObj: state => state.siteObj
     }),
     mounted () {
-      if (this.$store.state.siteObj) {
-        const arr = Object.keys(this.$store.state.siteObj)
-        arr.forEach(v => {
-          this.url = [...this.url, ...this.$store.state.siteObj[v]]
-        })
-        if (this.url.length > 50) {
-          this.url.length = 50
-        }
-      }
+      this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
     },
     methods: {
       ...mapActions({
@@ -168,6 +161,7 @@
           return
         }
         this.startStatus = true
+        this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({
           headless: true,
           executablePath: this.chromePath
@@ -252,6 +246,23 @@
        */
       writeLog (v) {
         this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
+      }
+    },
+    watch: {
+      'contentForm.paramsInput' () {
+        this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
+      },
+      siteObj: {
+        handler: function () {
+          const arr = Object.keys(this.siteObj)
+          arr.forEach(v => {
+            this.url = [...this.url, ...this.siteObj[v]]
+          })
+          if (this.url.length > 50) {
+            this.url.length = 50
+          }
+        },
+        deep: true
       }
     }
   }

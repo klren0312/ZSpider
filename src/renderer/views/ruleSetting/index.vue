@@ -16,9 +16,9 @@
       </el-form>
     </div>
     <div class="setting-content">
-      <landing-page v-if="step === 1"></landing-page>
-      <details-page v-if="step === 2"></details-page>
-      <start-spider v-if="step === 3"></start-spider>
+      <landing-page v-show="step === 1"></landing-page>
+      <details-page v-show="step === 2"></details-page>
+      <start-spider v-show="step === 3"></start-spider>
     </div>
   </div>
 </template>

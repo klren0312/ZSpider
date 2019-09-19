@@ -1,10 +1,13 @@
 <template>
-  <div>
+  <div class="system-info">
     <h3 class="title">系统信息</h3>
     <div class="items">
       <div class="item">
         <div class="name">内存占用:</div>
         <div class="value">{{ usemem | byteFormat }} / {{ totalmem | byteFormat }}</div>
+      </div>
+      <div class="item">
+        <el-progress :text-inside="true" :stroke-width="20" :percentage="percentage" status="warning"></el-progress>
       </div>
       <div class="item">
         <div class="name">系统平台:</div>
@@ -26,6 +29,9 @@
     computed: {
       usemem: function () {
         return this.totalmem - this.freemem
+      },
+      percentage: function () {
+        return parseInt(this.usemem * 100 / this.totalmem)
       }
     },
     filters: {
@@ -58,7 +64,7 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss">
   /* .title {
     color: #888;
     font-size: 18px;
@@ -67,20 +73,26 @@
     margin-top: 10px;
   } */
 
-  .items { margin-top: 8px; }
+  .system-info {
+    .items { margin-top: 8px; }
 
-  .item {
-    display: flex;
-    margin-bottom: 6px;
-  }
+    .item {
+      width: 100%;
+      display: flex;
+      margin-bottom: 6px;
+    }
+    .item .el-progress {
+      width: 100%;
+    }
 
-  .item .name {
-    color: #6a6a6a;
-    margin-right: 6px;
-  }
+    .item .name {
+      color: #6a6a6a;
+      margin-right: 6px;
+    }
 
-  .item .value {
-    color: #35495e;
-    font-weight: bold;
+    .item .value {
+      color: #35495e;
+      font-weight: bold;
+    }
   }
 </style>

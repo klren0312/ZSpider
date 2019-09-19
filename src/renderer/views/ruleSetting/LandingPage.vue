@@ -15,7 +15,7 @@
             <el-input v-model="linkRule" size="mini"/>
           </el-form-item>
           <el-form-item label="爬取页数">
-            <el-input-number v-model="pages" size="mini"/>
+            <el-input-number v-model="pages" size="mini" disabled/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
@@ -64,7 +64,7 @@ export default {
       mainUrl: 'http://hf.rent.house365.com/district/',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
-      pages: 140,
+      pages: 5,
       logs: [],
       treeObj: {},
       treeTitleArr: [],
@@ -105,6 +105,7 @@ export default {
     async start () {
       this.startStatus = true
       this.treeObj = {}
+      this.$store.dispatch('CTRL_LOG', true)
       this.$store.dispatch('SET_SITE', this.treeObj) // 清理旧数据
       browser = await puppeteer.launch({
         headless: true,
