@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "ren <renzhiwei@lewell.cn>",
   "description": "spider",
-  "license": null,
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
