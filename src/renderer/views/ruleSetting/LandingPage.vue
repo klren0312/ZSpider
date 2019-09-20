@@ -15,7 +15,7 @@
             <el-input v-model="linkRule" size="mini"/>
           </el-form-item>
           <el-form-item label="爬取页数">
-            <el-input-number v-model="pages" size="mini" disabled/>
+            <el-input-number v-model="pages" size="mini"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
@@ -49,6 +49,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
+import EventBus from '@/utils/EventBus'
 const puppeteer = require('puppeteer-core')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
@@ -64,7 +65,7 @@ export default {
       mainUrl: 'http://hf.rent.house365.com/district/',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
-      pages: 5,
+      pages: 140,
       logs: [],
       treeObj: {},
       treeTitleArr: [],
@@ -81,14 +82,6 @@ export default {
     /**
      * 前往详情页
      */
-    gotoDetails () {
-      this.$store.dispatch('SET_SITE', this.treeObj)
-      this.$store.dispatch('SET_RULE', {
-        mainUrl: this.mainUrl,
-        page: this.pages
-      })
-      this.$router.push('/details')
-    },
     refreshData () {
       this.treeTitleArr = Object.keys(this.treeObj)
     },
@@ -103,10 +96,13 @@ export default {
      * 开始爬
      */
     async start () {
+      this.$store.dispatch('SET_RULE', {
+        mainUrl: this.mainUrl,
+        page: this.pages
+      })
       this.startStatus = true
       this.treeObj = {}
       this.$store.dispatch('CTRL_LOG', true)
-      this.$store.dispatch('SET_SITE', this.treeObj) // 清理旧数据
       browser = await puppeteer.launch({
         headless: true,
         executablePath: this.chromePath
@@ -138,7 +134,11 @@ export default {
         this.writeLog(v)
       })
       if (this.pages < 2) return
-      for (let i = 2; i < this.pages; i++) {
+      let spiderPage = this.page
+      if (this.pages > 5) {
+        spiderPage = 5
+      }
+      for (let i = 2; i < spiderPage; i++) {
         const pageUrl = `${this.mainUrl}dl_p${i}.html`
         this.writeLog(`go to ${pageUrl}`)
         try {
@@ -152,6 +152,7 @@ export default {
           })
         )
         this.treeObj[pageUrl] = urls
+        EventBus.$emit('SITES', this.treeObj)
         this.writeLog(urls.join('\n'))
       }
 
@@ -235,7 +236,7 @@ export default {
   }
 
   .right-side {
-    width: 65%;
+    width: 78%;
   }
 
   .result-list {

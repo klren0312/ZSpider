@@ -6,7 +6,6 @@ Vue.use(Vuex)
 
 const state = {
   chromePath: '',
-  siteObj: {}, // 爬取的内容页链接对象
   rule: {
     mainUrl: '',
     page: 0
@@ -17,9 +16,6 @@ const state = {
 }
 
 const mutations = {
-  SET_SITE (state, siteObj) {
-    state.siteObj = siteObj
-  },
   SET_RULE (state, rule) {
     state.rule = rule
   },
@@ -41,10 +37,6 @@ const mutations = {
 }
 
 const actions = {
-  SET_SITE ({ commit }, siteObj) {
-    db.set('config.siteObj', siteObj).write()
-    commit('SET_SITE', siteObj)
-  },
   SET_RULE ({ commit }, rule) {
     db.set('config.mainUrl', rule.mainUrl).write()
     db.set('config.page', rule.page).write()

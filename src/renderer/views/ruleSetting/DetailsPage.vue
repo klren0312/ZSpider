@@ -17,15 +17,19 @@
             <el-button type="danger" @click="contentForm.paramsInput = []" size="mini">清空参数</el-button>
             <div class="params-list">
               <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
-                <el-col :span="6">
+                <el-col :span="5">
                   <el-input v-model="v.name" placeholder="请输入参数名称" size="mini"></el-input>
                 </el-col>
                 <el-col class="line" :span="1">-</el-col>
-                <el-col :span="6">
+                <el-col :span="5">
                   <el-input v-model="v.param" placeholder="请输入参数选择器" size="mini"></el-input>
                 </el-col>
                 <el-col class="line" :span="1">-</el-col>
-                <el-col :span="6">
+                <el-col :span="4">
+                  <el-input v-model="v.attr" placeholder="请输入属性名, 不使用则不填" size="mini"></el-input>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="4">
                   <el-input v-model="v.value" placeholder="获取值" size="mini"></el-input>
                 </el-col>
                 <el-col :span="3" class="close-btn">
@@ -50,6 +54,7 @@
 <script>
   import { mapActions, mapState } from 'vuex'
   import SystemInformation from '@/components/LandingPage/SystemInformation'
+  import EventBus from '@/utils/EventBus'
   const puppeteer = require('puppeteer')
   const {
     remote
@@ -73,56 +78,74 @@
           /* eslint-disable */
           paramsInput: [{
               name: 'title',
-              param: '#personal > p.name',
-              value: ''
-            }, {
-              name: 'no',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.titleT > p',
-              value: ''
-            },
-            {
-              name: 'price',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(1) > dd > span',
-              value: ''
-            },
-            {
-              name: 'size',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(2) > dd',
-              value: ''
-            },
-            {
-              name: 'decoration',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(3) > dd',
-              value: ''
-            },
-            {
-              name: 'floor',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(5) > dd',
-              value: ''
-            },
-            {
-              name: 'location',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(7) > dd',
-              value: ''
-            },
-            {
-              name: 'community',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > dl:nth-child(8) > dd > a:nth-child(1)',
-              value: ''
-            },
-            {
-              name: 'time',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.time',
+              param: '.detailHead > .detailHead__title.fl.clearfix > p',
+              attr: '',
               value: ''
             },
             {
               name: 'phone',
-              param: 'body > div:nth-child(9) > div.houseInformation.clearfix > div.left > div.houseInfo.clearfix > div.houseInfoMain > div.telephoneBox > div > div > div > p.tel.fd_telephone',
+              param: '.infoDetail.fr > div.adviser > div.clearfix.btnBar > div',
+              attr: 'telno',
               value: ''
             },
             {
               name: 'name',
-              param: '#personal > p.name',
+              param: '.infoDetail.fr > div.adviser > div.clearfix.adviserPs > div.fl > div > div.adviserName.fl',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'price',
+              param: '.infoDetail.fr > div.infoDetail__title',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'size',
+              param: '.infoDetail.fr > .infoDetail__content > div:nth-child(2) > div:nth-child(1)',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'decoration',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(1) > div:nth-child(2)',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'floor',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(2) > div:nth-child(2)',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'location',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(6) > div',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'community',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(5) > div > a.infoDetail__item__local.line1',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'time',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(7) > div',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'propertyCosts',
+              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(3) > div:nth-child(2)',
+              attr: '',
+              value: ''
+            },
+            {
+              name: 'description',
+              param: '.detail__mainCotetn.clearfix > div.detail__mainCotetnL.fl > div.detail__mainCotetn__intro',
+              attr: '',
               value: ''
             }
           ]
@@ -131,11 +154,19 @@
       }
     },
     computed: mapState({
-      chromePath: state => state.chromePath,
-      siteObj: state => state.siteObj
+      chromePath: state => state.chromePath
     }),
     mounted () {
       this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
+      EventBus.$on('SITES', sites => {
+        const arr = Object.keys(sites)
+        arr.forEach(v => {
+          this.url = [...this.url, ...sites[v]]
+        })
+        if (this.url.length > 50) {
+          this.url.length = 50
+        }
+      })
     },
     methods: {
       ...mapActions({
@@ -176,7 +207,11 @@
           let house = await page.evaluate((arr) => {
             let obj = {}
             arr.length > 0 && arr.forEach(v => {
-              obj[v.name] = (document.querySelector(v.param).innerHTML).trim().replace(/\s/g, '').replace(/<\/?.+?\/?>/g, '')
+              if (v.attr) {
+                obj[v.name] = (document.querySelector(v.param).getAttribute(v.attr))
+              } else {
+                obj[v.name] = (document.querySelector(v.param).innerHTML).trim().replace(/\s/g, '').replace(/<\/?.+?\/?>/g, '')
+              }
               v.value = obj[v.name]
               // that.writeLog(`${v.name}: ${obj[v.name]}`)
             })
@@ -251,18 +286,6 @@
     watch: {
       'contentForm.paramsInput' () {
         this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
-      },
-      siteObj: {
-        handler: function () {
-          const arr = Object.keys(this.siteObj)
-          arr.forEach(v => {
-            this.url = [...this.url, ...this.siteObj[v]]
-          })
-          if (this.url.length > 50) {
-            this.url.length = 50
-          }
-        },
-        deep: true
       }
     }
   }
