@@ -6,14 +6,14 @@
         <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
         <div class="step" :class="{active: step > 2}" @click="step = 3">3、其他设置</div>
       </div>
-      <el-form :inline="true">
+      <!-- <el-form :inline="true">
         <el-form-item label="任务规则名:">
           <el-input size="mini" v-model="jobName"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="mini">保存</el-button>
         </el-form-item>
-      </el-form>
+      </el-form> -->
     </div>
     <div class="setting-content">
       <landing-page v-show="step === 1"></landing-page>

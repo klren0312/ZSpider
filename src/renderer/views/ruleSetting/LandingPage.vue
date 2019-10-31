@@ -8,7 +8,11 @@
       <div class="right-side">
         <el-form label-width="80px">
           <el-form-item label="页面地址">
-            <el-input type="text" v-model="mainUrl"  size="mini"/>
+            <div class="main-url">
+              <el-input ref="MainUrlInput" class="main-url-input" type="text" v-model="mainUrl"  size="mini" clearable/>
+              <el-button type="text" size="mini" @click="insert('input', 'MainUrlInput', '[分页位置]')">[分页位置]</el-button>
+            </div>
+            
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
           <el-form-item label="选择器">
@@ -50,6 +54,7 @@
 import { mapActions, mapState } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
 import EventBus from '@/utils/EventBus'
+import insertText from '@/utils/InsertText'
 const puppeteer = require('puppeteer-core')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
@@ -62,7 +67,7 @@ export default {
   data () {
     return {
       dataDialog: false,
-      mainUrl: 'http://hf.rent.house365.com/district/',
+      mainUrl: 'http://hf.rent.house365.com/district//dl_p[分页位置].html',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
       pages: 140,
@@ -80,6 +85,14 @@ export default {
       pushLogs: 'SAVE_LOGS'
     }),
     /**
+     * 往指定的input中光标位置插入指定值
+     */
+    insert (type, el, text) {
+      const dom = this.$refs[el]
+      console.log(type, el, text, dom)
+      insertText(dom.$refs[type], text)
+    },
+    /**
      * 前往详情页
      */
     refreshData () {
@@ -96,6 +109,15 @@ export default {
      * 开始爬
      */
     async start () {
+      if (!this.mainUrl) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: '请输入主页面网址',
+          buttons: ['ok']
+        })
+        return
+      }
       this.$store.dispatch('SET_RULE', {
         mainUrl: this.mainUrl,
         page: this.pages
@@ -105,7 +127,14 @@ export default {
       this.$store.dispatch('CTRL_LOG', true)
       browser = await puppeteer.launch({
         headless: true,
-        executablePath: this.chromePath
+        executablePath: this.chromePath,
+        args: [ // 禁用一些功能
+          '--no-sandbox', // 沙盒模式
+          '--disable-setuid-sandbox', // uid沙盒
+          '--disable-dev-shm-usage', // 创建临时文件共享内存
+          '--disable-accelerated-2d-canvas', // canvas渲染
+          '--disable-gpu' // GPU硬件加速
+        ]
       })
       this.writeLog('browser init')
       page = await browser.newPage()
@@ -116,30 +145,21 @@ export default {
      * 前往主页面
      */
     async gotoMain () {
-      if (this.mainUrl === '') return
-      try {
-        await page.goto(this.mainUrl)
-      } catch (e) {
-        this.writeLog(e)
-      }
-      this.writeLog(`go to ${this.mainUrl}`)
-      this.writeLog(`use css selector ${this.linkRule}`)
-      let theUrls = await page.$$eval(this.linkRule, a => {
-        return a.map(v => {
-          return v.href
+      if (!this.mainUrl) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: '请输入主页面网址',
+          buttons: ['ok']
         })
-      })
-      this.treeObj[this.mainUrl] = theUrls
-      theUrls.forEach(v => {
-        this.writeLog(v)
-      })
-      if (this.pages < 2) return
+        return
+      }
       let spiderPage = this.page
       if (this.pages > 5) {
         spiderPage = 5
       }
-      for (let i = 2; i < spiderPage; i++) {
-        const pageUrl = `${this.mainUrl}dl_p${i}.html`
+      for (let i = 1; i < spiderPage; i++) {
+        const pageUrl = this.mainUrl.replace(/\[分页位置\]/g, i)
         this.writeLog(`go to ${pageUrl}`)
         try {
           await page.goto(pageUrl)
@@ -188,11 +208,20 @@ export default {
       })
     },
     openInBrowser () {
+      if (!this.mainUrl) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: '请输入主页面网址',
+          buttons: ['ok']
+        })
+        return
+      }
       let win = new BrowserWindow({ width: 800, height: 600, show: false })
       win.on('closed', function () {
         win = null
       })
-      win.loadURL(this.mainUrl)
+      win.loadURL(this.mainUrl.replace(/\[分页位置\]/g, 1))
       win.show()
     }
   }
@@ -242,5 +271,15 @@ export default {
   .result-list {
     max-height: 250px;
     overflow: auto;
+  }
+  .main-url {
+    .main-url-input {
+      width: 500px;
+    }
+  }
+  .el-input__inner {
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: bold;
   }
 </style>

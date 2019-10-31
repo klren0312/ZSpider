@@ -7,7 +7,7 @@
       <div class="right-side">
         <el-form label-width="100px">
           <el-form-item label="内容页链接">
-            <el-select v-model="contentForm.url" size="mini">
+            <el-select class="content-select" v-model="contentForm.url" size="mini">
               <el-option v-for="(v, i) in url" :key="i" :label="v" :value="v"></el-option>
             </el-select>
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
@@ -173,10 +173,10 @@
         pushLogs: 'SAVE_LOGS'
       }),
       async start () {
-        if (this.contentForm.url === '') {
+        if (!this.contentForm.url) {
           remote.dialog.showMessageBox({
-            type: 'info',
-            title: '提示',
+            type: 'error',
+            title: '错误',
             message: '请选择链接',
             buttons: ['ok']
           })
@@ -184,8 +184,8 @@
         }
         if (this.contentForm.paramsInput.length === 0) {
           remote.dialog.showMessageBox({
-            type: 'info',
-            title: '提示',
+            type: 'error',
+            title: '错误',
             message: '请配置参数',
             buttons: ['ok']
           })
@@ -247,8 +247,8 @@
       openInBrowser () {
         if (this.contentForm.url === '') {
           remote.dialog.showMessageBox({
-            type: 'info',
-            title: '提示',
+            type: 'error',
+            title: '错误',
             message: '请选择链接',
             buttons: ['ok']
           })
@@ -305,5 +305,9 @@
   .line,
   .close-btn {
     text-align: center;
+  }
+
+  .content-select {
+    width: 500px;
   }
 </style>

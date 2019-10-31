@@ -17,6 +17,9 @@
 import SystemLog from './components/SystemLog/index.vue'
 import { mapState } from 'vuex'
 import db from '@/dataStore'
+const {
+  remote
+} = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
 // const { shell } = require('electron')
 
@@ -31,32 +34,33 @@ export default {
     }
   },
   mounted () {
-    // this.$nextTick(_ => {
-    //   if (!db.get('config.hasTips').value()) {
-    //   }
-    // })
-    this.$confirm('请确定您已安装Chrome?', '提示', {
-      confirmButtonText: '我安装了',
-      cancelButtonText: '我没安装',
-      closeOnPressEscape: false,
-      distinguishCancelAndClose: true,
-      type: 'warning'
-    }).then(() => {
-      db.set('config.hasTips', true).write()
-      // shell.showItemInFolder(this.chromePath)
-    }).catch(() => {
-      let win = new BrowserWindow({ width: 800, height: 600, show: false })
-      win.on('closed', function () {
-        win = null
-      })
-      win.loadURL(`https://www.google.cn/chrome/`)
-      win.show()
-    })
+    this.showInstallInfo()
   },
   computed: mapState({
     ctrl: state => state.logCtrl,
     chromePath: state => state.chromePath
-  })
+  }),
+  methods: {
+    showInstallInfo () {
+      remote.dialog.showMessageBox({
+        type: 'info',
+        title: '提示',
+        message: '请确定您已安装Chrome?',
+        buttons: ['ok', 'no']
+      }, index => {
+        if (index === 0) {
+          db.set('config.hasTips', true).write()
+        } else {
+          let win = new BrowserWindow({ width: 800, height: 600, show: false })
+          win.on('closed', function () {
+            win = null
+          })
+          win.loadURL(`https://www.google.cn/chrome/`)
+          win.show()
+        }
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -65,6 +69,7 @@ export default {
 body {
   padding: 0;
   margin: 0;
+  font-family: "PingFang SC", "Lantinghei SC", "Lucida Grande", "\5FAE\8F6F\96C5\9ED1", "Microsoft YaHei", FreeSans, "WenQuanYi Micro Hei", "Hiragino Sans GB", "Hiragino Sans GB W3", SimSun, sans-serif, tahoma, arial;
   .theme-btn {
     text-align: right;
   }
