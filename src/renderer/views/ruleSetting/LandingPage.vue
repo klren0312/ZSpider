@@ -12,7 +12,6 @@
               <el-input ref="MainUrlInput" class="main-url-input" type="text" v-model="mainUrl"  size="mini" clearable/>
               <el-button type="text" size="mini" @click="insert('input', 'MainUrlInput', '[分页位置]')">[分页位置]</el-button>
             </div>
-            
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
           <el-form-item label="选择器">
@@ -70,7 +69,7 @@ export default {
       mainUrl: 'http://hf.rent.house365.com/district//dl_p[分页位置].html',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
-      pages: 140,
+      pages: 20,
       logs: [],
       treeObj: {},
       treeTitleArr: [],
@@ -120,7 +119,8 @@ export default {
       }
       this.$store.dispatch('SET_RULE', {
         mainUrl: this.mainUrl,
-        page: this.pages
+        page: this.pages,
+        linkRule: this.linkRule
       })
       this.startStatus = true
       this.treeObj = {}
@@ -154,11 +154,12 @@ export default {
         })
         return
       }
-      let spiderPage = this.page
+      let spiderPage = this.pages
       if (this.pages > 5) {
         spiderPage = 5
       }
-      for (let i = 1; i < spiderPage; i++) {
+      console.log(spiderPage)
+      for (let i = 1; i <= spiderPage; i++) {
         const pageUrl = this.mainUrl.replace(/\[分页位置\]/g, i)
         this.writeLog(`go to ${pageUrl}`)
         try {
@@ -177,6 +178,7 @@ export default {
       }
 
       browser.close()
+      this.writeLog('测试采集, 最多采集五个')
       this.writeLog('结束, 关闭浏览器')
       page = null
       browser = null

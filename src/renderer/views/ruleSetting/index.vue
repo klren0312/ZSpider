@@ -4,7 +4,7 @@
       <div class="steps">
         <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
         <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
-        <div class="step" :class="{active: step > 2}" @click="step = 3">3、其他设置</div>
+        <div class="step" :class="{active: step > 2}" @click="step = 3">3、开始爬取</div>
       </div>
       <!-- <el-form :inline="true">
         <el-form-item label="任务规则名:">

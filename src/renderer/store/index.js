@@ -8,7 +8,8 @@ const state = {
   chromePath: '',
   rule: {
     mainUrl: '',
-    page: 0
+    page: 0,
+    linkRule: ''
   },
   contentParams: [],
   logCtrl: false,
@@ -40,6 +41,7 @@ const actions = {
   SET_RULE ({ commit }, rule) {
     db.set('config.mainUrl', rule.mainUrl).write()
     db.set('config.page', rule.page).write()
+    db.set('config.linkRule', rule.linkRule).write()
     commit('SET_RULE', rule)
   },
   SET_PARAM ({ commit }, params) {

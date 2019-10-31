@@ -34,7 +34,9 @@ export default {
     }
   },
   mounted () {
-    this.showInstallInfo()
+    if (process.env.NODE_ENV !== 'development') {
+      this.showInstallInfo()
+    }
   },
   computed: mapState({
     ctrl: state => state.logCtrl,

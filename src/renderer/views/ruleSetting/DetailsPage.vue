@@ -195,7 +195,14 @@
         this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({
           headless: true,
-          executablePath: this.chromePath
+          executablePath: this.chromePath,
+          args: [ // 禁用一些功能
+            '--no-sandbox', // 沙盒模式
+            '--disable-setuid-sandbox', // uid沙盒
+            '--disable-dev-shm-usage', // 创建临时文件共享内存
+            '--disable-accelerated-2d-canvas', // canvas渲染
+            '--disable-gpu' // GPU硬件加速
+          ]
         })
         this.writeLog('browser init')
         page = await browser.newPage()
