@@ -5,7 +5,7 @@
       <i class="el-icon-arrow-up" v-else></i>
     </div>
     <div class="log-list" :class="ctrl ? '' : 'close'" ref="logList">
-      <p class="log-line" v-for="(v, i) in logs" :key="i">{{i}}. {{v}}</p>
+      <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
     </div>
   </div>
 </template>

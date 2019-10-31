@@ -15,16 +15,32 @@ if (process.type !== 'renderer') {
   }
 }
 
-const adapter = new FileSync(path.join(STORE_PATH, '/data.json'))
+// =========================== 规则存储 =================================
+const ruleAdapter = new FileSync(path.join(STORE_PATH, '/rules.json'))
 
-const db = Datastore(adapter)
-db._.mixin(LodashId)
-console.log('db init', STORE_PATH)
-if (!db.has('config').value()) {
-  db.set('config', {}).write()
+const ruleDb = Datastore(ruleAdapter)
+ruleDb._.mixin(LodashId)
+console.log('ruleDb init', STORE_PATH)
+if (!ruleDb.has('config').value()) {
+  ruleDb.set('config', {}).write()
 }
 
-if (!db.has('data').value()) {
-  db.set('data', []).write()
+if (!ruleDb.has('data').value()) {
+  ruleDb.set('data', []).write()
 }
-export default db
+
+// =========================== 数据存储 =================================
+const dataAdapter = new FileSync(path.join(STORE_PATH, '/datas.json'))
+
+const dataDb = Datastore(dataAdapter)
+dataDb._.mixin(LodashId)
+console.log('dataDb init', STORE_PATH)
+if (!dataDb.has('config').value()) {
+  dataDb.set('config', {}).write()
+}
+
+if (!dataDb.has('data').value()) {
+  dataDb.set('data', []).write()
+}
+
+export { dataDb, ruleDb }

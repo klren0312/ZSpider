@@ -16,7 +16,7 @@
 <script>
 import SystemLog from './components/SystemLog/index.vue'
 import { mapState } from 'vuex'
-import db from '@/dataStore'
+import { ruleDb } from '@/dataStore'
 const {
   remote
 } = require('electron')
@@ -35,7 +35,9 @@ export default {
   },
   mounted () {
     if (process.env.NODE_ENV !== 'development') {
-      this.showInstallInfo()
+      if (ruleDb.get('config.hasTips').value()) {
+        this.showInstallInfo()
+      }
     }
   },
   computed: mapState({
@@ -51,7 +53,7 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          db.set('config.hasTips', true).write()
+          ruleDb.set('config.hasTips', true).write()
         } else {
           let win = new BrowserWindow({ width: 800, height: 600, show: false })
           win.on('closed', function () {

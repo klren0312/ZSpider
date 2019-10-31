@@ -228,14 +228,13 @@
             v.value = house[v.name]
             this.writeLog(`${v.name}: ${house[v.name]}`)
           })
-          console.log(house)
           this.startStatus = false
           browser.close()
           this.writeLog('结束, 关闭浏览器')
           page = null
           browser = null
         } catch (e) {
-          this.writeLog(e)
+          this.writeLog('采集报错: ' + e)
         }
       },
       stop () {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import db from '@/dataStore'
+import { ruleDb } from '@/dataStore'
 
 Vue.use(Vuex)
 
@@ -39,13 +39,13 @@ const mutations = {
 
 const actions = {
   SET_RULE ({ commit }, rule) {
-    db.set('config.mainUrl', rule.mainUrl).write()
-    db.set('config.page', rule.page).write()
-    db.set('config.linkRule', rule.linkRule).write()
+    ruleDb.set('config.mainUrl', rule.mainUrl).write()
+    ruleDb.set('config.page', rule.page).write()
+    ruleDb.set('config.linkRule', rule.linkRule).write()
     commit('SET_RULE', rule)
   },
   SET_PARAM ({ commit }, params) {
-    db.set('config.params', params).write()
+    ruleDb.set('config.params', params).write()
     commit('SET_PARAM', params)
   },
   CTRL_LOG ({ commit }, ctrl) {
@@ -62,7 +62,7 @@ const actions = {
     commit('POP_LOGS')
   },
   SET_CHROME ({ commit }, chromePath) {
-    db.set('config.chromePath', chromePath).write()
+    ruleDb.set('config.chromePath', chromePath).write()
     commit('SET_CHROME', chromePath)
   }
 }

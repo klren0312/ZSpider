@@ -31,14 +31,37 @@
         </el-table>
       </template>
     </div>
+    <div class="result-container">
+      <el-table :data="resultTable" border height="500px">
+        <el-table-column width="200px" label="标题" prop="title" fixed="left"></el-table-column>
+        <el-table-column width="200px" label="价格" prop="price"></el-table-column>
+        <el-table-column width="200px" label="电话" prop="phone"></el-table-column>
+        <el-table-column width="200px" label="姓名" prop="name"></el-table-column>
+        <el-table-column width="200px" label="面积" prop="size"></el-table-column>
+        <el-table-column width="200px" label="装修" prop="decoration"></el-table-column>
+        <el-table-column width="200px" label="楼层" prop="floor"></el-table-column>
+        <el-table-column width="200px" label="地址" prop="location"></el-table-column>
+        <el-table-column width="200px" label="小区" prop="community"></el-table-column>
+        <el-table-column width="200px" label="物业费" prop="propertyCosts"></el-table-column>
+        <el-table-column width="200px" show-overflow-tooltip label="描述" prop="description"></el-table-column>
+        <el-table-column width="200px" label="时间" prop="time"></el-table-column>
+        <el-table-column width="200px" label="链接" prop="sourceUrl">
+          <template slot-scope="scope">
+            <span>{{scope.row.sourceUrl}}</span>
+            <el-button type="text" @click="copy(scope.row.sourceUrl)">复制</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script>
-  import db from '@/dataStore'
+  import { ruleDb, dataDb } from '@/dataStore'
   import {
     mapActions
   } from 'vuex'
   const puppeteer = require('puppeteer')
+  const { remote } = require('electron')
 
   let browser = null
   let page = null
@@ -50,7 +73,8 @@
         isStart: false,
         config: {},
         urls: [],
-        showConfig: true
+        showConfig: true,
+        resultTable: []
       }
     },
     mounted () {
@@ -75,10 +99,35 @@
         browser.close()
       },
       /**
+       * 复制
+       */
+      copy (str) {
+        const el = document.createElement('textarea')
+        el.value = str
+        el.setAttribute('readonly', '')
+        el.style.position = 'absolute'
+        el.style.left = '-9999px'
+        document.body.appendChild(el)
+        const selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+        if (selected) {
+          document.getSelection().removeAllRanges()
+          document.getSelection().addRange(selected)
+        }
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: '提示',
+          message: '复制成功',
+          buttons: ['ok']
+        })
+      },
+      /**
        * 获取规则配置
        */
       getConfig () {
-        this.config = db.get('config').value()
+        this.config = ruleDb.get('config').value()
       },
       async goToSpider () {
         this.$store.dispatch('CTRL_LOG', true)
@@ -97,7 +146,7 @@
         page = await browser.newPage()
         this.writeLog('open new page')
         // 获取内容页链接
-        for (let i = 1; i < parseInt(this.config.page); i++) {
+        for (let i = 1; i <= parseInt(this.config.page); i++) {
           const pageUrl = this.config.mainUrl.replace(/\[分页位置\]/g, i)
           this.writeLog(`go to ${pageUrl}`)
           try {
@@ -124,24 +173,33 @@
             let house = await page.evaluate((arr) => {
               let obj = {}
               arr.length > 0 && arr.forEach(v => {
-                if (v.attr) {
-                  obj[v.name] = (document.querySelector(v.param).getAttribute(v.attr))
-                } else {
-                  obj[v.name] = (document.querySelector(v.param).innerHTML).trim().replace(/\s/g, '').replace(/<\/?.+?\/?>/g, '')
-                }
-                v.value = obj[v.name]
+                try {
+                  if (v.attr) {
+                    obj[v.name] = (document.querySelector(v.param).getAttribute(v.attr))
+                  } else {
+                    obj[v.name] = (document.querySelector(v.param).innerHTML).trim().replace(/\s/g, '').replace(/<\/?.+?\/?>/g, '')
+                  }
+                  v.value = obj[v.name]
+                } catch (error) {}
                 // that.writeLog(`${v.name}: ${obj[v.name]}`)
               })
               return obj
             }, arr)
+            house['sourceUrl'] = this.urls[i]
+            house['id'] = i
             this.config.params.forEach(v => {
               v.value = house[v.name]
               this.writeLog(`${v.name}: ${house[v.name]}`)
             })
+            this.resultTable.push(house)
           } catch (e) {
-            this.writeLog(e)
+            this.writeLog('采集报错: ' + e)
+            if (e.indexOf('Most likely the page has been closed')) {
+              break
+            }
           }
         }
+        dataDb('datas', this.resultTable).write()
         this.isStart = false
         browser.close()
         this.writeLog('结束, 关闭浏览器')
