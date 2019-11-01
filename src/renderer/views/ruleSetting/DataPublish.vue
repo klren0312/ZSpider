@@ -9,7 +9,9 @@
       style="width: 100%">
       <el-table-column
         label="ID"
-        prop="id">
+        prop="id"
+        show-overflow-tooltip
+        width="80px">
       </el-table-column>
       <el-table-column
         label="数据库地址"
@@ -39,8 +41,21 @@
         prop="table">
       </el-table-column>
       <el-table-column
-        label="操作">
+        label="发布结果">
         <template slot-scope="scope">
+          <div>
+            <el-tag effect="dark" type="success">{{scope.row.success}}</el-tag>
+            <el-tag effect="dark" type="danger">{{scope.row.fail}}</el-tag>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        fixed="right"
+        width="250px">
+        <template slot-scope="scope">
+          <el-button @click="publish(scope.row)" type="primary" size="mini">发布</el-button>
+          <el-button @click="clear(scope.row)" type="primary" size="mini">清空表</el-button>
           <el-button @click="deletePublish(scope.row)" type="danger" size="mini">删除</el-button>
         </template>
       </el-table-column>
@@ -85,7 +100,7 @@
   </main>
 </template>
 <script>
-import { ruleDb } from '@/dataStore'
+import { ruleDb, dataDb } from '@/dataStore'
 const mysql = require('mysql2')
 const { remote } = require('electron')
 const collection = ruleDb.get('publishConfig')
@@ -169,6 +184,8 @@ export default {
       }
       this.$refs['publishForm'].validate((valid) => {
         if (valid) {
+          this.form.fail = 0
+          this.form.success = 0
           collection
             .insert({ ...this.form })
             .write()
@@ -187,6 +204,9 @@ export default {
         return v.toString(16)
       })
     },
+    /**
+     * 删除发布
+     */
     deletePublish (row) {
       remote.dialog.showMessageBox({
         type: 'info',
@@ -201,6 +221,52 @@ export default {
           this.getPublish()
         } else {
         }
+      })
+    },
+    /**
+     * 发布数据
+     */
+    async publish (row) {
+      const conn = await mysql.createConnectionPromise({
+        host: row.host,
+        port: row.port,
+        user: row.user,
+        password: row.password,
+        database: row.database
+      })
+      const datas = dataDb.get('data').value()
+      for (let i = 0, len = datas.length; i < len; i++) {
+        const d = datas[i]
+        try {
+          await conn.query(`INSERT INTO ${row.table} SET ?`, d)
+          row.success++
+        } catch (error) {
+          row.fail++
+        }
+      }
+      conn.end()
+    },
+    /**
+     * 清空表
+     */
+    async clear (row) {
+      const conn = await mysql.createConnectionPromise({
+        host: row.host,
+        port: row.port,
+        user: row.user,
+        password: row.password,
+        database: row.database
+      })
+      try {
+        await conn.query(`truncate table ${row.table}`)
+      } catch (error) {
+      }
+      conn.end()
+      remote.dialog.showMessageBox({
+        type: 'info',
+        title: '提示',
+        message: `已清空数据表(${row.table})`,
+        buttons: ['ok']
       })
     }
   }
