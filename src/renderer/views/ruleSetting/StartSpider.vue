@@ -3,7 +3,8 @@
     <div class="config-container">
       <div class="config-title">
         <div>规则配置详情</div>
-        <div>
+        <div class="ctrl-block">
+          <el-progress class="spider-progress" :width="30" :stroke-width="2" type="circle" :percentage="spiderProgress"></el-progress>
           <el-button type="primary" size="mini" @click="start" v-if="!isStart">开始采集</el-button>
           <el-button type="danger" size="mini" @click="end" v-else>停止采集</el-button>
           <el-button v-if="!showConfig" type="text" @click="showConfig=true">展开</el-button>
@@ -45,7 +46,7 @@
         <el-table-column width="200px" label="物业费" prop="propertyCosts"></el-table-column>
         <el-table-column width="200px" show-overflow-tooltip label="描述" prop="description"></el-table-column>
         <el-table-column width="200px" label="时间" prop="time"></el-table-column>
-        <el-table-column width="200px" label="链接" prop="sourceUrl">
+        <el-table-column width="200px" label="链接" prop="sourceUrl" fixed="right">
           <template slot-scope="scope">
             <span>{{scope.row.sourceUrl}}</span>
             <el-button type="text" @click="copy(scope.row.sourceUrl)">复制</el-button>
@@ -74,7 +75,8 @@
         config: {},
         urls: [],
         showConfig: true,
-        resultTable: []
+        resultTable: [],
+        spiderProgress: 0
       }
     },
     mounted () {
@@ -132,6 +134,7 @@
       async goToSpider () {
         // 启动前清空历史采集数据
         dataDb.set('data', []).write()
+        const collection = dataDb.defaults({ data: [] }).get('data')
         this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({
           headless: true,
@@ -168,6 +171,7 @@
         this.writeLog('下面开始内容页采集')
         for (let i = 0, len = this.urls.length; i < len; i++) {
           try {
+            this.spiderProgress = parseInt((((i + 1) / len) * 100).toFixed(2))
             await page.goto(this.urls[i])
             this.writeLog(`go to ${this.urls[i]}`)
             let arr = this.config.params
@@ -190,9 +194,15 @@
             house['id'] = i
             this.config.params.forEach(v => {
               v.value = house[v.name]
-              this.writeLog(`${v.name}: ${house[v.name]}`)
             })
+            this.writeLog(`${JSON.stringify(house)}`)
             this.resultTable.push(house)
+            if (this.resultTable.length > 50) {
+              this.resultTable.shift()
+            }
+            collection
+              .insert({ ...house })
+              .write()
           } catch (e) {
             this.writeLog('采集报错: ' + e)
             if (e.indexOf('Most likely the page has been closed') !== -1 || e.indexOf('Navigation failed because browser has disconnected') !== -1) {
@@ -200,7 +210,6 @@
             }
           }
         }
-        dataDb('data', this.resultTable).write()
         this.isStart = false
         browser.close()
         this.writeLog('结束, 关闭浏览器')
@@ -224,6 +233,14 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #eee;
+      .ctrl-block {
+        width: 200px;
+        display: flex;
+        align-items: center;
+      }
+      .spider-progress {
+        margin-right: 20px;
+      }
     }
   }
 </style>

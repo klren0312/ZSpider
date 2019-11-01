@@ -186,7 +186,7 @@
             value: v
           })
         })
-        console.log(formatArr)
+        // console.log(formatArr)
         cb(formatArr)
       },
       async start () {
@@ -243,8 +243,8 @@
           }, arr)
           this.contentForm.paramsInput.forEach(v => {
             v.value = house[v.name]
-            this.writeLog(`${v.name}: ${house[v.name]}`)
           })
+          this.writeLog(`${JSON.stringify(house)}`)
           this.startStatus = false
           browser.close()
           this.writeLog('结束, 关闭浏览器')

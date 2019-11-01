@@ -27,10 +27,16 @@ const mutations = {
     state.logCtrl = ctrl
   },
   SAVE_LOGS (state, logs) {
-    state.logs.unshift(logs)
+    let arr = JSON.parse(JSON.stringify(state.logs))
+    // 移除超出的消息
+    while (arr.length >= 30) arr.shift()
+    arr.unshift(logs)
+    state.logs = arr
   },
   POP_LOGS (state) {
-    state.logs.pop()
+    let arr = JSON.parse(JSON.stringify(state.logs))
+    arr.pop()
+    state.logs = arr
   },
   SET_CHROME (state, chromePath) {
     state.chromePath = chromePath
@@ -51,12 +57,8 @@ const actions = {
   CTRL_LOG ({ commit }, ctrl) {
     commit('CTRL_LOG', ctrl)
   },
-  SAVE_LOGS (state, logs) {
-    setTimeout(() => {
-      // 移除超出的消息
-      while (state.logs >= 30) state.logs.shift()
-      state.commit('SAVE_LOGS', logs)
-    }, 1000)
+  SAVE_LOGS ({ commit }, logs) {
+    commit('SAVE_LOGS', logs)
   },
   POP_LOGS ({ commit }) {
     commit('POP_LOGS')
