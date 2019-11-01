@@ -245,6 +245,10 @@ export default {
         }
       }
       conn.end()
+      collection
+        .find({id: row.id})
+        .assign({fail: row.fail, success: row.success})
+        .write()
     },
     /**
      * 清空表
