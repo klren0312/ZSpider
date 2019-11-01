@@ -57,6 +57,7 @@
     "fs-extra": "^7.0.1",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
+    "mysql2": "^2.0.0",
     "puppeteer": "^1.14.0",
     "puppeteer-core": "^1.17.0",
     "vue": "^2.5.16",

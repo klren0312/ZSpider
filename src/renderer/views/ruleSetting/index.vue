@@ -5,7 +5,9 @@
         <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
         <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
         <div class="step" :class="{active: step > 2}" @click="step = 3">3、开始爬取</div>
+        <div class="step" :class="{active: step > 3}" @click="step = 4">4、数据发布</div>
       </div>
+      <div class="tips">每个页面都必须进行测试, 才会保存配置</div>
       <!-- <el-form :inline="true">
         <el-form-item label="任务规则名:">
           <el-input size="mini" v-model="jobName"></el-input>
@@ -19,6 +21,7 @@
       <landing-page v-show="step === 1"></landing-page>
       <details-page v-show="step === 2"></details-page>
       <start-spider v-show="step === 3"></start-spider>
+      <data-publish v-show="step === 4"></data-publish>
     </div>
   </div>
 </template>
@@ -26,16 +29,18 @@
 import LandingPage from './LandingPage.vue'
 import DetailsPage from './DetailsPage.vue'
 import StartSpider from './StartSpider.vue'
+import DataPublish from './DataPublish.vue'
 export default {
   name: 'RuleSetting',
   components: {
     LandingPage,
     DetailsPage,
-    StartSpider
+    StartSpider,
+    DataPublish
   },
   data () {
     return {
-      step: 1,
+      step: 4,
       jobName: ''
     }
   }
@@ -48,6 +53,12 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    .tips {
+      margin-right: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
   }
   .setting-content {
     overflow-y: auto;
@@ -60,7 +71,7 @@ export default {
   .steps {
     width: 600px;
     /*margin: 0 auto 20px;*/
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     overflow: hidden;
     display: block;
     .step {
@@ -79,44 +90,6 @@ export default {
       &.active {
         color: #fff;
         background-color: #573eb1;
-        span {
-          em {
-            border-color:transparent transparent transparent #573eb1;
-          }
-        }
-      }
-      &:first-child {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
-      }
-      &:last-child {
-        border-right: 1px solid #fff;
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-      }
-      span {
-        width: 0;
-        height: 0;
-        display: block;
-        border-width:20px 0 19px 15px;
-        border-style:solid;
-        border-color:transparent transparent transparent #fff;
-        position:absolute;
-        right: -15px;
-        z-index: 4;
-        /*overflow: hidden;*/
-        em {
-          width: 0;
-          height: 0;
-          display: block;
-          border-width:20px 0 19px 15px;
-          border-style:solid;
-          border-color:transparent transparent transparent #aaa;
-          position:absolute;
-          right: 1px;
-          z-index: 4;
-          top: -20px;
-        }
       }
     }
   }

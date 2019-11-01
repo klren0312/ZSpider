@@ -29,6 +29,10 @@ if (!ruleDb.has('config').value()) {
 if (!ruleDb.has('contentUrls').value()) {
   ruleDb.set('contentUrls', {}).write()
 }
+// 存放发布配置
+if (!ruleDb.has('publishConfig').value()) {
+  ruleDb.set('publishConfig', []).write()
+}
 
 // =========================== 数据存储 =================================
 const dataAdapter = new FileSync(path.join(STORE_PATH, '/datas.json'))

@@ -21,8 +21,8 @@
             <el-input-number v-model="pages" size="mini"/>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始</el-button>
-            <el-button type="danger" @click="stop" size="mini" v-else>结束</el-button>
+            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始测试</el-button>
+            <el-button type="danger" @click="stop" size="mini" v-else>结束测试</el-button>
             <el-button :disabled="JSON.stringify(treeObj) === '{}'" @click="seeTree" size="mini">查看数据</el-button>
             <!-- <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
               <el-button  type="primary" plain :disabled="JSON.stringify(treeObj) === '{}'" @click="gotoDetails" size="mini">配置详情页</el-button>
