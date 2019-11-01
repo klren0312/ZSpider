@@ -21,12 +21,13 @@ const ruleAdapter = new FileSync(path.join(STORE_PATH, '/rules.json'))
 const ruleDb = Datastore(ruleAdapter)
 ruleDb._.mixin(LodashId)
 console.log('ruleDb init', STORE_PATH)
+// 存放规则配置
 if (!ruleDb.has('config').value()) {
   ruleDb.set('config', {}).write()
 }
-
-if (!ruleDb.has('data').value()) {
-  ruleDb.set('data', []).write()
+// 存放内容页地址
+if (!ruleDb.has('contentUrls').value()) {
+  ruleDb.set('contentUrls', {}).write()
 }
 
 // =========================== 数据存储 =================================
@@ -35,9 +36,6 @@ const dataAdapter = new FileSync(path.join(STORE_PATH, '/datas.json'))
 const dataDb = Datastore(dataAdapter)
 dataDb._.mixin(LodashId)
 console.log('dataDb init', STORE_PATH)
-if (!dataDb.has('config').value()) {
-  dataDb.set('config', {}).write()
-}
 
 if (!dataDb.has('data').value()) {
   dataDb.set('data', []).write()

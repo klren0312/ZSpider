@@ -54,6 +54,7 @@ import { mapActions, mapState } from 'vuex'
 import SystemInformation from '@/components/LandingPage/SystemInformation'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
+import { ruleDb } from '@/dataStore'
 const puppeteer = require('puppeteer-core')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
@@ -66,7 +67,7 @@ export default {
   data () {
     return {
       dataDialog: false,
-      mainUrl: 'http://hf.rent.house365.com/district//dl_p[分页位置].html',
+      mainUrl: 'http://hf.rent.house365.com/district/dl_p[分页位置].html',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
       pages: 20,
@@ -88,7 +89,6 @@ export default {
      */
     insert (type, el, text) {
       const dom = this.$refs[el]
-      console.log(type, el, text, dom)
       insertText(dom.$refs[type], text)
     },
     /**
@@ -158,7 +158,6 @@ export default {
       if (this.pages > 5) {
         spiderPage = 5
       }
-      console.log(spiderPage)
       for (let i = 1; i <= spiderPage; i++) {
         const pageUrl = this.mainUrl.replace(/\[分页位置\]/g, i)
         this.writeLog(`go to ${pageUrl}`)
@@ -173,16 +172,30 @@ export default {
           })
         )
         this.treeObj[pageUrl] = urls
-        EventBus.$emit('SITES', this.treeObj)
+        this.saveContentUrls(this.treeObj)
         this.writeLog(urls.join('\n'))
       }
-
       browser.close()
       this.writeLog('测试采集, 最多采集五个')
       this.writeLog('结束, 关闭浏览器')
       page = null
       browser = null
       this.startStatus = false
+    },
+    /**
+     * 存储内容页链接
+     */
+    saveContentUrls (obj) {
+      const arr = Object.keys(obj)
+      let urls = []
+      arr.forEach(v => {
+        urls = [...urls, ...obj[v]]
+      })
+      if (urls.length > 50) {
+        urls.length = 50
+      }
+      ruleDb.set('contentUrls', urls).write()
+      EventBus.$emit('SITES', urls)
     },
     /**
      * 打印日志

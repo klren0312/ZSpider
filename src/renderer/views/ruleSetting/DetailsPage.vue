@@ -7,9 +7,13 @@
       <div class="right-side">
         <el-form label-width="100px">
           <el-form-item label="内容页链接">
-            <el-select class="content-select" v-model="contentForm.url" size="mini">
-              <el-option v-for="(v, i) in url" :key="i" :label="v" :value="v"></el-option>
-            </el-select>
+            <el-autocomplete
+              size="mini"
+              class="content-select"
+              v-model="contentForm.url"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入内容页链接"
+            ></el-autocomplete>
             <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
           </el-form-item>
           <el-form-item label="字段配置" >
@@ -55,6 +59,7 @@
   import { mapActions, mapState } from 'vuex'
   import SystemInformation from '@/components/LandingPage/SystemInformation'
   import EventBus from '@/utils/EventBus'
+  import { dataDb, ruleDb } from '@/dataStore'
   const puppeteer = require('puppeteer')
   const {
     remote
@@ -159,19 +164,31 @@
     mounted () {
       this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
       EventBus.$on('SITES', sites => {
-        const arr = Object.keys(sites)
-        arr.forEach(v => {
-          this.url = [...this.url, ...sites[v]]
-        })
+        this.url = sites
         if (this.url.length > 50) {
           this.url.length = 50
         }
       })
+      this.url = ruleDb.get('contentUrls').value()
     },
     methods: {
       ...mapActions({
         pushLogs: 'SAVE_LOGS'
       }),
+      /**
+       * 链接可输入, 可选择
+       */
+      querySearch (queryString, cb) {
+        const urls = JSON.parse(JSON.stringify(this.url))
+        let formatArr = []
+        urls.forEach(v => {
+          formatArr.push({
+            value: v
+          })
+        })
+        console.log(formatArr)
+        cb(formatArr)
+      },
       async start () {
         if (!this.contentForm.url) {
           remote.dialog.showMessageBox({
@@ -233,8 +250,11 @@
           this.writeLog('结束, 关闭浏览器')
           page = null
           browser = null
+          dataDb.set('data', [house]).write()
         } catch (e) {
           this.writeLog('采集报错: ' + e)
+          browser.close()
+          this.writeLog('结束, 关闭浏览器')
         }
       },
       stop () {

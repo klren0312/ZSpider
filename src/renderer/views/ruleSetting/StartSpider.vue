@@ -130,6 +130,8 @@
         this.config = ruleDb.get('config').value()
       },
       async goToSpider () {
+        // 启动前清空历史采集数据
+        dataDb.set('data', []).write()
         this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({
           headless: true,
@@ -164,7 +166,6 @@
         }
         this.writeLog('内容页链接采集结束')
         this.writeLog('下面开始内容页采集')
-        console.log(this.urls)
         for (let i = 0, len = this.urls.length; i < len; i++) {
           try {
             await page.goto(this.urls[i])
@@ -194,12 +195,12 @@
             this.resultTable.push(house)
           } catch (e) {
             this.writeLog('采集报错: ' + e)
-            if (e.indexOf('Most likely the page has been closed')) {
+            if (e.indexOf('Most likely the page has been closed') !== -1 || e.indexOf('Navigation failed because browser has disconnected') !== -1) {
               break
             }
           }
         }
-        dataDb('datas', this.resultTable).write()
+        dataDb('data', this.resultTable).write()
         this.isStart = false
         browser.close()
         this.writeLog('结束, 关闭浏览器')

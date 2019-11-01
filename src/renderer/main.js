@@ -2,10 +2,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Progress } from 'element-ui'
+import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Progress, Autocomplete } from 'element-ui'
 import getChrome from './chromePath'
 
-[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Progress].forEach(v => {
+[Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Progress, Autocomplete].forEach(v => {
   Vue.use(v)
 })
 
