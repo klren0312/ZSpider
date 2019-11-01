@@ -162,7 +162,6 @@
       chromePath: state => state.chromePath
     }),
     mounted () {
-      this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
       EventBus.$on('SITES', sites => {
         this.url = sites
         if (this.url.length > 50) {
@@ -208,6 +207,7 @@
           })
           return
         }
+        this.$store.dispatch('SET_PARAM', this.contentForm.paramsInput)
         this.startStatus = true
         this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({

@@ -21,7 +21,7 @@ const mutations = {
     state.rule = rule
   },
   SET_PARAM (state, params) {
-    state.contentParams = params
+    state.contentParams = JSON.parse(JSON.stringify(params))
   },
   CTRL_LOG (state, ctrl) {
     state.logCtrl = ctrl
