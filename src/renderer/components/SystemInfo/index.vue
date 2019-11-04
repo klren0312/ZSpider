@@ -1,16 +1,13 @@
 <template>
   <div class="system-info">
-    <h3 class="title">系统信息</h3>
     <div class="items">
-      <div class="item">
-        <div class="name">内存占用:</div>
+      <div class="item mem-item">
+        <div class="name">内存:</div>
         <div class="value">{{ usemem | byteFormat }} / {{ totalmem | byteFormat }}</div>
+        <el-progress :text-inside="false" :stroke-width="10" :percentage="percentage" color="#f56c6c"></el-progress>
       </div>
-      <div class="item">
-        <el-progress :text-inside="true" :stroke-width="20" :percentage="percentage" status="warning"></el-progress>
-      </div>
-      <div class="item">
-        <div class="name">系统平台:</div>
+      <div class="item sys-item">
+        <div class="name">系统:</div>
         <div class="value">{{ platform }}</div>
       </div>
     </div>
@@ -65,34 +62,35 @@
 </script>
 
 <style lang="scss">
-  /* .title {
-    color: #888;
-    font-size: 18px;
-    font-weight: initial;
-    letter-spacing: .25px;
-    margin-top: 10px;
-  } */
+.system-info {
+  .items {
+    width: 664px;
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
 
-  .system-info {
-    .items { margin-top: 8px; }
-
-    .item {
-      width: 100%;
-      display: flex;
-      margin-bottom: 6px;
-    }
-    .item .el-progress {
-      width: 100%;
-    }
-
-    .item .name {
-      color: #6a6a6a;
-      margin-right: 6px;
-    }
-
-    .item .value {
-      color: #35495e;
-      font-weight: bold;
+  .item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    &.mem-item {
+      justify-content: space-around;
     }
   }
+  .item .el-progress {
+    width: 50%;
+  }
+
+  .item .name {
+    color: #6a6a6a;
+    margin-right: 6px;
+  }
+
+  .item .value {
+    color: #35495e;
+    font-weight: bold;
+  }
+}
 </style>

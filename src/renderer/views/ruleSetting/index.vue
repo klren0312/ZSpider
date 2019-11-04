@@ -1,21 +1,15 @@
 <template>
   <div class="rule-setting">
-    <div class="header">
-      <div class="steps">
-        <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
-        <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
-        <div class="step" :class="{active: step > 2}" @click="step = 3">3、开始爬取</div>
-        <div class="step" :class="{active: step > 3}" @click="step = 4">4、数据发布</div>
+    <div class="rule-header-block">
+      <div class="rule-header">
+        <div class="steps">
+          <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
+          <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
+          <div class="step" :class="{active: step > 2}" @click="step = 3">3、开始爬取</div>
+          <div class="step" :class="{active: step > 3}" @click="step = 4">4、数据发布</div>
+        </div>
+        <div class="tips">每个页面都必须进行测试, 才会保存配置</div>
       </div>
-      <div class="tips">每个页面都必须进行测试, 才会保存配置</div>
-      <!-- <el-form :inline="true">
-        <el-form-item label="任务规则名:">
-          <el-input size="mini" v-model="jobName"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="mini">保存</el-button>
-        </el-form-item>
-      </el-form> -->
     </div>
     <div class="setting-content">
       <landing-page v-show="step === 1"></landing-page>
@@ -49,7 +43,13 @@ export default {
 <style lang="scss" scoped>
 .rule-setting {
   height:100%;
-  .header {
+  .rule-header-block {
+    height: 40px;
+  }
+  .rule-header {
+    width: 100%;
+    position: fixed;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;

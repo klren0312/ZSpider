@@ -1,8 +1,13 @@
 <template>
   <div id="app" :class="isLight ? '' : 'black'">
-    <div class="theme-btn">
-      <el-button @click="isLight = !isLight" size="mini" v-if="isLight" icon="el-icon-sunny" circle></el-button>
-      <el-button @click="isLight = !isLight" size="mini" v-else icon="el-icon-moon" circle></el-button>
+    <div class="total-header-block">
+      <div class="total-header">
+        <system-info></system-info>
+        <div class="theme-btn">
+          <el-button @click="isLight = !isLight" size="mini" v-if="isLight" icon="el-icon-sunny" circle></el-button>
+          <el-button @click="isLight = !isLight" size="mini" v-else icon="el-icon-moon" circle></el-button>
+        </div>
+      </div>
     </div>
     <div class="content" :class="ctrl ? 'small' : ''">
       <router-view></router-view>
@@ -15,6 +20,7 @@
 
 <script>
 import SystemLog from './components/SystemLog/index.vue'
+import SystemInfo from './components/SystemInfo/index.vue'
 import { mapState } from 'vuex'
 import { ruleDb } from '@/dataStore'
 const {
@@ -26,7 +32,8 @@ const BrowserWindow = require('electron').remote.BrowserWindow
 export default {
   name: 'spider-test',
   components: {
-    SystemLog
+    SystemLog,
+    SystemInfo
   },
   data () {
     return {
@@ -74,6 +81,19 @@ body {
   padding: 0;
   margin: 0;
   font-family: "PingFang SC", "Lantinghei SC", "Lucida Grande", "\5FAE\8F6F\96C5\9ED1", "Microsoft YaHei", FreeSans, "WenQuanYi Micro Hei", "Hiragino Sans GB", "Hiragino Sans GB W3", SimSun, sans-serif, tahoma, arial;
+  .total-header-block {
+    height: 52px;
+    .total-header {
+      position: fixed;
+      width: 100%;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      background: #f5f5f5;
+    }
+  }
   .theme-btn {
     text-align: right;
   }

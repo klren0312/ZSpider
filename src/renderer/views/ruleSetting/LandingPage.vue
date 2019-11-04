@@ -1,10 +1,6 @@
 <template>
   <div id="wrapper">
     <main>
-      <div class="left-side">
-        <system-information></system-information>
-      </div>
-
       <div class="right-side">
         <el-form label-width="80px">
           <el-form-item label="页面地址">
@@ -51,7 +47,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import SystemInformation from '@/components/LandingPage/SystemInformation'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
 import { ruleDb } from '@/dataStore'
@@ -63,7 +58,6 @@ let browser = null
 let page = null
 export default {
   name: 'landing-page',
-  components: { SystemInformation },
   data () {
     return {
       dataDialog: false,

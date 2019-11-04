@@ -1,9 +1,6 @@
 <template>
   <div class="details-page">
     <main>
-      <div class="left-side">
-        <system-information></system-information>
-      </div>
       <div class="right-side">
         <el-form label-width="100px">
           <el-form-item label="内容页链接">
@@ -57,7 +54,6 @@
 </template>
 <script>
   import { mapActions, mapState } from 'vuex'
-  import SystemInformation from '@/components/LandingPage/SystemInformation'
   import EventBus from '@/utils/EventBus'
   import { dataDb, ruleDb } from '@/dataStore'
   const puppeteer = require('puppeteer')
@@ -70,9 +66,6 @@
 
   export default {
     name: 'DetailsPage',
-    components: {
-      SystemInformation
-    },
     data () {
       return {
         url: [],
