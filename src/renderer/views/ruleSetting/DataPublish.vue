@@ -64,33 +64,42 @@
     <el-dialog
       title="新建发布"
       :visible.sync="createDialog"
-      width="45%">
+      width="60%">
       <div class="tips">测试数据库连接后, 才能创建发布</div>
-      <el-form label-width="100px" ref="publishForm" :model="form" :rules="formRules">
-        <el-form-item label="发布名称:" prop="name">
-          <el-input v-model="form.name" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="数据库地址:" prop="host">
-          <el-input v-model="form.host" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="端口:" prop="port">
-          <el-input-number v-model="form.port" controls-position="right"  size="mini"></el-input-number>
-        </el-form-item>
-        <el-form-item label="用户名:" prop="user">
-          <el-input v-model="form.user" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="密码:" prop="password">
-          <el-input v-model="form.password" type="password" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="数据库:" prop="database">
-          <el-input v-model="form.database" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="数据表:" prop="table">
-          <el-input v-model="form.table" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button plain size="small" @click="testConnect(form)">测试连接</el-button>
-        </el-form-item>
+      <el-form class="form-block" label-width="100px" ref="publishForm" :model="form" :rules="formRules">
+        <div class="left-form">
+          <el-form-item label="发布名称:" prop="name">
+            <el-input v-model="form.name" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="数据库地址:" prop="host">
+            <el-input v-model="form.host" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="端口:" prop="port">
+            <el-input-number v-model="form.port" controls-position="right"  size="mini"></el-input-number>
+          </el-form-item>
+          <el-form-item label="用户名:" prop="user">
+            <el-input v-model="form.user" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="密码:" prop="password">
+            <el-input v-model="form.password" type="password" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="数据库:" prop="database">
+            <el-input v-model="form.database" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="数据表:" prop="table">
+            <el-input v-model="form.table" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button plain size="small" @click="testConnect(form)">测试连接</el-button>
+          </el-form-item>
+        </div>
+        <div class="right-form">
+          <el-form-item v-for="(v, i) in form.params" :key="i" :label="`${v.name}:`">
+            <el-select v-model="v.dbParam">
+              <el-option v-for="v in dbParams" :key="v" :value="v"></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="createDialog = false" size="small">取 消</el-button>
@@ -116,7 +125,8 @@ export default {
         user: 'root',
         password: '',
         database: '',
-        table: ''
+        table: '',
+        params: ''
       },
       formRules: {
         host: [{ required: true, message: '请填写数据库地址', trigger: 'blur' }],
@@ -126,11 +136,13 @@ export default {
         table: [{ required: true, message: '请填写数据库表名', trigger: 'blur' }]
       },
       createDialog: false,
-      isTest: false
+      isTest: false,
+      dbParams: []
     }
   },
   mounted () {
     this.getPublish()
+    this.getParams()
   },
   methods: {
     /**
@@ -139,6 +151,15 @@ export default {
     getPublish () {
       const arr = ruleDb.get('publishConfig').value()
       this.publishData = JSON.parse(JSON.stringify(arr))
+    },
+    /**
+     * 获取参数
+     */
+    getParams () {
+      this.form.params = ruleDb.get('config.params').value()
+      this.form.params.forEach(v => {
+        v.dbParam = ''
+      })
     },
     /**
      * 测试数据库连接
@@ -163,6 +184,15 @@ export default {
               })
             }
             this.isTest = true
+            conn.query(`select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`, (e, r) => {
+              if (e) throw e
+              this.dbParams = r.map(v => v.column_name)
+              this.form.params.forEach(v => {
+                if (this.dbParams.indexOf(v.name) !== -1) {
+                  v.dbParam = v.name
+                }
+              })
+            })
             conn.end()
           } catch (error) {
             remote.dialog.showMessageBox({
@@ -287,6 +317,9 @@ main {
     font-size: 14px;
     color: rgb(175, 175, 175);
     padding: 10px;
+  }
+  .form-block {
+    display: flex;
   }
 }
 </style>
