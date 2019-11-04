@@ -1,5 +1,13 @@
 <template>
   <div id="app" :class="isLight ? '' : 'black'">
+    <div class="frame-header-block">
+      <div class="frame-header">
+        <div class="frame-title">ZZES Spider</div>
+        <div class="frame-ctrl-group">
+          <ctrl-btn-group></ctrl-btn-group>
+        </div>
+      </div>
+    </div>
     <div class="total-header-block">
       <div class="total-header">
         <system-info></system-info>
@@ -21,6 +29,7 @@
 <script>
 import SystemLog from './components/SystemLog/index.vue'
 import SystemInfo from './components/SystemInfo/index.vue'
+import CtrlBtnGroup from './components/CtrlBtnGroup/index.vue'
 import { mapState } from 'vuex'
 import { ruleDb } from '@/dataStore'
 const {
@@ -33,7 +42,8 @@ export default {
   name: 'spider-test',
   components: {
     SystemLog,
-    SystemInfo
+    SystemInfo,
+    CtrlBtnGroup
   },
   data () {
     return {
@@ -81,6 +91,25 @@ body {
   padding: 0;
   margin: 0;
   font-family: "PingFang SC", "Lantinghei SC", "Lucida Grande", "\5FAE\8F6F\96C5\9ED1", "Microsoft YaHei", FreeSans, "WenQuanYi Micro Hei", "Hiragino Sans GB", "Hiragino Sans GB W3", SimSun, sans-serif, tahoma, arial;
+  .frame-header-block {
+    height: 30px;
+    .frame-header {
+      position: fixed;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 30px;
+      background-color: #323232;
+      -webkit-app-region: drag;
+    }
+    .frame-title {
+      padding-left: 20px;
+      font-size: 14px;
+      color: #fff;
+    }
+  }
   .total-header-block {
     height: 52px;
     .total-header {
@@ -98,7 +127,7 @@ body {
     text-align: right;
   }
   .content {
-    height: calc(100vh - 50px);
+    height: calc(100vh - 104px);
     overflow-y: auto;
     transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
     &.small {

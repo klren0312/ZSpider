@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, Menu, BrowserWindow, ipcMain } from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -16,14 +16,16 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 function createWindow () {
-  // Menu.setApplicationMenu(null)
+  // 隐藏菜单栏
+  Menu.setApplicationMenu(null)
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
     height: 800,
     useContentSize: true,
-    width: 1200
+    width: 1200,
+    frame: false
   })
 
   mainWindow.loadURL(winURL)
@@ -31,6 +33,19 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  /**
+   * ipc 通信
+   */
+  ipcMain.on('min', () => mainWindow.minimize())
+  ipcMain.on('max', () => {
+    if (mainWindow.isFullScreen()) {
+      mainWindow.setFullScreen(false)
+    } else {
+      mainWindow.setFullScreen(true)
+    }
+  })
+  ipcMain.on('close', () => mainWindow.close())
 }
 
 app.on('ready', createWindow)
@@ -65,4 +80,4 @@ autoUpdater.on('update-downloaded', () => {
 app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
- */
+*/
