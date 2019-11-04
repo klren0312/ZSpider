@@ -9,9 +9,14 @@
       style="width: 100%">
       <el-table-column
         label="ID"
-        prop="id"
+        type="index"
+        width="40px">
+      </el-table-column>
+      <el-table-column
+        label="发布名称"
+        prop="name"
         show-overflow-tooltip
-        width="80px">
+        width="130px">
       </el-table-column>
       <el-table-column
         label="数据库地址"
@@ -27,7 +32,8 @@
       </el-table-column>
       <el-table-column
         label="密码"
-        prop="password">
+        prop="password"
+        width="80px">
         <template slot-scope="scope">
           <div>******</div>
         </template>
@@ -52,20 +58,24 @@
       <el-table-column
         label="操作"
         fixed="right"
-        width="250px">
+        width="300px">
         <template slot-scope="scope">
-          <el-button @click="publish(scope.row)" type="primary" size="mini">发布</el-button>
-          <el-button @click="clear(scope.row)" type="primary" size="mini">清空表</el-button>
+          <el-button @click="edit(scope.row)" type="primary" size="mini">编辑</el-button>
+          <el-button @click="publish(scope.row)" type="success" size="mini">发布</el-button>
+          <el-button @click="clear(scope.row)" type="warning" size="mini">清空表</el-button>
           <el-button @click="deletePublish(scope.row)" type="danger" size="mini">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 新建弹框 -->
+    <!-- 新建/编辑弹框 -->
     <el-dialog
-      title="新建发布"
+      :title="isEdit ? '编辑发布' : '新建发布'"
       :visible.sync="createDialog"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
       width="60%">
-      <div class="tips">测试数据库连接后, 才能创建发布</div>
+      <div class="tips">测试数据库连接后, 才能{{isEdit ? "编辑" : "创建"}}发布</div>
       <el-form class="form-block" label-width="100px" ref="publishForm" :model="form" :rules="formRules">
         <div class="left-form">
           <el-form-item label="发布名称:" prop="name">
@@ -102,7 +112,7 @@
         </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="createDialog = false" size="small">取 消</el-button>
+        <el-button @click="createDialog = false, isEdit = false" size="small">取 消</el-button>
         <el-button type="primary" @click="save" size="small" :disabled="!isTest">确 定</el-button>
       </span>
     </el-dialog>
@@ -137,7 +147,9 @@ export default {
       },
       createDialog: false,
       isTest: false,
-      dbParams: []
+      dbParams: [],
+      publishStatus: false,
+      isEdit: false
     }
   },
   mounted () {
@@ -206,19 +218,39 @@ export default {
       })
     },
     /**
+     * 编辑发布
+     */
+    edit (row) {
+      this.form = JSON.parse(JSON.stringify(row))
+      this.isEdit = true
+      this.createDialog = true
+    },
+    /**
      * 保存发布
      */
     save () {
-      if (!this.form.name) {
+      if (!this.form.name && !this.isEdit) {
         this.form.name = this.generateGuid()
       }
       this.$refs['publishForm'].validate((valid) => {
         if (valid) {
-          this.form.fail = 0
-          this.form.success = 0
-          collection
-            .insert({ ...this.form })
-            .write()
+          if (this.isEdit) {
+            this.form.fail = 0
+            this.form.success = 0
+            const obj = JSON.parse(JSON.stringify(this.form))
+            delete obj.id
+            collection
+              .find({id: this.form.id})
+              .assign({...obj})
+              .write()
+            this.isEdit = false
+          } else {
+            this.form.fail = 0
+            this.form.success = 0
+            collection
+              .insert({ ...this.form })
+              .write()
+          }
           this.createDialog = false
           this.getPublish()
         }
@@ -257,6 +289,7 @@ export default {
      * 发布数据
      */
     async publish (row) {
+      this.publishStatus = true
       const conn = await mysql.createConnectionPromise({
         host: row.host,
         port: row.port,
@@ -275,6 +308,7 @@ export default {
         }
       }
       conn.end()
+      this.publishStatus = false
       collection
         .find({id: row.id})
         .assign({fail: row.fail, success: row.success})
