@@ -3,12 +3,20 @@
     <div class="rule-header-block">
       <div class="rule-header">
         <div class="steps">
-          <div class="step" :class="{active: step}" @click="step = 1"><span><em></em></span>1、获取内容页</div>
-          <div class="step" :class="{active: step > 1}" @click="step = 2"><span><em></em></span>2、配置数据参数</div>
-          <div class="step" :class="{active: step > 2}" @click="step = 3">3、开始爬取</div>
-          <div class="step" :class="{active: step > 3}" @click="step = 4">4、数据发布</div>
+          <div class="step" :class="{active: step}" @click="step = 1">获取内容页</div>
+          <div class="step" :class="{active: step > 1}" @click="step = 2">配置数据参数</div>
+          <div class="step" :class="{active: step > 2}" @click="step = 3">开始爬取</div>
+          <div class="step" :class="{active: step > 3}" @click="step = 4">数据发布</div>
         </div>
-        <div class="tips">每个页面都必须进行测试, 才会保存配置</div>
+        <!-- <div class="tips">每个页面都必须进行测试, 才会保存配置</div> -->
+        <el-form :inline="true">
+          <el-form-item>
+            <el-input size="mini" v-model="appName"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="mini" @click="save">保存</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
     <div class="setting-content">
@@ -24,6 +32,9 @@ import LandingPage from './LandingPage.vue'
 import DetailsPage from './DetailsPage.vue'
 import StartSpider from './StartSpider.vue'
 import DataPublish from './DataPublish.vue'
+import EventBus from '@/utils/EventBus'
+import { globalDb, ruleDb } from '@/dataStore'
+const { remote } = require('electron')
 export default {
   name: 'RuleSetting',
   components: {
@@ -34,13 +45,42 @@ export default {
   },
   data () {
     return {
-      step: 4,
-      jobName: ''
+      step: 1,
+      appName: ''
+    }
+  },
+  mounted () {
+    EventBus.$on('toStep', step => {
+      this.step = step
+    })
+  },
+  methods: {
+    save () {
+      if (!this.appName) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: '请输入应用名称',
+          buttons: ['ok']
+        })
+        return
+      }
+      const collection = globalDb.defaults({ apps: [] }).get('apps')
+      collection
+        .insert({
+          appName: this.appName,
+          ruleConfig: JSON.stringify({
+            config: ruleDb.get('config').value(),
+            contentUrls: ruleDb.get('contentUrls').value(),
+            publishConfig: ruleDb.get('publishConfig').value()
+          })
+        })
+        .write()
     }
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .rule-setting {
   height:100%;
   .rule-header-block {
@@ -92,6 +132,9 @@ export default {
         background-color: #573eb1;
       }
     }
+  }
+  .el-form--inline .el-form-item {
+    margin-bottom: 0;
   }
 }
 </style>

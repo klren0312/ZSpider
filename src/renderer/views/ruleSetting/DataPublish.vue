@@ -1,7 +1,7 @@
 <template>
   <main class="data-publish">
     <div class="filter">
-      <el-button icon="el-icon-plus" type="primary" size="medium" @click="createDialog=true">新建发布</el-button>
+      <el-button icon="el-icon-plus" type="primary" size="mini" @click="createDialog=true">新建发布</el-button>
     </div>
     <el-table
       border

@@ -26,8 +26,8 @@
           </el-form>
         </div>
         <el-table :data="config.params" border height="400px">
-          <el-table-column label="参数名" prop="name"></el-table-column>
-          <el-table-column label="参数" prop="param"></el-table-column>
+          <el-table-column min-width="100" label="参数名" prop="name"></el-table-column>
+          <el-table-column min-width="280" label="参数" prop="param"></el-table-column>
           <el-table-column label="参数参考值" prop="value"></el-table-column>
         </el-table>
       </template>
@@ -61,6 +61,7 @@
   import {
     mapActions
   } from 'vuex'
+  import EventBus from '@/utils/EventBus'
   const puppeteer = require('puppeteer')
   const { remote } = require('electron')
 
@@ -132,6 +133,26 @@
         this.config = ruleDb.get('config').value()
       },
       async goToSpider () {
+        if (!this.config.mainUrl || !this.config.linkRule) {
+          remote.dialog.showMessageBox({
+            type: 'error',
+            title: '错误',
+            message: '请先测试获取内容页',
+            buttons: ['ok']
+          })
+          EventBus.$emit('toStep', 1)
+          return
+        }
+        if (!this.config.params) {
+          remote.dialog.showMessageBox({
+            type: 'error',
+            title: '错误',
+            message: '请先配置内容页参数',
+            buttons: ['ok']
+          })
+          EventBus.$emit('toStep', 2)
+          return
+        }
         // 启动前清空历史采集数据
         dataDb.set('data', []).write()
         const collection = dataDb.defaults({ data: [] }).get('data')

@@ -15,6 +15,17 @@ if (process.type !== 'renderer') {
   }
 }
 
+// =========================== 全局存储 =================================
+const globalAdapter = new FileSync(path.join(STORE_PATH, '/global.json'))
+
+const globalDb = Datastore(globalAdapter)
+globalDb._.mixin(LodashId)
+console.log('globalDb init', STORE_PATH)
+// 存放规则配置
+if (!globalDb.has('apps').value()) {
+  globalDb.set('apps', []).write()
+}
+
 // =========================== 规则存储 =================================
 const ruleAdapter = new FileSync(path.join(STORE_PATH, '/rules.json'))
 
@@ -45,4 +56,4 @@ if (!dataDb.has('data').value()) {
   dataDb.set('data', []).write()
 }
 
-export { dataDb, ruleDb }
+export { dataDb, ruleDb, globalDb }

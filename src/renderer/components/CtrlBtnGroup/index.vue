@@ -27,6 +27,9 @@ export default {
   &:focus {
     outline: none;
   }
+  &:hover {
+    opacity: .5;
+  }
 }
 .min-btn {
   background: url(data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPjxwYXRoIGQ9Ik0xMjggNDQ4aDc2OHYxMjhIMTI4eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==) center / contain no-repeat;
