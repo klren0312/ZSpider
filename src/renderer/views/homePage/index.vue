@@ -2,6 +2,7 @@
   <div class="home-page">
     <div class="filter">
       <el-button size="mini" type="primary" @click="toCreate">新建应用</el-button>
+      <el-button size="mini" type="primary" @click="importApp">导入应用</el-button>
     </div>
     <div class="card-container">
       <div class="card-block" v-for="v in appList" :key="v.id">
@@ -12,6 +13,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="delete">删除</el-dropdown-item>
                 <el-dropdown-item command="upload">上传</el-dropdown-item>
+                <el-dropdown-item command="export">导出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -28,6 +30,8 @@
 import { globalDb, ruleDb } from '@/dataStore'
 const appCollection = globalDb.get('apps')
 const { remote } = require('electron')
+const fs = require('fs')
+
 export default {
   name: 'HomePage',
   data () {
@@ -36,7 +40,9 @@ export default {
     }
   },
   mounted () {
-    this.getAppList()
+    this.getAppList({
+      filters: ['.zpk']
+    })
   },
   methods: {
     getAppList () {
@@ -45,7 +51,50 @@ export default {
     handleCtrl ($event, app) {
       if ($event === 'delete') {
         this.deleteApp(app.id)
+      } else if ($event === 'export') {
+        const details = globalDb.get('apps').find({ id: app.id }).value()
+        const path = remote.dialog.showSaveDialog({
+          title: '选择保存路径',
+          filters: [{
+            name: 'zpk文件',
+            extensions: ['zpk']
+          }],
+          properties: {
+            openFile: true,
+            openDirectory: false,
+            multiSelections: false
+          }
+        })
+        fs.writeFile(`${path}`, details.ruleConfig, () => {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '导出结果',
+            message: `导出成功, 路径: ${path}`,
+            buttons: ['ok']
+          })
+        })
       }
+    },
+    importApp () {
+      const filePath = remote.dialog.showOpenDialog({
+        title: '选择zpk文件',
+        filters: [{
+          name: 'zpk文件',
+          extensions: ['zpk']
+        }]
+      })
+      /* eslint-disable */
+      fs.readFile(filePath[0], 'utf8', (e, res) => {
+        if (e) throw e
+        appCollection
+          .insert({
+            appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
+            ruleConfig: res
+          })
+          .write()
+        this.getAppList()
+      })
+      /* eslint-enable */
     },
     toCreate () {
       ruleDb.set('config', {}).write()
@@ -96,7 +145,7 @@ export default {
   flex-wrap: wrap;
   align-items: center;
   .card-block {
-    width: 20%;
+    width: 15%;
     .card-item {
       width: 150px;
       height: 150px;
