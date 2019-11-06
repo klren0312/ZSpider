@@ -38,12 +38,13 @@ function createWindow () {
    * ipc 通信
    */
   ipcMain.on('min', () => mainWindow.minimize())
-  ipcMain.on('max', () => {
+  ipcMain.on('max', (event) => {
     if (mainWindow.isFullScreen()) {
       mainWindow.setFullScreen(false)
     } else {
       mainWindow.setFullScreen(true)
     }
+    event.sender.send('fullScreenStatus', mainWindow.isFullScreen())
   })
   ipcMain.on('close', () => mainWindow.close())
 }
