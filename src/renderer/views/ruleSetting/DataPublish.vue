@@ -169,7 +169,7 @@ export default {
      */
     getParams () {
       this.form.params = ruleDb.get('config.params').value()
-      this.form.params.forEach(v => {
+      this.form.params && this.form.params.forEach(v => {
         v.dbParam = ''
       })
     },

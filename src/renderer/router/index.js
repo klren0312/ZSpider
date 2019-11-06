@@ -7,7 +7,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'rule-setting',
+      name: 'HomePage',
+      component: require('@/views/homePage/index').default
+    },
+    {
+      path: '/ruleSetting',
+      name: 'RuleSetting',
       component: require('@/views/ruleSetting/index').default
     },
     {

@@ -14,7 +14,10 @@
             <el-input size="mini" v-model="appName"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="mini" @click="save">保存</el-button>
+            <el-button size="mini" type="primary" @click="save">保存</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="mini" @click="cancel">取消</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -46,10 +49,17 @@ export default {
   data () {
     return {
       step: 1,
-      appName: ''
+      appName: '',
+      id: '',
+      isEdit: false
     }
   },
   mounted () {
+    if (this.$route.query.hasOwnProperty('id')) {
+      this.appName = this.$route.query.appName
+      this.id = this.$route.query.id
+      this.isEdit = true
+    }
     EventBus.$on('toStep', step => {
       this.step = step
     })
@@ -76,6 +86,15 @@ export default {
           })
         })
         .write()
+      this.isEdit = false
+      this.$router.push('/')
+    },
+    cancel () {
+      ruleDb.set('config', {}).write()
+      ruleDb.set('contentUrls', {}).write()
+      ruleDb.set('publishConfig', []).write()
+      this.isEdit = false
+      this.$router.push('/')
     }
   }
 }
@@ -93,6 +112,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 1;
     .tips {
       margin-right: 20px;
       font-size: 14px;

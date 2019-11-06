@@ -1,5 +1,149 @@
 <template>
-  <div>
-    <!-- TODO: 规则列表页 -->
+  <div class="home-page">
+    <div class="filter">
+      <el-button size="mini" type="primary" @click="toCreate">新建应用</el-button>
+    </div>
+    <div class="card-container">
+      <div class="card-block" v-for="v in appList" :key="v.id">
+        <div class="card-item">
+          <div class="card-header">
+            <el-dropdown size="mini" trigger="click" @command="handleCtrl($event, v)">
+              <button class="ctrl-btn">•••</button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="delete">删除</el-dropdown-item>
+                <el-dropdown-item command="upload">上传</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="card-content" @click="toDetails(v.id)">
+            <div class="card-icon"></div>
+            <div class="card-title">{{v.appName}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+<script>
+import { globalDb, ruleDb } from '@/dataStore'
+const appCollection = globalDb.get('apps')
+const { remote } = require('electron')
+export default {
+  name: 'HomePage',
+  data () {
+    return {
+      appList: []
+    }
+  },
+  mounted () {
+    this.getAppList()
+  },
+  methods: {
+    getAppList () {
+      this.appList = JSON.parse(JSON.stringify(globalDb.get('apps').value()))
+    },
+    handleCtrl ($event, app) {
+      if ($event === 'delete') {
+        this.deleteApp(app.id)
+      }
+    },
+    toCreate () {
+      ruleDb.set('config', {}).write()
+      ruleDb.set('contentUrls', {}).write()
+      ruleDb.set('publishConfig', []).write()
+      this.$router.push('/ruleSetting')
+    },
+    deleteApp (id) {
+      remote.dialog.showMessageBox({
+        type: 'info',
+        title: '提示',
+        message: '确定要删除该应用?',
+        buttons: ['ok', 'no']
+      }, index => {
+        if (index === 0) {
+          appCollection
+            .remove({ id: id })
+            .write()
+          this.getAppList()
+        } else {
+        }
+      })
+    },
+    toDetails (id) {
+      const details = globalDb.get('apps').find({ id: id }).value()
+      if (details) {
+        const obj = JSON.parse(details.ruleConfig)
+        ruleDb.set('config', obj.config).write()
+        ruleDb.set('contentUrls', obj.contentUrls).write()
+        ruleDb.set('publishConfig', obj.publishConfig).write()
+
+        this.$nextTick(_ => {
+          this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
+        })
+      }
+    }
+  }
+}
+</script>
+<style lang="scss">
+.home-page {
+  padding: 20px;
+  box-sizing: border-box;
+}
+.card-container {
+  padding: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  .card-block {
+    width: 20%;
+    .card-item {
+      width: 150px;
+      height: 150px;
+      border: 1px solid #f5f5f5;
+      &:hover {
+        border: 0;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      }
+    }
+    .card-header {
+      padding: 0 5px;
+      height: 20%;
+      text-align: right;
+      .ctrl-btn {
+        border: 0;
+        background: transparent;
+        color: #323232;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+    .card-content {
+      padding: 0 20px;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      cursor: pointer;
+    }
+    .card-title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      background-image: url(data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPjxwYXRoIGQ9Ik0yODcgNjJoNTMwLjM1N2M0NSAwIDgwLjM1NyAzNS4zNTcgODAuMzU3IDgwLjM1N3YzMDUuMzU3SDE1OC40M1YxOTAuNTcxQzE1OC40MjkgMTE5Ljg1NyAyMTYuMjg2IDYyIDI4NyA2MnoiIGZpbGw9IiNCNUY1RUMiLz48cGF0aCBkPSJNNjQ3IDYySDIzOC43ODZjLTQ1IDAtODAuMzU3IDM1LjM1Ny04MC4zNTcgODAuMzU3djczOS4yODZjMCA0NSAzNS4zNTcgODAuMzU3IDgwLjM1NyA4MC4zNTdoNTc1LjM1N2M0NSAwIDgwLjM1Ny0zNS4zNTcgODAuMzU3LTgwLjM1N1YzMDkuNUw2NDcgNjJ6IiBmaWxsPSIjMzZDRkM5Ii8+PHBhdGggZD0iTTY1MC4yMTQgNjJ2MTg2LjQyOWMwIDMyLjE0MiAyNS43MTUgNjEuMDcxIDYxLjA3MiA2MS4wNzFoMTg2LjQyOEw2NTAuMjE0IDYyeiIgZmlsbD0iIzA4OTc5QyIvPjxwYXRoIGQ9Ik0yODcgNDE1LjU3MWE0OC4yMTQgNDguMjE0IDAgMSAwIDk2LjQyOSAwIDQ4LjIxNCA0OC4yMTQgMCAxIDAtOTYuNDI5IDB6TTUxMiAzODMuNDI5aDE5Mi44NTdjMTkuMjg2IDAgMzIuMTQzIDEyLjg1NyAzMi4xNDMgMzIuMTQycy0xMi44NTcgMzIuMTQzLTMyLjE0MyAzMi4xNDNINTEyYy0xOS4yODYgMC0zMi4xNDMtMTIuODU3LTMyLjE0My0zMi4xNDNTNDkyLjcxNCAzODMuNDMgNTEyIDM4My40M3ptMCAxNjAuNzE0aDE5Mi44NTdDNzI0LjE0MyA1NDQuMTQzIDczNyA1NTcgNzM3IDU3Ni4yODZzLTEyLjg1NyAzMi4xNDMtMzIuMTQzIDMyLjE0M0g1MTJjLTE5LjI4NiAwLTMyLjE0My0xMi44NTgtMzIuMTQzLTMyLjE0M3MxMi44NTctMzIuMTQzIDMyLjE0My0zMi4xNDN6bTAgMTYwLjcxNGgxOTIuODU3QzcyNC4xNDMgNzA0Ljg1NyA3MzcgNzE3LjcxNCA3MzcgNzM3cy0xMi44NTcgMzIuMTQzLTMyLjE0MyAzMi4xNDNINTEyYy0xOS4yODYgMC0zMi4xNDMtMTIuODU3LTMyLjE0My0zMi4xNDNzMTIuODU3LTMyLjE0MyAzMi4xNDMtMzIuMTQzek0yODcgNTc2LjI4NmE0OC4yMTQgNDguMjE0IDAgMSAwIDk2LjQyOSAwIDQ4LjIxNCA0OC4yMTQgMCAxIDAtOTYuNDI5IDB6TTI4NyA3MzdhNDguMjE0IDQ4LjIxNCAwIDEgMCA5Ni40MjkgMEE0OC4yMTQgNDguMjE0IDAgMSAwIDI4NyA3Mzd6IiBmaWxsPSIjQjVGNUVDIi8+PC9zdmc+);
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+  }
+}
+</style>
