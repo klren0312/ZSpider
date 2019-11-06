@@ -116,6 +116,7 @@ body {
     height: 52px;
     .total-header {
       position: fixed;
+      left: 0;
       width: 100%;
       padding: 10px 20px;
       display: flex;
@@ -123,6 +124,9 @@ body {
       align-items: center;
       font-size: 14px;
       background: #f5f5f5;
+      border-left: 1px solid #323232;
+      border-right: 1px solid #323232;
+      box-sizing: border-box;
       z-index: 1;
     }
   }
