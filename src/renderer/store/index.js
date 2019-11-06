@@ -29,7 +29,7 @@ const mutations = {
   SAVE_LOGS (state, logs) {
     let arr = JSON.parse(JSON.stringify(state.logs))
     // 移除超出的消息
-    while (arr.length >= 30) arr.shift()
+    while (arr.length >= 30) arr.pop()
     arr.unshift(logs)
     state.logs = arr
   },
