@@ -25,7 +25,7 @@
       <landing-page v-show="step === 1"></landing-page>
       <details-page v-show="step === 2"></details-page>
       <start-spider v-show="step === 3"></start-spider>
-      <data-publish v-show="step === 4"></data-publish>
+      <data-publish></data-publish>
     </div>
   </div>
 </template>
