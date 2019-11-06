@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { globalDb, ruleDb } from '@/dataStore'
+import { globalDb, ruleDb, dataDb } from '@/dataStore'
 const appCollection = globalDb.get('apps')
 const { remote } = require('electron')
 const fs = require('fs')
@@ -100,6 +100,7 @@ export default {
       ruleDb.set('config', {}).write()
       ruleDb.set('contentUrls', {}).write()
       ruleDb.set('publishConfig', []).write()
+      dataDb.set('data', []).write()
       this.$router.push('/ruleSetting')
     },
     deleteApp (id) {
@@ -125,7 +126,7 @@ export default {
         ruleDb.set('config', obj.config).write()
         ruleDb.set('contentUrls', obj.contentUrls).write()
         ruleDb.set('publishConfig', obj.publishConfig).write()
-
+        dataDb.set('data', []).write()
         this.$nextTick(_ => {
           this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
         })
