@@ -76,16 +76,30 @@ export default {
         return
       }
       const collection = globalDb.defaults({ apps: [] }).get('apps')
-      collection
-        .insert({
-          appName: this.appName,
-          ruleConfig: JSON.stringify({
-            config: ruleDb.get('config').value(),
-            contentUrls: ruleDb.get('contentUrls').value(),
-            publishConfig: ruleDb.get('publishConfig').value()
+      if (this.isEdit) { // 编辑
+        collection
+          .find({ id: this.id })
+          .assign({
+            appName: this.appName,
+            ruleConfig: JSON.stringify({
+              config: ruleDb.get('config').value(),
+              contentUrls: ruleDb.get('contentUrls').value(),
+              publishConfig: ruleDb.get('publishConfig').value()
+            })
           })
-        })
-        .write()
+          .write()
+      } else { // 创建
+        collection
+          .insert({
+            appName: this.appName,
+            ruleConfig: JSON.stringify({
+              config: ruleDb.get('config').value(),
+              contentUrls: ruleDb.get('contentUrls').value(),
+              publishConfig: ruleDb.get('publishConfig').value()
+            })
+          })
+          .write()
+      }
       this.isEdit = false
       this.$router.push('/')
     },
