@@ -19,7 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "spider-test",
+    "productName": "zzesspider",
     "appId": "com.zzes.spider",
     "directories": {
       "output": "build"
@@ -50,6 +50,13 @@
     },
     "linux": {
       "icon": "build/icons"
+    },
+    "nsis": {
+      "include": "build/res/installer.nsi",
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "menuCategory": true,
+      "allowElevation": true
     }
   },
   "dependencies": {
