@@ -104,11 +104,21 @@ export default {
       this.$router.push('/')
     },
     cancel () {
-      ruleDb.set('config', {}).write()
-      ruleDb.set('contentUrls', {}).write()
-      ruleDb.set('publishConfig', []).write()
-      this.isEdit = false
-      this.$router.push('/')
+      remote.dialog.showMessageBox({
+        type: 'info',
+        title: '提示',
+        message: '确定要离开?离开后数据将不会保存',
+        buttons: ['ok', 'no']
+      }, index => {
+        if (index === 0) {
+          ruleDb.set('config', {}).write()
+          ruleDb.set('contentUrls', {}).write()
+          ruleDb.set('publishConfig', []).write()
+          this.isEdit = false
+          this.$router.push('/')
+        } else {
+        }
+      })
     }
   }
 }
