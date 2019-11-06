@@ -150,6 +150,7 @@ export default {
       width: 150px;
       height: 150px;
       border: 1px solid #f5f5f5;
+      background: #fff;
       &:hover {
         border: 0;
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

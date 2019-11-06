@@ -3,6 +3,7 @@
     <div class="frame-header-block">
       <div class="frame-header">
         <div class="frame-title">ZZES Spider</div>
+        <div class="tips" v-if="this.$route.name === 'RuleSetting'">每个页面都必须进行测试, 才会保存配置</div>
         <div class="frame-ctrl-group">
           <ctrl-btn-group></ctrl-btn-group>
         </div>
@@ -20,9 +21,7 @@
     <div class="content" :class="ctrl ? 'small' : ''">
       <router-view></router-view>
     </div>
-    <div class="log-content">
-      <system-log></system-log>
-    </div>
+    <system-log></system-log>
   </div>
 </template>
 
@@ -104,7 +103,8 @@ body {
       background-color: #323232;
       -webkit-app-region: drag;
     }
-    .frame-title {
+    .frame-title,
+    .tips {
       padding-left: 20px;
       font-size: 14px;
       color: #fff;
@@ -121,6 +121,7 @@ body {
       align-items: center;
       font-size: 14px;
       background: #f5f5f5;
+      z-index: 1;
     }
   }
   .theme-btn {
@@ -129,13 +130,13 @@ body {
   .content {
     height: calc(100vh - 104px);
     overflow-y: auto;
-    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
-    &.small {
-      height: calc(100vh - 30px - 220px);
-    }
+    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
+    // &.small {
+    //   height: calc(100vh - 30px - 220px);
+    // }
   }
   #wrapper {
-    min-height: 100vh;
+    min-height: calc(100vh - 145px);
     padding: 20px 20px;
   }
 }

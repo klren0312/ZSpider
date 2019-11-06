@@ -2,6 +2,7 @@
   <main class="data-publish">
     <div class="filter">
       <el-button icon="el-icon-plus" type="primary" size="mini" @click="createDialog=true">新建发布</el-button>
+      <div class="data-total">当前数据总数: <strong>{{datas.length}}</strong>条</div>
     </div>
     <el-table
       border
@@ -149,12 +150,14 @@ export default {
       isTest: false,
       dbParams: [],
       publishStatus: false,
-      isEdit: false
+      isEdit: false,
+      datas: []
     }
   },
   mounted () {
     this.getPublish()
     this.getParams()
+    this.datas = dataDb.get('data').value()
   },
   methods: {
     /**
@@ -297,13 +300,13 @@ export default {
         password: row.password,
         database: row.database
       })
-      const datas = dataDb.get('data').value()
-      for (let i = 0, len = datas.length; i < len; i++) {
-        const d = datas[i]
+      for (let i = 0, len = this.datas.length; i < len; i++) {
+        const d = this.datas[i]
         try {
           await conn.query(`INSERT INTO ${row.table} SET ?`, d)
           row.success++
         } catch (error) {
+          console.error(error)
           row.fail++
         }
       }
@@ -346,6 +349,12 @@ main {
   padding: 20px 20px 0;
   .filter {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    .data-total {
+      margin-left: 20px;
+      font-size: 14px;
+    }  
   }
   .tips {
     font-size: 14px;

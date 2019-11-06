@@ -26,10 +26,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 .run-logs {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 5;
   .ctrl-btn {
     border: 1px solid #dfdfdf;
     text-align: center;
     cursor: pointer;
+    background: #fff;
     &:hover {
       background: #dfdfdf
     }

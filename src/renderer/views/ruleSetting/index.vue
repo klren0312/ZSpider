@@ -8,7 +8,6 @@
           <div class="step" :class="{active: step > 2}" @click="step = 3">开始爬取</div>
           <div class="step" :class="{active: step > 3}" @click="step = 4">数据发布</div>
         </div>
-        <!-- <div class="tips">每个页面都必须进行测试, 才会保存配置</div> -->
         <el-form :inline="true">
           <el-form-item>
             <el-input size="mini" v-model="appName"></el-input>
@@ -136,6 +135,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #fff;
     z-index: 1;
     .tips {
       margin-right: 20px;
@@ -146,10 +146,10 @@ export default {
   }
   .setting-content {
     overflow-y: auto;
-    height: calc(100vh - 50px - 63px);
+    height: calc(100vh - 145px);
     transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
     &.small {
-      height: calc(100vh - 30px - 63px - 220px);
+      height: calc(100vh - 313px);
     }
   }
   .steps {
