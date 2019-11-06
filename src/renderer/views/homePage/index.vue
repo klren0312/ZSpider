@@ -65,14 +65,16 @@ export default {
             multiSelections: false
           }
         })
-        fs.writeFile(`${path}`, details.ruleConfig, () => {
-          remote.dialog.showMessageBox({
-            type: 'info',
-            title: '导出结果',
-            message: `导出成功, 路径: ${path}`,
-            buttons: ['ok']
+        if (path) {
+          fs.writeFile(`${path}`, details.ruleConfig, () => {
+            remote.dialog.showMessageBox({
+              type: 'info',
+              title: '导出结果',
+              message: `导出成功, 路径: ${path}`,
+              buttons: ['ok']
+            })
           })
-        })
+        }
       }
     },
     importApp () {
@@ -83,18 +85,20 @@ export default {
           extensions: ['zpk']
         }]
       })
-      /* eslint-disable */
-      fs.readFile(filePath[0], 'utf8', (e, res) => {
-        if (e) throw e
-        appCollection
-          .insert({
-            appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
-            ruleConfig: res
-          })
-          .write()
-        this.getAppList()
-      })
-      /* eslint-enable */
+      if (filePath) {
+        /* eslint-disable */
+        fs.readFile(filePath[0], 'utf8', (e, res) => {
+          if (e) throw e
+          appCollection
+            .insert({
+              appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
+              ruleConfig: res
+            })
+            .write()
+          this.getAppList()
+        })
+        /* eslint-enable */
+      }
     },
     toCreate () {
       ruleDb.set('config', {}).write()
