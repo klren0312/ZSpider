@@ -90,6 +90,8 @@ body {
   padding: 0;
   margin: 0;
   font-family: "PingFang SC", "Lantinghei SC", "Lucida Grande", "\5FAE\8F6F\96C5\9ED1", "Microsoft YaHei", FreeSans, "WenQuanYi Micro Hei", "Hiragino Sans GB", "Hiragino Sans GB W3", SimSun, sans-serif, tahoma, arial;
+  border: 1px solid #323232;
+  box-sizing: border-box;
   .frame-header-block {
     height: 30px;
     .frame-header {

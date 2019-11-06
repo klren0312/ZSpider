@@ -29,9 +29,10 @@ export default {
   width: 100%;
   position: fixed;
   bottom: 0;
+  left: 0;
   z-index: 5;
   .ctrl-btn {
-    border: 1px solid #dfdfdf;
+    border: 1px solid #323232;
     text-align: center;
     cursor: pointer;
     background: #fff;
