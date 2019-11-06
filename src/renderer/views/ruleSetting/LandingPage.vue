@@ -14,7 +14,7 @@
             <el-input v-model="linkRule" size="mini"/>
           </el-form-item>
           <el-form-item label="爬取页数">
-            <el-input-number v-model="pages" size="mini"/>
+            <el-input-number v-model="page" size="mini"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始测试</el-button>
@@ -64,7 +64,7 @@ export default {
       mainUrl: 'http://hf.rent.house365.com/district/dl_p[分页位置].html',
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
-      pages: 20,
+      page: 20,
       logs: [],
       treeObj: {},
       treeTitleArr: [],
@@ -74,10 +74,24 @@ export default {
   computed: mapState({
     chromePath: state => state.chromePath
   }),
+  mounted () {
+    this.initData()
+  },
   methods: {
     ...mapActions({
       pushLogs: 'SAVE_LOGS'
     }),
+    /**
+     * 初始化数据
+     */
+    initData () {
+      const config = ruleDb.get('config').value()
+      if (config) {
+        this.mainUrl = config.mainUrl ? config.mainUrl : ''
+        this.page = config.page ? config.page : 0
+        this.linkRule = config.linkRule ? config.linkRule : ''
+      }
+    },
     /**
      * 往指定的input中光标位置插入指定值
      */
@@ -113,7 +127,7 @@ export default {
       }
       this.$store.dispatch('SET_RULE', {
         mainUrl: this.mainUrl,
-        page: this.pages,
+        page: this.page,
         linkRule: this.linkRule
       })
       this.startStatus = true
@@ -148,8 +162,8 @@ export default {
         })
         return
       }
-      let spiderPage = this.pages
-      if (this.pages > 5) {
+      let spiderPage = this.page
+      if (this.page > 5) {
         spiderPage = 5
       }
       for (let i = 1; i <= spiderPage; i++) {

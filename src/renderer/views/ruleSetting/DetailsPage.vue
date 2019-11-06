@@ -161,12 +161,21 @@
           this.url.length = 50
         }
       })
-      this.url = ruleDb.get('contentUrls').value()
+      this.initData()
     },
     methods: {
       ...mapActions({
         pushLogs: 'SAVE_LOGS'
       }),
+      initData () {
+        this.url = ruleDb.get('contentUrls').value()
+        const params = ruleDb.get('config.params').value()
+        if (params) {
+          this.contentForm.paramsInput = params
+        } else {
+          this.contentForm.paramsInput = []
+        }
+      },
       /**
        * 链接可输入, 可选择
        */
