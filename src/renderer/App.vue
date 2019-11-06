@@ -31,7 +31,7 @@ import SystemLog from './components/SystemLog/index.vue'
 import SystemInfo from './components/SystemInfo/index.vue'
 import CtrlBtnGroup from './components/CtrlBtnGroup/index.vue'
 import { mapState } from 'vuex'
-import { ruleDb } from '@/dataStore'
+import { globalDb } from '@/dataStore'
 const {
   remote
 } = require('electron')
@@ -52,7 +52,7 @@ export default {
   },
   mounted () {
     if (process.env.NODE_ENV !== 'development') {
-      if (ruleDb.get('config.hasTips').value()) {
+      if (globalDb.get('hasTips').value()) {
         this.showInstallInfo()
       }
     }
@@ -70,7 +70,7 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          ruleDb.set('config.hasTips', true).write()
+          globalDb.set('hasTips', true).write()
         } else {
           let win = new BrowserWindow({ width: 800, height: 600, show: false })
           win.on('closed', function () {

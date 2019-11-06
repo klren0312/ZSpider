@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { ruleDb } from '@/dataStore'
+import { ruleDb, globalDb } from '@/dataStore'
 
 Vue.use(Vuex)
 
@@ -64,7 +64,7 @@ const actions = {
     commit('POP_LOGS')
   },
   SET_CHROME ({ commit }, chromePath) {
-    ruleDb.set('config.chromePath', chromePath).write()
+    globalDb.set('chromePath', chromePath).write()
     commit('SET_CHROME', chromePath)
   }
 }
