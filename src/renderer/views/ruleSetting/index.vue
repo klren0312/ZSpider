@@ -126,16 +126,20 @@ export default {
 .rule-setting {
   height:100%;
   .rule-header-block {
+    padding-top: 10px;
     height: 40px;
   }
   .rule-header {
     width: 100%;
     position: fixed;
+    left: 0;
     padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #fff;
+    border-left: 1px solid #323232;
+    border-right: 1px solid #323232;
     z-index: 1;
     .tips {
       margin-right: 20px;

@@ -49,6 +49,22 @@ export default {
     handleCtrl ($event, app) {
       if ($event === 'delete') {
         this.deleteApp(app.id)
+      } else if ($event === 'upload') {
+        fetch(`http://localhost:3000/apps`, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            appName: app.appName,
+            ruleConfig: app.ruleConfig,
+            localId: app.id
+          })
+        })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res)
+          })
       } else if ($event === 'export') {
         const details = globalDb.get('apps').find({ id: app.id }).value()
         const path = remote.dialog.showSaveDialog({
