@@ -40,9 +40,7 @@ export default {
     }
   },
   mounted () {
-    this.getAppList({
-      filters: ['.zpk']
-    })
+    this.getAppList()
   },
   methods: {
     getAppList () {
