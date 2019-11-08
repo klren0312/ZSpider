@@ -2,9 +2,11 @@ import store from './store'
 import EventBus from './utils/EventBus'
 let socket = null
 let interval = null
+let reConnectNum = 0
 function wsConnect () {
   socket = new WebSocket(`${store.state.WSUrl}`)
   socket.onopen = () => {
+    reConnectNum = 0
     console.log('socket 连接成功')
     interval = setInterval(() => {
       socket.send(JSON.stringify({
@@ -21,10 +23,13 @@ function wsConnect () {
   }
 
   socket.onclose = () => {
+    reConnectNum++
     EventBus.$emit('online', false)
     socket && socket.close()
     interval && clearInterval(interval)
-    reConnect()
+    if (reConnectNum <= 50) {
+      reConnect()
+    }
   }
 
   socket.onerror = () => {
