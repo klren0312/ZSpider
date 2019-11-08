@@ -161,4 +161,13 @@ $pageBg: #37383e;
     color: #409EFF;
     font-weight: 700;
   }
+  .card-container .card-block .card-header .ctrl-btn {
+    color: #fff;
+    &:hover {
+      color: #eee;
+    }
+  }
+  .card-container .card-block .card-item {
+    background: #000;
+  }
 }
