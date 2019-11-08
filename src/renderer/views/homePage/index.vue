@@ -3,10 +3,12 @@
     <div class="filter">
       <el-button size="mini" type="primary" @click="toCreate">新建应用</el-button>
       <el-button size="mini" type="primary" @click="importApp">导入应用</el-button>
+      <el-button size="mini" type="success" @click="getRemoteApp" :loading="remoteLoading">拉取远程应用</el-button>
     </div>
     <div class="card-container">
       <div class="card-block" v-for="v in appList" :key="v.id">
         <div class="card-item">
+          <div class="subscript" v-if="v.hasOwnProperty('localId')">远程</div>
           <div class="card-header">
             <el-dropdown size="mini" trigger="click" @command="handleCtrl($event, v)">
               <button class="ctrl-btn">•••</button>
@@ -36,7 +38,8 @@ export default {
   name: 'HomePage',
   data () {
     return {
-      appList: []
+      appList: [],
+      remoteLoading: false
     }
   },
   mounted () {
@@ -63,7 +66,12 @@ export default {
         })
           .then(res => res.json())
           .then(res => {
-            console.log(res)
+            remote.dialog.showMessageBox({
+              type: 'info',
+              title: '上传结果',
+              message: res.message,
+              buttons: ['ok']
+            })
           })
       } else if ($event === 'export') {
         const details = globalDb.get('apps').find({ id: app.id }).value()
@@ -90,6 +98,49 @@ export default {
           })
         }
       }
+    },
+    /**
+     * 拉取远程应用
+     */
+    getRemoteApp () {
+      this.remoteLoading = false
+      remote.dialog.showMessageBox({
+        type: 'info',
+        title: '提示',
+        message: '拉取远程应用, 若与本地相同, 将覆盖本地应用, 是否继续?',
+        buttons: ['ok', 'no']
+      }, index => {
+        if (index === 0) {
+          fetch(`http://localhost:3000/apps`)
+            .then(res => res.json())
+            .then(res => {
+              res.data.forEach(v => {
+                const localApp = appCollection
+                  .find({ id: v.localId })
+                  .value()
+                console.log(localApp)
+                if (localApp) {
+                  const remoteApp = JSON.parse(JSON.stringify(v))
+                  remoteApp.id = remoteApp.localId
+                  appCollection
+                    .find({ id: v.localId })
+                    .assign({...remoteApp})
+                    .write()
+                } else {
+                  const remoteApp = JSON.parse(JSON.stringify(v))
+                  remoteApp.id = remoteApp.localId
+                  appCollection.insert({...remoteApp}).write()
+                  this.getAppList()
+                }
+              })
+              this.remoteLoading = false
+            })
+            .catch(e => {
+              this.remoteLoading = false
+            })
+        } else {
+        }
+      })
     },
     importApp () {
       const filePath = remote.dialog.showOpenDialog({
@@ -166,13 +217,27 @@ export default {
   .card-block {
     width: 15%;
     .card-item {
+      position: relative;
       width: 150px;
       height: 150px;
       border: 1px solid #f5f5f5;
       background: #fff;
+      overflow: hidden;
       &:hover {
         border: 0;
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      }
+      .subscript {
+        position: absolute;
+        top: 18px;
+        left: -71px;
+        height: 20px;
+        width: 200px;
+        text-align: center;
+        font-size: 14px;
+        background: linear-gradient(to right, #d38312, #f30092);
+        color: #fff;
+        transform: rotate(-45deg);
       }
     }
     .card-header {

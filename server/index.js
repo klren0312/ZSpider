@@ -28,8 +28,12 @@ app.all('*', function(req, res, next) {
  * 客户端拉取应用
  */
 app.get('/apps', async (req, res) => {
-  const result = await conn.promise().query(`SELECT * FROM apps'`)
-  res.send(result)
+  const result = await conn.promise().query(`SELECT * FROM apps`)
+  res.send({
+    code: 200,
+    message: '拉取应用成功',
+    data: result[0]
+  })
 })
 
 /**
@@ -40,10 +44,18 @@ app.post('/apps', async (req, res) => {
   const result = await conn.promise().query(`SELECT * FROM apps WHERE localId='${data.localId}'`)
   if (result[0].length === 0) {
     const r = await conn.promise().query(`INSERT INTO apps SET ?`, req.body)
-    res.send(r)
+    res.send({
+      code: 200,
+      message: '提交成功',
+      data: data
+    })
   } else {
     const r = await conn.promise().query(`UPDATE apps SET ? WHERE localId='${data.localId}'`, data)
-    res.send(r)
+    res.send({
+      code: 200,
+      message: '更新成功',
+      data: data
+    })
   }
 })
 
