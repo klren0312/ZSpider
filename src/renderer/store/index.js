@@ -6,8 +6,8 @@ Vue.use(Vuex)
 
 const state = {
   /* eslint-disable */
-  ServerUrl: 'http://117.51.158.8:1200',
-  WSUrl: 'ws://117.51.158.8:1200/exchange',
+  ServerUrl: 'http://localhost:3000',
+  WSUrl: 'ws://localhost:3000/exchange',
   /* eslint-enable */
   chromePath: '',
   rule: {
