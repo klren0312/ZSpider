@@ -2,7 +2,7 @@
   <div id="app" :class="isLight ? '' : 'black'">
     <div class="frame-header-block">
       <div class="frame-header">
-        <div class="frame-title">ZZES Spider</div>
+        <div class="frame-title">ZZES Spider (<span class="online-status" :class="online ? 'online' : 'outline'">{{online ? '已连接' : '未连接'}}</span>)</div>
         <div class="tips" v-if="this.$route.name === 'RuleSetting'">每个页面都必须进行测试, 才会保存配置</div>
         <div class="frame-ctrl-group">
           <ctrl-btn-group></ctrl-btn-group>
@@ -31,6 +31,7 @@ import SystemInfo from './components/SystemInfo/index.vue'
 import CtrlBtnGroup from './components/CtrlBtnGroup/index.vue'
 import { mapState } from 'vuex'
 import { globalDb } from '@/dataStore'
+import EventBus from '@/utils/EventBus'
 const {
   remote
 } = require('electron')
@@ -46,7 +47,8 @@ export default {
   },
   data () {
     return {
-      isLight: true
+      isLight: true,
+      online: false
     }
   },
   mounted () {
@@ -55,6 +57,9 @@ export default {
         this.showInstallInfo()
       }
     }
+    EventBus.$on('online', msg => {
+      this.online = msg
+    })
   },
   computed: mapState({
     ctrl: state => state.logCtrl,
@@ -110,6 +115,26 @@ body {
       padding-left: 20px;
       font-size: 14px;
       color: #fff;
+    }
+    .online-status {
+      position: relative;
+      padding-left: 15px;
+      font-size: 12px;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #52c41a;
+      }
+      &.outline {
+        &::before {
+          background: #f5222d;
+        }
+      }
     }
   }
   .total-header-block {

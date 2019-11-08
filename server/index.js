@@ -1,5 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const http = require('http')
+const WebSocket = require('ws')
 const mysql = require('mysql2')
 
 const conn = mysql.createConnection({
@@ -23,7 +25,7 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Methods", "*");
   next();
 })
-
+// ================== API start ===================================
 /**
  * 客户端拉取应用
  */
@@ -59,7 +61,31 @@ app.post('/apps', async (req, res) => {
   }
 })
 
+// ================== API end ===================================
+
+// ================== WS start ==================================
+const server = http.createServer(app)
+const wss = new WebSocket.Server({ server: server, path: '/exchange' })
+let online = 0
+wss.on('connection', (ws, request) => {
+  online++
+  ws.on('message', msg => {
+    const afterMsg = JSON.parse(msg)
+    if (afterMsg.type === 'heart') {
+      ws.send(JSON.stringify({
+        type: 'heart',
+        msg: 'pong'
+      }))
+    }
+  })
+  ws.on('close', () => {
+    online--
+  })
+  console.log(online)
+})
+// ================== WS end   ==================================
+
 //端口：3000
-app.listen(3000, function() {
+server.listen(3000, function() {
   console.log("server starts at http://127.0.0.1:3000");
 })

@@ -5,6 +5,10 @@ import { ruleDb, globalDb } from '@/dataStore'
 Vue.use(Vuex)
 
 const state = {
+  /* eslint-disable */
+  ServerUrl: 'http://localhost:3000',
+  WSUrl: 'ws://localhost:3000/exchange',
+  /* eslint-enable */
   chromePath: '',
   rule: {
     mainUrl: '',

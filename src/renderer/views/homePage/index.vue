@@ -53,7 +53,7 @@ export default {
       if ($event === 'delete') {
         this.deleteApp(app.id)
       } else if ($event === 'upload') {
-        fetch(`http://localhost:3000/apps`, {
+        fetch(`${this.$store.state.ServerUrl}/apps`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json'
@@ -111,7 +111,7 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          fetch(`http://localhost:3000/apps`)
+          fetch(`${this.$store.state.ServerUrl}/apps`)
             .then(res => res.json())
             .then(res => {
               res.data.forEach(v => {
