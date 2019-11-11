@@ -19,6 +19,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, build
       run: |
+        npm install
         npm run build
     - name: Release
       uses: fnkr/github-action-ghr@v1
