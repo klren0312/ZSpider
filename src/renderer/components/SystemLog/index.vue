@@ -11,12 +11,25 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import EventBus from '@/utils/EventBus'
 export default {
   name: 'SystemLog',
+  data () {
+    return {
+      logs: []
+    }
+  },
   computed: mapState({
-    ctrl: state => state.logCtrl,
-    logs: state => state.logs
+    ctrl: state => state.logCtrl
   }),
+  mounted () {
+    EventBus.$on('logs', v => {
+      if (this.logs.length >= 100) {
+        this.logs.pop()
+      }
+      this.logs.unshift(v)
+    })
+  },
   methods: {
     ctrlLog () {
       this.$store.dispatch('CTRL_LOG', !this.ctrl)
@@ -40,6 +53,9 @@ export default {
       background: #dfdfdf
     }
   }
+}
+.xterm {
+  width: 100%;
 }
 .log-list {
   height: 200px;

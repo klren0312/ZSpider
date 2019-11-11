@@ -16,8 +16,7 @@ const state = {
     linkRule: ''
   },
   contentParams: [],
-  logCtrl: false,
-  logs: []
+  logCtrl: false
 }
 
 const mutations = {
@@ -29,18 +28,6 @@ const mutations = {
   },
   CTRL_LOG (state, ctrl) {
     state.logCtrl = ctrl
-  },
-  SAVE_LOGS (state, logs) {
-    let arr = JSON.parse(JSON.stringify(state.logs))
-    // 移除超出的消息
-    while (arr.length >= 30) arr.pop()
-    arr.unshift(logs)
-    state.logs = arr
-  },
-  POP_LOGS (state) {
-    let arr = JSON.parse(JSON.stringify(state.logs))
-    arr.pop()
-    state.logs = arr
   },
   SET_CHROME (state, chromePath) {
     state.chromePath = chromePath
@@ -60,12 +47,6 @@ const actions = {
   },
   CTRL_LOG ({ commit }, ctrl) {
     commit('CTRL_LOG', ctrl)
-  },
-  SAVE_LOGS ({ commit }, logs) {
-    commit('SAVE_LOGS', logs)
-  },
-  POP_LOGS ({ commit }) {
-    commit('POP_LOGS')
   },
   SET_CHROME ({ commit }, chromePath) {
     globalDb.set('chromePath', chromePath).write()

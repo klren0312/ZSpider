@@ -21,6 +21,7 @@ const globalAdapter = new FileSync(path.join(STORE_PATH, '/global.json'))
 const globalDb = Datastore(globalAdapter)
 globalDb._.mixin(LodashId)
 console.log('globalDb init', STORE_PATH)
+
 // 存放规则配置
 if (!globalDb.has('apps').value()) {
   globalDb.set('apps', []).write()

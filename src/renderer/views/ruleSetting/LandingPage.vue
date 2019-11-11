@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
 import { ruleDb } from '@/dataStore'
@@ -65,7 +65,6 @@ export default {
       urlArr: [],
       linkRule: '#JS_listPag > dd > div.info > h3 > a',
       page: 20,
-      logs: [],
       treeObj: {},
       treeTitleArr: [],
       startStatus: false
@@ -78,9 +77,6 @@ export default {
     this.initData()
   },
   methods: {
-    ...mapActions({
-      pushLogs: 'SAVE_LOGS'
-    }),
     /**
      * 初始化数据
      */
@@ -209,7 +205,7 @@ export default {
      * 打印日志
      */
     writeLog (v) {
-      this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
+      EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
     },
     seeTree () {
       if (JSON.stringify(this.treeObj) === '{}') {

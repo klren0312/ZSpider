@@ -1,7 +1,7 @@
 <template>
   <div class="details-page">
     <main>
-      <div class="right-side">
+      <div>
         <el-form label-width="100px">
           <el-form-item label="内容页链接">
             <el-autocomplete
@@ -53,7 +53,7 @@
   </div>
 </template>
 <script>
-  import { mapActions, mapState } from 'vuex'
+  import { mapState } from 'vuex'
   import EventBus from '@/utils/EventBus'
   import { dataDb, ruleDb } from '@/dataStore'
   const puppeteer = require('puppeteer')
@@ -164,9 +164,6 @@
       this.initData()
     },
     methods: {
-      ...mapActions({
-        pushLogs: 'SAVE_LOGS'
-      }),
       initData () {
         this.url = ruleDb.get('contentUrls').value()
         const params = ruleDb.get('config.params').value()
@@ -308,7 +305,7 @@
        * 打印日志
        */
       writeLog (v) {
-        this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
+        EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
       }
     },
     watch: {

@@ -28,7 +28,7 @@
         <el-table :data="config.params" border height="400px">
           <el-table-column min-width="100" label="参数名" prop="name"></el-table-column>
           <el-table-column min-width="280" label="参数" prop="param"></el-table-column>
-          <el-table-column label="参数参考值" prop="value"></el-table-column>
+          <!-- <el-table-column label="参数参考值" prop="value"></el-table-column> -->
         </el-table>
       </template>
     </div>
@@ -58,9 +58,6 @@
 </template>
 <script>
   import { ruleDb, dataDb } from '@/dataStore'
-  import {
-    mapActions
-  } from 'vuex'
   import EventBus from '@/utils/EventBus'
   const puppeteer = require('puppeteer')
   const { remote } = require('electron')
@@ -84,9 +81,6 @@
       this.getConfig()
     },
     methods: {
-      ...mapActions({
-        pushLogs: 'SAVE_LOGS'
-      }),
       goToHome () {
         this.$router.push('/')
       },
@@ -241,7 +235,7 @@
        * 打印日志
        */
       writeLog (v) {
-        this.pushLogs(`${new Date().toLocaleString()}: ${v}`)
+        EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
       }
     }
   }

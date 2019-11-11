@@ -218,7 +218,7 @@ export default {
             remote.dialog.showMessageBox({
               type: 'error',
               title: '错误',
-              message: '数据库连接失败:' + error,
+              message: error.message,
               buttons: ['ok']
             })
           }
@@ -298,24 +298,33 @@ export default {
      */
     async publish (row) {
       this.publishStatus = true
-      const conn = await mysql.createConnectionPromise({
-        host: row.host,
-        port: row.port,
-        user: row.user,
-        password: row.password,
-        database: row.database
-      })
-      for (let i = 0, len = this.datas.length; i < len; i++) {
-        const d = this.datas[i]
-        try {
-          await conn.query(`INSERT INTO ${row.table} SET ?`, d)
-          row.success++
-        } catch (error) {
-          console.error(error)
-          row.fail++
+      try {
+        const conn = await mysql.createConnectionPromise({
+          host: row.host,
+          port: row.port,
+          user: row.user,
+          password: row.password,
+          database: row.database
+        })
+        for (let i = 0, len = this.datas.length; i < len; i++) {
+          const d = this.datas[i]
+          try {
+            await conn.query(`INSERT INTO ${row.table} SET ?`, d)
+            row.success++
+          } catch (error) {
+            console.error(error)
+            row.fail++
+          }
         }
+        conn.end()
+      } catch (error) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: error.message,
+          buttons: ['ok']
+        })
       }
-      conn.end()
       this.publishStatus = false
       collection
         .find({id: row.id})
