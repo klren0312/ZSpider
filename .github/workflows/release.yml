@@ -21,7 +21,6 @@ jobs:
       run: |
         npm install
         npm run build
-    - name: zip the file
     - uses: montudor/action-zip@v0.1.0
       with:
         args: zip -qq -r ./build/spider.zip ./build/win-unpacked/
