@@ -1,7 +1,9 @@
 <template>
   <main class="data-publish">
     <div class="filter">
-      <el-button icon="el-icon-plus" type="primary" size="mini" @click="createDialog=true">新建发布</el-button>
+      <el-button type="primary" size="mini" @click="createDialog=true" icon="el-icon-plus">新建发布</el-button>
+      <el-button type="success" size="mini" @click="exportExcel" icon="el-icon-download">导出EXCEL</el-button>
+      <el-button type="success" size="mini" @click="exportJSON" icon="el-icon-download">导出JSON</el-button>
       <div class="data-total">当前数据总数: <strong>{{datas.length}}</strong>条</div>
     </div>
     <el-table
@@ -124,6 +126,9 @@ import { ruleDb, dataDb } from '@/dataStore'
 const mysql = require('mysql2')
 const { remote } = require('electron')
 const collection = ruleDb.get('publishConfig')
+const excel = require('node-excel-export')
+const fs = require('fs')
+
 export default {
   name: 'DataPublish',
   data () {
@@ -339,6 +344,102 @@ export default {
         message: `已清空数据表(${row.table})`,
         buttons: ['ok']
       })
+    },
+    /**
+     * 导出excel
+     */
+    exportExcel () {
+      const headers = ruleDb.get('config.params').value()
+      if (Array.isArray(headers) && headers.length) {
+        this.datas = dataDb.get('data').value()
+        const styles = {
+          headerDark: {
+            fill: {
+              fgColor: {
+                rgb: 'FF000000'
+              }
+            },
+            font: {
+              color: {
+                rgb: 'FFFFFFFF'
+              },
+              sz: 14,
+              bold: true,
+              underline: true
+            }
+          }
+        }
+        const tHeader = {}
+        headers.forEach(v => {
+          tHeader[v.name] = {
+            displayName: v.name,
+            headerStyle: styles.headerDark
+          }
+        })
+        const report = excel.buildExport([{
+          name: 'datas',
+          heading: [],
+          data: this.datas,
+          specification: tHeader
+        }])
+        const path = remote.dialog.showSaveDialog({
+          title: '选择保存路径',
+          filters: [{
+            name: 'xlsx文件',
+            extensions: ['xlsx']
+          }],
+          properties: {
+            openFile: true,
+            openDirectory: false,
+            multiSelections: false
+          }
+        })
+        if (path) {
+          fs.writeFile(`${path}`, report, () => {
+            remote.dialog.showMessageBox({
+              type: 'info',
+              title: '导出结果',
+              message: `导出成功, 路径: ${path}`,
+              buttons: ['ok']
+            })
+          })
+        }
+      } else {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: '请对应用进行配置',
+          buttons: ['ok']
+        })
+      }
+    },
+    /**
+     * 导出JSON
+     */
+    exportJSON () {
+      this.datas = dataDb.get('data').value()
+      const path = remote.dialog.showSaveDialog({
+        title: '选择保存路径',
+        filters: [{
+          name: 'JSON文件',
+          extensions: ['json']
+        }],
+        properties: {
+          openFile: true,
+          openDirectory: false,
+          multiSelections: false
+        }
+      })
+      if (path) {
+        fs.writeFile(`${path}`, JSON.stringify(this.datas), () => {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '导出结果',
+            message: `导出成功, 路径: ${path}`,
+            buttons: ['ok']
+          })
+        })
+      }
     }
   }
 }

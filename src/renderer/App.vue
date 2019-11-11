@@ -53,7 +53,7 @@ export default {
   },
   mounted () {
     if (process.env.NODE_ENV !== 'development') {
-      if (globalDb.get('hasTips').value()) {
+      if (!globalDb.get('hasTips').value()) {
         this.showInstallInfo()
       }
     }

@@ -25,6 +25,14 @@ console.log('globalDb init', STORE_PATH)
 if (!globalDb.has('apps').value()) {
   globalDb.set('apps', []).write()
 }
+// 存放chrome路径
+if (!globalDb.has('chromePath').value()) {
+  globalDb.set('chromePath', []).write()
+}
+// 存放是否弹出安装chrome提示
+if (!globalDb.has('hasTips').value()) {
+  globalDb.set('hasTips', false).write()
+}
 
 // =========================== 规则存储 =================================
 const ruleAdapter = new FileSync(path.join(STORE_PATH, '/rules.json'))

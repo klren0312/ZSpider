@@ -1,8 +1,8 @@
 {
-  "name": "spider-test",
-  "version": "0.0.1",
+  "name": "zzes-spider",
+  "version": "0.1.0",
   "author": "ren <renzhiwei@lewell.cn>",
-  "description": "spider",
+  "description": "zzes-spider",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -65,6 +65,7 @@
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
     "mysql2": "^2.0.0",
+    "node-excel-export": "^1.4.4",
     "puppeteer": "^1.14.0",
     "puppeteer-core": "^1.17.0",
     "vue": "^2.5.16",
