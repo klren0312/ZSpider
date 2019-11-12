@@ -4,7 +4,7 @@
       <el-dropdown split-button type="primary" size="mini" @command="handleCreate">
         新建应用
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="view">可视化应用</el-dropdown-item>
+          <el-dropdown-item command="rule">规则应用</el-dropdown-item>
           <el-dropdown-item command="code">代码应用</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -25,8 +25,8 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="card-content" @click="toDetails(v.id)">
-            <div class="card-icon"></div>
+          <div class="card-content" @click="toDetails(v)">
+            <div class="card-icon" :class="v.type === 'rule' ? 'rule-icon' : ''"></div>
             <div class="card-title">{{v.appName}}</div>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default {
       ruleDb.set('contentUrls', {}).write()
       ruleDb.set('publishConfig', []).write()
       dataDb.set('data', []).write()
-      if (command === 'view') {
+      if (command === 'rule') {
         this.$router.push('/ruleSetting')
       } else {
         this.$router.push('/codeRule')
@@ -201,17 +201,21 @@ export default {
         }
       })
     },
-    toDetails (id) {
-      const details = globalDb.get('apps').find({ id: id }).value()
-      if (details) {
-        const obj = JSON.parse(details.ruleConfig)
-        ruleDb.set('config', obj.config).write()
-        ruleDb.set('contentUrls', obj.contentUrls).write()
-        ruleDb.set('publishConfig', obj.publishConfig).write()
-        dataDb.set('data', []).write()
-        this.$nextTick(_ => {
-          this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
-        })
+    toDetails (data) {
+      if (data.type === 'rule') {
+        const details = globalDb.get('apps').find({ id: data.id }).value()
+        if (details) {
+          const obj = JSON.parse(details.ruleConfig)
+          ruleDb.set('config', obj.config).write()
+          ruleDb.set('contentUrls', obj.contentUrls).write()
+          ruleDb.set('publishConfig', obj.publishConfig).write()
+          dataDb.set('data', []).write()
+          this.$nextTick(_ => {
+            this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
+          })
+        }
+      } else {
+        this.$router.push(`/codeRule?id=${data.id}&appName=${data.appName}`)
       }
     }
   }
@@ -289,6 +293,9 @@ export default {
       background-image: url(data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPjxwYXRoIGQ9Ik0yODcgNjJoNTMwLjM1N2M0NSAwIDgwLjM1NyAzNS4zNTcgODAuMzU3IDgwLjM1N3YzMDUuMzU3SDE1OC40M1YxOTAuNTcxQzE1OC40MjkgMTE5Ljg1NyAyMTYuMjg2IDYyIDI4NyA2MnoiIGZpbGw9IiNCNUY1RUMiLz48cGF0aCBkPSJNNjQ3IDYySDIzOC43ODZjLTQ1IDAtODAuMzU3IDM1LjM1Ny04MC4zNTcgODAuMzU3djczOS4yODZjMCA0NSAzNS4zNTcgODAuMzU3IDgwLjM1NyA4MC4zNTdoNTc1LjM1N2M0NSAwIDgwLjM1Ny0zNS4zNTcgODAuMzU3LTgwLjM1N1YzMDkuNUw2NDcgNjJ6IiBmaWxsPSIjMzZDRkM5Ii8+PHBhdGggZD0iTTY1MC4yMTQgNjJ2MTg2LjQyOWMwIDMyLjE0MiAyNS43MTUgNjEuMDcxIDYxLjA3MiA2MS4wNzFoMTg2LjQyOEw2NTAuMjE0IDYyeiIgZmlsbD0iIzA4OTc5QyIvPjxwYXRoIGQ9Ik0yODcgNDE1LjU3MWE0OC4yMTQgNDguMjE0IDAgMSAwIDk2LjQyOSAwIDQ4LjIxNCA0OC4yMTQgMCAxIDAtOTYuNDI5IDB6TTUxMiAzODMuNDI5aDE5Mi44NTdjMTkuMjg2IDAgMzIuMTQzIDEyLjg1NyAzMi4xNDMgMzIuMTQycy0xMi44NTcgMzIuMTQzLTMyLjE0MyAzMi4xNDNINTEyYy0xOS4yODYgMC0zMi4xNDMtMTIuODU3LTMyLjE0My0zMi4xNDNTNDkyLjcxNCAzODMuNDMgNTEyIDM4My40M3ptMCAxNjAuNzE0aDE5Mi44NTdDNzI0LjE0MyA1NDQuMTQzIDczNyA1NTcgNzM3IDU3Ni4yODZzLTEyLjg1NyAzMi4xNDMtMzIuMTQzIDMyLjE0M0g1MTJjLTE5LjI4NiAwLTMyLjE0My0xMi44NTgtMzIuMTQzLTMyLjE0M3MxMi44NTctMzIuMTQzIDMyLjE0My0zMi4xNDN6bTAgMTYwLjcxNGgxOTIuODU3QzcyNC4xNDMgNzA0Ljg1NyA3MzcgNzE3LjcxNCA3MzcgNzM3cy0xMi44NTcgMzIuMTQzLTMyLjE0MyAzMi4xNDNINTEyYy0xOS4yODYgMC0zMi4xNDMtMTIuODU3LTMyLjE0My0zMi4xNDNzMTIuODU3LTMyLjE0MyAzMi4xNDMtMzIuMTQzek0yODcgNTc2LjI4NmE0OC4yMTQgNDguMjE0IDAgMSAwIDk2LjQyOSAwIDQ4LjIxNCA0OC4yMTQgMCAxIDAtOTYuNDI5IDB6TTI4NyA3MzdhNDguMjE0IDQ4LjIxNCAwIDEgMCA5Ni40MjkgMEE0OC4yMTQgNDguMjE0IDAgMSAwIDI4NyA3Mzd6IiBmaWxsPSIjQjVGNUVDIi8+PC9zdmc+);
       background-position: center;
       background-repeat: no-repeat;
+      &.rule-icon {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPjxwYXRoIGQ9Ik0xNTQuNjg3IDMyOC40MjhsLTEuMjg3LjY0NHYzNjQuODlMNTExLjIxIDg4Mi4yVjUwNi4zN2wtMzU2LjUyNC0xNzcuOTR6IiBmaWxsPSIjRkZGIi8+PHBhdGggZD0iTTg2OC4zOCAzMjguNzVMNTExLjIxIDE0MC44MzQgMTY4LjUyMyAzMjEuMDI4bC0xMy44MzYgNy40TDUxMS4yMSA1MDYuMzdsNC4xODQtMS45MyAzNTMuOTUtMTc1LjA0NXYtLjMyMmwtLjk2NS0uMzIyek01MTUuMzk1IDUwNC40MzhsLTQuMTg0IDEuOTMxIDQuMTg0LTEuOTN6IiBmaWxsPSIjOTFENUZGIi8+PHBhdGggZD0iTTkzOS44MTQgMjk0LjMyYTU5Ljg1IDU5Ljg1IDAgMCAwLTI1LjQyLTI2LjcwN0w1MzguNTYxIDY4Ljc1N2E1OC44ODUgNTguODg1IDAgMCAwLTU0LjcwMSAwbC0zNzUuNTEgMTk3LjU3YTU4LjI0MSA1OC4yNDEgMCAwIDAtMTUuNDQ1IDEzLjgzNSA2NC4zNTUgNjQuMzU1IDAgMCAwLTkuNjUzIDEyLjU1IDU5Ljg1IDU5Ljg1IDAgMCAwLTYuNDM2IDI1Ljc0MXYzODYuMTI4YTU5LjIwNiA1OS4yMDYgMCAwIDAgMzIuMTc4IDUyLjEyOGwzNzUuNTEgMTk3LjU2OEE1OS4yMDYgNTkuMjA2IDAgMCAwIDUxMS4yMSA5NjJoNC41MDVhNTYuMzEgNTYuMzEgMCAwIDAgMjIuODQ2LTYuMTE0bDM3NS41MS0xOTcuNTY5YTU5LjIwNiA1OS4yMDYgMCAwIDAgMzIuMTc3LTUyLjEyN1YzMTguNDUzYTU2LjYzMiA1Ni42MzIgMCAwIDAtNi40MzUtMjQuMTMzem0tNzAuNDY5IDM1LjA3NGwtMzUzLjk1IDE3NS4wNDQtNC4xODQgMi4yNTNWODgyLjJMMTUzLjA3OCA2OTMuOTYyVjMyOS4wNzJsMTMuODM2LTcuNCAzNDQuMjk3LTE4MC44MzhMODY4LjM4IDMyOC43NXoiIGZpbGw9IiM0MEE5RkYiLz48L3N2Zz4=);
+      }
     }
 
   }

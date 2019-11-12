@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
 let webConfig = {
   devtool: '#cheap-module-eval-source-map',
@@ -120,7 +121,10 @@ let webConfig = {
       'process.env.IS_WEB': 'true'
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new MonacoWebpackPlugin({
+      languages: ['javascript']
+    })
   ],
   output: {
     filename: '[name].js',

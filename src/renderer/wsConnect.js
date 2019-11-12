@@ -8,12 +8,16 @@ function wsConnect () {
   socket.onopen = () => {
     reConnectNum = 0
     console.log('socket 连接成功')
+    socket.send(JSON.stringify({
+      type: 'heart',
+      msg: 'ping'
+    }))
     interval = setInterval(() => {
       socket.send(JSON.stringify({
         type: 'heart',
         msg: 'ping'
       }))
-    }, 3000)
+    }, 60000)
     socket.onmessage = msg => {
       const data = JSON.parse(msg.data)
       if (data.type === 'heart') {

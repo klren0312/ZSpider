@@ -84,7 +84,8 @@ export default {
               config: ruleDb.get('config').value(),
               contentUrls: ruleDb.get('contentUrls').value(),
               publishConfig: ruleDb.get('publishConfig').value()
-            })
+            }),
+            type: 'rule'
           })
           .write()
       } else { // 创建
@@ -95,7 +96,8 @@ export default {
               config: ruleDb.get('config').value(),
               contentUrls: ruleDb.get('contentUrls').value(),
               publishConfig: ruleDb.get('publishConfig').value()
-            })
+            }),
+            type: 'rule'
           })
           .write()
       }
