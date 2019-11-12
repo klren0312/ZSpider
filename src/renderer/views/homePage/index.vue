@@ -67,7 +67,8 @@ export default {
           body: JSON.stringify({
             appName: app.appName,
             ruleConfig: app.ruleConfig,
-            localId: app.id
+            localId: app.id,
+            type: app.type
           })
         })
           .then(res => res.json())
