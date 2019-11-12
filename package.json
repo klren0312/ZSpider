@@ -66,16 +66,12 @@
     "lowdb": "^1.0.0",
     "mysql2": "^2.0.0",
     "node-excel-export": "^1.4.4",
-    "puppeteer": "^1.14.0",
     "puppeteer-core": "^1.17.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "vuex-electron": "^1.0.0",
-    "xterm": "^4.2.0-vscode1",
-    "xterm-addon-fit": "^0.3.0",
-    "xterm-addon-web-links": "^0.2.1"
+    "vuex-electron": "^1.0.0"
   },
   "devDependencies": {
     "ajv": "^6.5.0",

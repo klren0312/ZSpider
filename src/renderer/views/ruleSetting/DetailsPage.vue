@@ -56,7 +56,7 @@
   import { mapState } from 'vuex'
   import EventBus from '@/utils/EventBus'
   import { dataDb, ruleDb } from '@/dataStore'
-  const puppeteer = require('puppeteer')
+  const puppeteer = require('puppeteer-core')
   const {
     remote
   } = require('electron')

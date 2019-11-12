@@ -1,7 +1,13 @@
 <template>
   <div class="home-page">
     <div class="filter">
-      <el-button size="mini" type="primary" @click="toCreate">新建应用</el-button>
+      <el-dropdown split-button type="primary" size="mini" @command="handleCreate">
+        新建应用
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="view">可视化应用</el-dropdown-item>
+          <el-dropdown-item command="code">代码应用</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-button size="mini" type="primary" @click="importApp">导入应用</el-button>
       <el-button size="mini" type="success" @click="getRemoteApp" :loading="remoteLoading">拉取远程应用</el-button>
     </div>
@@ -100,6 +106,20 @@ export default {
       }
     },
     /**
+     * 新建触发
+     */
+    handleCreate (command) {
+      ruleDb.set('config', {}).write()
+      ruleDb.set('contentUrls', {}).write()
+      ruleDb.set('publishConfig', []).write()
+      dataDb.set('data', []).write()
+      if (command === 'view') {
+        this.$router.push('/ruleSetting')
+      } else {
+        this.$router.push('/codeRule')
+      }
+    },
+    /**
      * 拉取远程应用
      */
     getRemoteApp () {
@@ -164,13 +184,6 @@ export default {
         })
         /* eslint-enable */
       }
-    },
-    toCreate () {
-      ruleDb.set('config', {}).write()
-      ruleDb.set('contentUrls', {}).write()
-      ruleDb.set('publishConfig', []).write()
-      dataDb.set('data', []).write()
-      this.$router.push('/ruleSetting')
     },
     deleteApp (id) {
       remote.dialog.showMessageBox({

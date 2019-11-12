@@ -57,9 +57,10 @@
   </div>
 </template>
 <script>
+  import { mapState } from 'vuex'
   import { ruleDb, dataDb } from '@/dataStore'
   import EventBus from '@/utils/EventBus'
-  const puppeteer = require('puppeteer')
+  const puppeteer = require('puppeteer-core')
   const { remote } = require('electron')
 
   let browser = null
@@ -77,6 +78,9 @@
         spiderProgress: 0
       }
     },
+    computed: mapState({
+      chromePath: state => state.chromePath
+    }),
     mounted () {
       this.getConfig()
     },

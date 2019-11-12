@@ -16,6 +16,11 @@ export default new Router({
       component: require('@/views/ruleSetting/index').default
     },
     {
+      path: '/codeRule',
+      name: 'CodeRule',
+      component: require('@/views/codeRule/index').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
