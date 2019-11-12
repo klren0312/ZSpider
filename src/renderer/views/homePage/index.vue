@@ -95,7 +95,10 @@ export default {
           }
         })
         if (path) {
-          fs.writeFile(`${path}`, details.ruleConfig, () => {
+          fs.writeFile(`${path}`, JSON.stringify({
+            ruleConfig: details.ruleConfig,
+            type: app.type
+          }), () => {
             remote.dialog.showMessageBox({
               type: 'info',
               title: '导出结果',
@@ -175,10 +178,12 @@ export default {
         /* eslint-disable */
         fs.readFile(filePath[0], 'utf8', (e, res) => {
           if (e) throw e
+          const data = JSON.parse(res)
           appCollection
             .insert({
               appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
-              ruleConfig: res
+              ruleConfig: data.ruleConfig,
+              type: data.type
             })
             .write()
           this.getAppList()
