@@ -147,26 +147,28 @@ export default {
       const collection = dataDb.defaults({ data: [] }).get('data')
       this.$store.dispatch('CTRL_LOG', true)
       this.writeLog('代码开始运行...')
-      const vm = new NodeVM({
-        console: 'redirect',
-        sandbox: {
-          dataDb: collection
-        },
-        require: {
-          external: {
-            modules: ['cheerio', 'cheerio-tableparser', 'request-promise', 'request', 'mysql2'],
-            transitive: true
+      setTimeout(() => {
+        const vm = new NodeVM({
+          console: 'redirect',
+          sandbox: {
+            dataDb: collection
+          },
+          require: {
+            external: {
+              modules: ['cheerio', 'cheerio-tableparser', 'request-promise', 'request', 'mysql2'],
+              transitive: true
+            }
           }
-        }
-      })
-      vm.on('console.log', msg => {
-        if (typeof msg !== 'string') {
-          this.writeLog(JSON.stringify(msg))
-        } else {
-          this.writeLog(msg)
-        }
-      })
-      vm.run(this.code, 'vm.js')
+        })
+        vm.on('console.log', msg => {
+          if (typeof msg !== 'string') {
+            this.writeLog(JSON.stringify(msg))
+          } else {
+            this.writeLog(msg)
+          }
+        })
+        vm.run(this.code, 'vm.js')
+      }, 2000)
     },
     /**
      * 打印日志
