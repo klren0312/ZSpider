@@ -10,3 +10,5 @@ npm-debug.log.*
 thumbs.db
 !.gitkeep
 yarn.lock
+
+logs.txt

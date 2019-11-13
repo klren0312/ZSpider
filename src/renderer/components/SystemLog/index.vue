@@ -12,6 +12,8 @@
 <script>
 import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
+const fs = require('fs')
+const path = require('path')
 export default {
   name: 'SystemLog',
   data () {
@@ -28,6 +30,7 @@ export default {
         this.logs.pop()
       }
       this.logs.unshift(v)
+      fs.appendFile(path.resolve('logs.txt'), v + '\n', () => {})
     })
   },
   methods: {
