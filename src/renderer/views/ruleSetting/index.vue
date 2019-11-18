@@ -35,7 +35,8 @@ import DetailsPage from './DetailsPage.vue'
 import StartSpider from './StartSpider.vue'
 import DataPublish from './DataPublish.vue'
 import EventBus from '@/utils/EventBus'
-import { globalDb, ruleDb } from '@/dataStore'
+import { editAppById, addApp } from '@/service/global.service'
+import { clearRule, getConfig, getContentUrls, getPublishConfig } from '@/service/rule.service'
 const { remote } = require('electron')
 export default {
   name: 'RuleSetting',
@@ -74,35 +75,28 @@ export default {
         })
         return
       }
-      const collection = globalDb.defaults({ apps: [] }).get('apps')
       if (this.isEdit) { // 编辑
-        collection
-          .find({ id: this.id })
-          .assign({
-            appName: this.appName,
-            ruleConfig: JSON.stringify({
-              config: ruleDb.get('config').value(),
-              contentUrls: ruleDb.get('contentUrls').value(),
-              publishConfig: ruleDb.get('publishConfig').value()
-            }),
-            type: 'rule'
-          })
-          .write()
+        editAppById(this.id, {
+          appName: this.appName,
+          ruleConfig: JSON.stringify({
+            config: getConfig(),
+            contentUrls: getContentUrls(),
+            publishConfig: getPublishConfig()
+          }),
+          type: 'rule'
+        })
       } else { // 创建
-        collection
-          .insert({
-            appName: this.appName,
-            ruleConfig: JSON.stringify({
-              config: ruleDb.get('config').value(),
-              contentUrls: ruleDb.get('contentUrls').value(),
-              publishConfig: ruleDb.get('publishConfig').value()
-            }),
-            type: 'rule'
-          })
-          .write()
+        addApp({
+          appName: this.appName,
+          ruleConfig: JSON.stringify({
+            config: getConfig(),
+            contentUrls: getContentUrls(),
+            publishConfig: getPublishConfig()
+          }),
+          type: 'rule'
+        })
       }
-      this.isEdit = false
-      this.$router.push('/')
+      this.clear()
     },
     cancel () {
       remote.dialog.showMessageBox({
@@ -112,14 +106,15 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          ruleDb.set('config', {}).write()
-          ruleDb.set('contentUrls', {}).write()
-          ruleDb.set('publishConfig', []).write()
-          this.isEdit = false
-          this.$router.push('/')
+          this.clear()
         } else {
         }
       })
+    },
+    clear () {
+      clearRule()
+      this.isEdit = false
+      this.$router.push('/')
     }
   }
 }

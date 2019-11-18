@@ -122,10 +122,10 @@
   </main>
 </template>
 <script>
-import { ruleDb, dataDb } from '@/dataStore'
+import { getConfig, getPublishConfig, addPublish, editPublishById, deletePublish } from '@/service/rule.service'
+import { getDatas } from '@/service/data.service'
 const mysql = require('mysql2')
 const { remote } = require('electron')
-const collection = ruleDb.get('publishConfig')
 const excel = require('node-excel-export')
 const fs = require('fs')
 
@@ -162,21 +162,21 @@ export default {
   mounted () {
     this.getPublish()
     this.getParams()
-    this.datas = dataDb.get('data').value()
+    this.datas = getDatas()
   },
   methods: {
     /**
      * 获取发布配置
      */
     getPublish () {
-      const arr = ruleDb.get('publishConfig').value()
+      const arr = getPublishConfig()
       this.publishData = JSON.parse(JSON.stringify(arr))
     },
     /**
      * 获取参数
      */
     getParams () {
-      this.form.params = ruleDb.get('config.params').value()
+      this.form.params = getConfig().params
       this.form.params && this.form.params.forEach(v => {
         v.dbParam = ''
       })
@@ -202,6 +202,8 @@ export default {
                 message: '数据库连接成功!',
                 buttons: ['ok']
               })
+            } else {
+              return false
             }
             this.isTest = true
             conn.query(`select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`, (e, r) => {
@@ -247,17 +249,12 @@ export default {
             this.form.success = 0
             const obj = JSON.parse(JSON.stringify(this.form))
             delete obj.id
-            collection
-              .find({id: this.form.id})
-              .assign({...obj})
-              .write()
+            editPublishById(this.form.id, obj)
             this.isEdit = false
           } else {
             this.form.fail = 0
             this.form.success = 0
-            collection
-              .insert({ ...this.form })
-              .write()
+            addPublish(this.form)
           }
           this.createDialog = false
           this.getPublish()
@@ -285,9 +282,7 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          collection
-            .remove({ id: row.id })
-            .write()
+          deletePublish(row.id)
           this.getPublish()
         } else {
         }
@@ -326,41 +321,44 @@ export default {
         })
       }
       this.publishStatus = false
-      collection
-        .find({id: row.id})
-        .assign({fail: row.fail, success: row.success})
-        .write()
+      editPublishById(row.id, {fail: row.fail, success: row.success})
     },
     /**
      * 清空表
      */
     async clear (row) {
-      const conn = await mysql.createConnectionPromise({
-        host: row.host,
-        port: row.port,
-        user: row.user,
-        password: row.password,
-        database: row.database
-      })
       try {
+        const conn = await mysql.createConnectionPromise({
+          host: row.host,
+          port: row.port,
+          user: row.user,
+          password: row.password,
+          database: row.database
+        })
         await conn.query(`truncate table ${row.table}`)
+        conn.end()
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: '提示',
+          message: `已清空数据表(${row.table})`,
+          buttons: ['ok']
+        })
       } catch (error) {
+        remote.dialog.showMessageBox({
+          type: 'error',
+          title: '错误',
+          message: error.message,
+          buttons: ['ok']
+        })
       }
-      conn.end()
-      remote.dialog.showMessageBox({
-        type: 'info',
-        title: '提示',
-        message: `已清空数据表(${row.table})`,
-        buttons: ['ok']
-      })
     },
     /**
      * 导出excel
      */
     exportExcel () {
-      const headers = ruleDb.get('config.params').value()
+      const headers = getConfig().params
       if (Array.isArray(headers) && headers.length) {
-        this.datas = dataDb.get('data').value()
+        this.datas = getDatas()
         const styles = {
           headerDark: {
             fill: {
@@ -381,7 +379,7 @@ export default {
         const tHeader = {}
         headers.forEach(v => {
           tHeader[v.name] = {
-            displayName: v.name,
+            displayName: v.note,
             headerStyle: styles.headerDark
           }
         })
@@ -426,7 +424,7 @@ export default {
      * 导出JSON
      */
     exportJSON () {
-      this.datas = dataDb.get('data').value()
+      this.datas = getDatas()
       const path = remote.dialog.showSaveDialog({
         title: '选择保存路径',
         filters: [{

@@ -35,8 +35,9 @@
   </div>
 </template>
 <script>
-import { globalDb, ruleDb, dataDb } from '@/dataStore'
-const appCollection = globalDb.get('apps')
+import { getApps, getAppById, editAppById, addApp, uploadApp, getRemoteApp, deleteApp } from '@/service/global.service'
+import { clearRule, addRule } from '@/service/rule.service'
+import { clearData } from '@/service/data.service'
 const { remote } = require('electron')
 const fs = require('fs')
 
@@ -53,35 +54,22 @@ export default {
   },
   methods: {
     getAppList () {
-      this.appList = JSON.parse(JSON.stringify(globalDb.get('apps').value()))
+      this.appList = getApps()
     },
     handleCtrl ($event, app) {
       if ($event === 'delete') {
         this.deleteApp(app.id)
       } else if ($event === 'upload') {
-        fetch(`${this.$store.state.ServerUrl}/apps`, {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            appName: app.appName,
-            ruleConfig: app.ruleConfig,
-            localId: app.id,
-            type: app.type
+        uploadApp(app).then(res => {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: '上传结果',
+            message: res.message,
+            buttons: ['ok']
           })
         })
-          .then(res => res.json())
-          .then(res => {
-            remote.dialog.showMessageBox({
-              type: 'info',
-              title: '上传结果',
-              message: res.message,
-              buttons: ['ok']
-            })
-          })
       } else if ($event === 'export') {
-        const details = globalDb.get('apps').find({ id: app.id }).value()
+        const details = getAppById(app.id)
         const path = remote.dialog.showSaveDialog({
           title: '选择保存路径',
           filters: [{
@@ -113,10 +101,8 @@ export default {
      * 新建触发
      */
     handleCreate (command) {
-      ruleDb.set('config', {}).write()
-      ruleDb.set('contentUrls', {}).write()
-      ruleDb.set('publishConfig', []).write()
-      dataDb.set('data', []).write()
+      clearRule()
+      clearData()
       if (command === 'rule') {
         this.$router.push('/ruleSetting')
       } else {
@@ -135,25 +121,18 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          fetch(`${this.$store.state.ServerUrl}/apps`)
-            .then(res => res.json())
+          getRemoteApp()
             .then(res => {
               res.data.forEach(v => {
-                const localApp = appCollection
-                  .find({ id: v.localId })
-                  .value()
-                console.log(localApp)
+                const localApp = getAppById(v.localId)
                 if (localApp) {
                   const remoteApp = JSON.parse(JSON.stringify(v))
                   remoteApp.id = remoteApp.localId
-                  appCollection
-                    .find({ id: v.localId })
-                    .assign({...remoteApp})
-                    .write()
+                  editAppById(v.localId, remoteApp)
                 } else {
                   const remoteApp = JSON.parse(JSON.stringify(v))
                   remoteApp.id = remoteApp.localId
-                  appCollection.insert({...remoteApp}).write()
+                  addApp(remoteApp)
                   this.getAppList()
                 }
               })
@@ -179,13 +158,11 @@ export default {
         fs.readFile(filePath[0], 'utf8', (e, res) => {
           if (e) throw e
           const data = JSON.parse(res)
-          appCollection
-            .insert({
-              appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
-              ruleConfig: data.ruleConfig,
-              type: data.type
-            })
-            .write()
+          addApp({
+            appName: filePath[0].match(/([^\.\/\\]+)\.([a-z]+)$/i)[1],
+            ruleConfig: data.ruleConfig,
+            type: data.type
+          })
           this.getAppList()
         })
         /* eslint-enable */
@@ -199,9 +176,7 @@ export default {
         buttons: ['ok', 'no']
       }, index => {
         if (index === 0) {
-          appCollection
-            .remove({ id: id })
-            .write()
+          deleteApp(id)
           this.getAppList()
         } else {
         }
@@ -209,13 +184,11 @@ export default {
     },
     toDetails (data) {
       if (data.type === 'rule') {
-        const details = globalDb.get('apps').find({ id: data.id }).value()
+        const details = getAppById(data.id)
         if (details) {
           const obj = JSON.parse(details.ruleConfig)
-          ruleDb.set('config', obj.config).write()
-          ruleDb.set('contentUrls', obj.contentUrls).write()
-          ruleDb.set('publishConfig', obj.publishConfig).write()
-          dataDb.set('data', []).write()
+          addRule(obj)
+          clearData()
           this.$nextTick(_ => {
             this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
           })

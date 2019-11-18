@@ -49,7 +49,7 @@
 import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
-import { ruleDb } from '@/dataStore'
+import { getConfig, setContentUrls } from '@/service/rule.service'
 const puppeteer = require('puppeteer-core')
 const { remote } = require('electron')
 const BrowserWindow = require('electron').remote.BrowserWindow
@@ -81,7 +81,7 @@ export default {
      * 初始化数据
      */
     initData () {
-      const config = ruleDb.get('config').value()
+      const config = getConfig()
       if (config) {
         this.mainUrl = config.mainUrl ? config.mainUrl : ''
         this.page = config.page ? config.page : 0
@@ -198,7 +198,7 @@ export default {
       if (urls.length > 50) {
         urls.length = 50
       }
-      ruleDb.set('contentUrls', urls).write()
+      setContentUrls(urls)
       EventBus.$emit('SITES', urls)
     },
     /**

@@ -34,18 +34,13 @@
     </div>
     <div class="result-container">
       <el-table :data="resultTable" border height="500px">
-        <el-table-column width="200px" label="标题" prop="title" fixed="left"></el-table-column>
-        <el-table-column width="200px" label="价格" prop="price"></el-table-column>
-        <el-table-column width="200px" label="电话" prop="phone"></el-table-column>
-        <el-table-column width="200px" label="姓名" prop="name"></el-table-column>
-        <el-table-column width="200px" label="面积" prop="size"></el-table-column>
-        <el-table-column width="200px" label="装修" prop="decoration"></el-table-column>
-        <el-table-column width="200px" label="楼层" prop="floor"></el-table-column>
-        <el-table-column width="200px" label="地址" prop="location"></el-table-column>
-        <el-table-column width="200px" label="小区" prop="community"></el-table-column>
-        <el-table-column width="200px" label="物业费" prop="propertyCosts"></el-table-column>
-        <el-table-column width="200px" show-overflow-tooltip label="描述" prop="description"></el-table-column>
-        <el-table-column width="200px" label="时间" prop="time"></el-table-column>
+        <el-table-column
+          min-width="200px"
+          v-for="(v, i) in tableParams"
+          :key="i"
+          :label="v.note ? v.note : v.name"
+          :prop="v.name"
+        ></el-table-column>
         <el-table-column width="200px" label="链接" prop="sourceUrl" fixed="right">
           <template slot-scope="scope">
             <span>{{scope.row.sourceUrl}}</span>
@@ -58,8 +53,9 @@
 </template>
 <script>
   import { mapState } from 'vuex'
-  import { ruleDb, dataDb } from '@/dataStore'
   import EventBus from '@/utils/EventBus'
+  import { getConfig } from '@/service/rule.service'
+  import { clearData, addData } from '@/service/data.service'
   const puppeteer = require('puppeteer-core')
   const { remote } = require('electron')
 
@@ -75,7 +71,8 @@
         urls: [],
         showConfig: true,
         resultTable: [],
-        spiderProgress: 0
+        spiderProgress: 0,
+        tableParams: []
       }
     },
     computed: mapState({
@@ -128,7 +125,8 @@
        * 获取规则配置
        */
       getConfig () {
-        this.config = ruleDb.get('config').value()
+        this.config = getConfig()
+        this.tableParams = this.config.params
       },
       async goToSpider () {
         if (!this.config.mainUrl || !this.config.linkRule) {
@@ -152,8 +150,7 @@
           return
         }
         // 启动前清空历史采集数据
-        dataDb.set('data', []).write()
-        const collection = dataDb.defaults({ data: [] }).get('data')
+        clearData()
         this.$store.dispatch('CTRL_LOG', true)
         browser = await puppeteer.launch({
           headless: true,
@@ -219,9 +216,7 @@
             if (this.resultTable.length > 50) {
               this.resultTable.shift()
             }
-            collection
-              .insert({ ...house })
-              .write()
+            addData(house)
           } catch (e) {
             this.writeLog('采集报错: ' + e)
             if (e.indexOf('Most likely the page has been closed') !== -1 || e.indexOf('Navigation failed because browser has disconnected') !== -1) {
