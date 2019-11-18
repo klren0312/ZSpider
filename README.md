@@ -1,6 +1,6 @@
 # 治电爬虫程序
 
-#### 功能
+### 功能
 
  - 夜间模式
  - 创建/修改应用
@@ -11,17 +11,7 @@
  - 客户端与服务端通信
  - 新增代码应用
 
-#### 代码应用相关调用类库和方法
-```javascript
-{ name: 'reqest', info: 'HTTP请求库' },
-{ name: 'request-promise', info: '基于Promise的HTTP请求库' },
-{ name: 'cheerio', info: 'HTML解析库' },
-{ name: 'cheerio-tableparser', info: 'HTML表格解析库' },
-{ name: 'mysql2', info: 'MySQL操作库' }
-{ name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' }
-```
-
-#### 开发与打包
+### 开发与打包
 
 ``` bash
 # install dependencies
@@ -39,7 +29,30 @@ npm run lint
 
 ```
 
-#### 运行截图
+### 相关问题
+#### 1.导入示例应用
+a.文件夹名称: `example`
+
+b.应用: 
+
+ - house365应用.zpk
+ - 代码测试应用.zpk
+
+c.导入
+在主页面点击导入应用, 选取`.zpk`文件导入即可
+
+
+#### 2.代码应用相关调用类库和方法
+```javascript
+{ name: 'reqest', info: 'HTTP请求库' },
+{ name: 'request-promise', info: '基于Promise的HTTP请求库' },
+{ name: 'cheerio', info: 'HTML解析库' },
+{ name: 'cheerio-tableparser', info: 'HTML表格解析库' },
+{ name: 'mysql2', info: 'MySQL操作库' }
+{ name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' }
+```
+
+### 运行截图
 ![](./imgs/1.jpg)
 ![](./imgs/7.jpg)
 ![](./imgs/2.jpg)
