@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <div class="filter">
-      <el-dropdown split-button type="primary" size="mini" @command="handleCreate">
+      <el-dropdown split-button type="primary" size="mini" trigger="click" @command="handleCreate">
         新建应用
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="rule">规则应用</el-dropdown-item>
@@ -25,7 +25,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="card-content" @click="toDetails(v)">
+          <div class="card-content" @click="toDetails(v)" :title="v.appName">
             <div class="card-icon" :class="v.type === 'rule' ? 'rule-icon' : ''"></div>
             <div class="card-title">{{v.appName}}</div>
           </div>
@@ -262,6 +262,10 @@ export default {
       cursor: pointer;
     }
     .card-title {
+      width: 132px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       text-align: center;
       font-size: 16px;
       font-weight: bold;
