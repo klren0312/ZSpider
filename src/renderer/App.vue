@@ -2,7 +2,7 @@
   <div id="app" :class="isLight ? '' : 'black'">
     <div class="frame-header-block">
       <div class="frame-header">
-        <div class="frame-title">ZZES Spider (<span class="online-status" :class="online ? 'online' : 'outline'">{{online ? '已连接' : '未连接'}}</span>)</div>
+        <div class="frame-title">ZSpider (<span class="online-status" :class="online ? 'online' : 'outline'">{{online ? '已连接' : '未连接'}}</span>)</div>
         <div class="tips" v-if="this.$route.name === 'RuleSetting'">每个页面都必须进行测试, 才会保存配置</div>
         <div class="frame-ctrl-group">
           <ctrl-btn-group></ctrl-btn-group>
@@ -39,7 +39,7 @@ const BrowserWindow = require('electron').remote.BrowserWindow
 // const { shell } = require('electron')
 
 export default {
-  name: 'spider-test',
+  name: 'ZSpider',
   components: {
     SystemLog,
     SystemInfo,

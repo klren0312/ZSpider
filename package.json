@@ -1,8 +1,8 @@
 {
-  "name": "zzes-spider",
+  "name": "zspider",
   "version": "0.1.0",
   "author": "ren <renzhiwei@lewell.cn>",
-  "description": "zzes-spider",
+  "description": "ZSpider",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "zzesspider",
+    "productName": "ZSpider",
     "appId": "com.zzes.spider",
     "directories": {
       "output": "build"
