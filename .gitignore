@@ -11,4 +11,6 @@ thumbs.db
 !.gitkeep
 yarn.lock
 
+example.png
+
 logs.txt

@@ -32,6 +32,18 @@ export default {
       this.$emit('change', content)
     })
   },
+  methods: {
+    addText (text) {
+      var position = this.editor.getPosition()
+      this.editor.executeEdits('', [
+        {
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+          text: text,
+          forceMoveMarkers: true
+        }
+      ])
+    }
+  },
   beforeDestroy () {
     this.editor && this.editor.dispose()
   },

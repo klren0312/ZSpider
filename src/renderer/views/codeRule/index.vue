@@ -5,6 +5,15 @@
         <div class="steps">
           <el-button size="mini" type="success" @click="testCode">运行代码</el-button>
           <el-button size="mini" @click="dialogVisible = true">查看可调用接口文档</el-button>
+          <el-dropdown split-button size="mini" @command="selectCode">
+            插入代码段
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="1">MySQL连接</el-dropdown-item>
+              <el-dropdown-item :command="2">Cheerio爬虫</el-dropdown-item>
+              <el-dropdown-item :command="3">Puppeteer爬虫</el-dropdown-item>
+              <el-dropdown-item :command="4">HTTP请求</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
         <el-form :inline="true">
           <el-form-item>
@@ -20,7 +29,7 @@
       </div>
     </div>
     <div class="setting-content">
-      <code-editor v-model="code" :initData="initCode"></code-editor>
+      <code-editor ref="codeEditor" v-model="code" :initData="initCode"></code-editor>
     </div>    
     <el-dialog
       title="相关可调用文档"
@@ -41,6 +50,7 @@
 import { ruleDb, dataDb, globalDb } from '@/dataStore'
 import CodeEditor from '@/components/CodeEditor/index.vue'
 import EventBus from '@/utils/EventBus'
+import { sampleDict } from './sample'
 const { remote } = require('electron')
 const { NodeVM } = require('vm2')
 
@@ -58,14 +68,18 @@ export default {
       code: '',
       initCode: '',
       classData: [
+        { name: 'fs', info: 'NodeJS内置文件操作库' },
+        { name: 'path', info: 'NodeJS内置路径操作库' },
         { name: 'reqest', info: 'HTTP请求库' },
         { name: 'request-promise', info: '基于Promise的HTTP请求库' },
         { name: 'cheerio', info: 'HTML解析库' },
-        { name: 'cheerio-tableparser', info: 'HTML表格解析库' },
-        { name: 'mysql2', info: 'MySQL操作库' }
+        { name: 'cheerio-tableparser', info: 'HTML表格解析的Cheerio插件' },
+        { name: 'mysql2', info: 'MySQL操作库' },
+        { name: 'puppeteer-core', info: '操作Chrome库' }
       ],
       funcData: [
-        { name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' }
+        { name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' },
+        { name: 'chromePath', info: '本地Chrome安装路径' }
       ],
       dialogVisible: false
     }
@@ -151,11 +165,20 @@ export default {
         const vm = new NodeVM({
           console: 'redirect',
           sandbox: {
-            dataDb: collection
+            dataDb: collection,
+            chromePath: this.$store.state.chromePath
           },
           require: {
+            builtin: ['fs', 'path'],
             external: {
-              modules: ['cheerio', 'cheerio-tableparser', 'request-promise', 'request', 'mysql2'],
+              modules: [
+                'cheerio',
+                'cheerio-tableparser',
+                'request-promise',
+                'request',
+                'mysql2',
+                'puppeteer-core'
+              ],
               transitive: true
             }
           }
@@ -175,6 +198,22 @@ export default {
      */
     writeLog (v) {
       EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
+    },
+    /**
+     * 插入代码
+     */
+    appendCode (text) {
+      this.$refs.codeEditor.addText(text + '')
+    },
+    /**
+     * 选取代码片段
+     */
+    selectCode (e) {
+      try {
+        this.appendCode(sampleDict[e])
+      } catch (error) {
+        this.appendCode("console.log('hello ZSpider')")
+      }
     }
   }
 }
