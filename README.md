@@ -10,6 +10,7 @@
  - 本地应用上传, 远程应用获取
  - 客户端与服务端通信
  - 新增代码应用
+ - 插入代码片段功能
 
 ### 开发与打包
 
@@ -44,12 +45,16 @@ c.导入
 
 #### 2.代码应用相关调用类库和方法
 ```javascript
-{ name: 'reqest', info: 'HTTP请求库' },
-{ name: 'request-promise', info: '基于Promise的HTTP请求库' },
-{ name: 'cheerio', info: 'HTML解析库' },
-{ name: 'cheerio-tableparser', info: 'HTML表格解析库' },
+{ name: 'fs', info: 'NodeJS内置文件操作库' }
+{ name: 'path', info: 'NodeJS内置路径操作库' }
+{ name: 'reqest', info: 'HTTP请求库' }
+{ name: 'request-promise', info: '基于Promise的HTTP请求库' }
+{ name: 'cheerio', info: 'HTML解析库' }
+{ name: 'cheerio-tableparser', info: 'HTML表格解析的Cheerio插件' }
 { name: 'mysql2', info: 'MySQL操作库' }
+{ name: 'puppeteer-core', info: '操作Chrome库' }
 { name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' }
+{ name: 'chromePath', info: '本地Chrome安装路径' }
 ```
 
 ### 运行截图

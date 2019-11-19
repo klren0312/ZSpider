@@ -1,4 +1,18 @@
-# [0.1.0](https://github.com/klren0312/ZSpider/compare/4fa15cd...v0.1.0) (2019-11-12)
+## <small>0.1.2 (2019-11-19)</small>
+
+* feat: 代码应用中添加插入代码示例片段 ([6616758](https://github.com/klren0312/ZSpider/commit/6616758))
+* feat: 将相关操作接口提取出来 ([5eab5fd](https://github.com/klren0312/ZSpider/commit/5eab5fd))
+* feat: 日志写入文件 ([3323b06](https://github.com/klren0312/ZSpider/commit/3323b06))
+* feat: 添加可配置chrome路径 ([a2a3328](https://github.com/klren0312/ZSpider/commit/a2a3328))
+* fix: 代码运行时, 窗口无响应问题. 添加延时运行, 让日志框先弹出 ([7fb0082](https://github.com/klren0312/ZSpider/commit/7fb0082))
+* fix: 添加应用下拉改为click触发 ([4b25269](https://github.com/klren0312/ZSpider/commit/4b25269))
+* fix: 配置参数初始化代码取消注释 ([ff9b39c](https://github.com/klren0312/ZSpider/commit/ff9b39c))
+* chore: 添加changelog ([bbea50c](https://github.com/klren0312/ZSpider/commit/bbea50c))
+* chore: 添加示例应用.zpk文件; 修改文档 ([435cb8a](https://github.com/klren0312/ZSpider/commit/435cb8a))
+
+
+
+# <small>0.1.0 (2019-11-12)</small>
 
 ### Bug Fixes
 
