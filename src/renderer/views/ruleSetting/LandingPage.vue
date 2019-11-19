@@ -236,7 +236,7 @@ export default {
         })
         return
       }
-      let win = new BrowserWindow({ width: 800, height: 600, show: false })
+      let win = new BrowserWindow({ width: 800, height: 600, show: false, frame: true })
       win.on('closed', function () {
         win = null
       })

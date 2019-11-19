@@ -299,7 +299,8 @@
         let win = new BrowserWindow({
           width: 800,
           height: 600,
-          show: false
+          show: false,
+          frame: true
         })
         win.on('closed', function () {
           win = null
