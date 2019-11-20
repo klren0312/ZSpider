@@ -138,7 +138,8 @@ export default {
           '--disable-dev-shm-usage', // 创建临时文件共享内存
           '--disable-accelerated-2d-canvas', // canvas渲染
           '--disable-gpu' // GPU硬件加速
-        ]
+        ],
+        ignoreDefaultArgs: ['--enable-automation']
       })
       this.writeLog('browser init')
       page = await browser.newPage()
