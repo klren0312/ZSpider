@@ -34,6 +34,10 @@ if (!globalDb.has('chromePath').value()) {
 if (!globalDb.has('hasTips').value()) {
   globalDb.set('hasTips', false).write()
 }
+// 存放是mac地址
+if (!globalDb.has('mac').value()) {
+  globalDb.set('mac', '').write()
+}
 
 // =========================== 规则存储 =================================
 const ruleAdapter = new FileSync(path.join(STORE_PATH, '/rules.json'))

@@ -1,5 +1,15 @@
 import store from './store'
 import EventBus from './utils/EventBus'
+import getMac from 'getmac'
+import { globalDb } from './dataStore'
+
+const originMac = globalDb.get('mac').value()
+const mac = getMac()
+let macChange = originMac !== mac
+if (!originMac) {
+  globalDb.set('mac', mac).write()
+}
+
 let socket = null
 let interval = null
 let reConnectNum = 0
@@ -10,12 +20,20 @@ function wsConnect () {
     console.log('socket 连接成功')
     socket.send(JSON.stringify({
       type: 'heart',
-      msg: 'ping'
+      msg: JSON.stringify({
+        originMac: originMac,
+        mac: mac,
+        isChange: macChange
+      })
     }))
     interval = setInterval(() => {
       socket.send(JSON.stringify({
         type: 'heart',
-        msg: 'ping'
+        msg: JSON.stringify({
+          originMac: originMac,
+          mac: mac,
+          isChange: macChange
+        })
       }))
     }, 60000)
     socket.onmessage = msg => {

@@ -64,6 +64,7 @@
     "cheerio-tableparser": "^1.0.1",
     "element-ui": "^2.7.2",
     "fs-extra": "^7.0.1",
+    "getmac": "^4.1.0",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
     "monaco-editor": "^0.18.1",

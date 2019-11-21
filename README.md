@@ -53,6 +53,7 @@ c.导入
 { name: 'cheerio-tableparser', info: 'HTML表格解析的Cheerio插件' }
 { name: 'mysql2', info: 'MySQL操作库' }
 { name: 'puppeteer-core', info: '操作Chrome库' }
+{ name: 'electron', info: '操作Electron窗体相关API' }
 { name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' }
 { name: 'chromePath', info: '本地Chrome安装路径' }
 ```

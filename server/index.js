@@ -72,6 +72,7 @@ wss.on('connection', (ws, request) => {
   ws.on('message', msg => {
     const afterMsg = JSON.parse(msg)
     if (afterMsg.type === 'heart') {
+      console.log(afterMsg.msg)
       ws.send(JSON.stringify({
         type: 'heart',
         msg: 'pong'
@@ -85,7 +86,7 @@ wss.on('connection', (ws, request) => {
 })
 // ================== WS end   ==================================
 
-//端口：3000
-server.listen(3000, function() {
-  console.log("server starts at http://127.0.0.1:3000");
+//端口：1200
+server.listen(1200, function() {
+  console.log("server starts at http://127.0.0.1:1200");
 })
