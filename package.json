@@ -67,7 +67,7 @@
     "getmac": "^4.1.0",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
-    "monaco-editor": "^0.18.1",
+    "monaco-editor": "^0.20.0",
     "mysql2": "^2.0.0",
     "node-excel-export": "^1.4.4",
     "puppeteer-core": "^1.17.0",
