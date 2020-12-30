@@ -27,7 +27,9 @@ function createWindow () {
     width: 1200,
     frame: false,
     webPreferences: {
-      webSecurity: false
+      nodeIntegration: true, // 渲染层可以使用node
+      webSecurity: false, // 跨域
+      enableRemoteModule: true // 可以使用remote
     }
   })
 
