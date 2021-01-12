@@ -52,7 +52,6 @@ import CodeEditor from '@/components/CodeEditor/index.vue'
 import EventBus from '@/utils/EventBus'
 import { sampleDict } from './sample'
 import { remote } from 'electron'
-import vm from 'vm'
 
 export default {
   name: 'CodeRule',
@@ -130,21 +129,21 @@ export default {
       this.$router.push('/')
     },
     cancel () {
-      remote.dialog.showMessageBox({
+      const res = remote.dialog.showMessageBoxSync({
         type: 'info',
         title: '提示',
+        cancelId: -1,
         message: '确定要离开?离开后数据将不会保存',
         buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
-          ruleDb.set('config', {}).write()
-          ruleDb.set('contentUrls', {}).write()
-          ruleDb.set('publishConfig', []).write()
-          this.isEdit = false
-          this.$router.push('/')
-        } else {
-        }
       })
+      if (res === 0) {
+        ruleDb.set('config', {}).write()
+        ruleDb.set('contentUrls', {}).write()
+        ruleDb.set('publishConfig', []).write()
+        this.isEdit = false
+        this.$router.push('/')
+      } else {
+      }
     },
     /**
      * 测试代码运行, 使用虚拟机
@@ -164,11 +163,37 @@ export default {
       this.$store.dispatch('CTRL_LOG', true)
       this.writeLog('代码开始运行...')
       setTimeout(() => {
-        const sandbox = {
-          dataDb: collection,
-          chromePath: this.$store.state.chromePath
-        }
-        vm.runInThisContext(this.code, sandbox)(require)
+        const { NodeVM } = require('vm2')
+        const vm = new NodeVM({
+          console: 'redirect',
+          sandbox: {
+            dataDb: collection,
+            chromePath: this.$store.state.chromePath
+          },
+          require: {
+            builtin: ['fs', 'path'],
+            external: {
+              modules: [
+                'cheerio',
+                'cheerio-tableparser',
+                'request-promise',
+                'request',
+                'mysql2',
+                'puppeteer-core',
+                'electron'
+              ],
+              transitive: true
+            }
+          }
+        })
+        vm.on('console.log', msg => {
+          if (typeof msg !== 'string') {
+            this.writeLog(JSON.stringify(msg))
+          } else {
+            this.writeLog(msg)
+          }
+        })
+        vm.run(this.code, 'vm.js')
       }, 2000)
     },
     /**

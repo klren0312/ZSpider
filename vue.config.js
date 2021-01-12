@@ -5,6 +5,10 @@ module.exports = {
   productionSourceMap: false,
   lintOnSave: process.env.NODE_ENV === 'development',
   configureWebpack: {
+    externals: {
+      vm2: 'require("vm2")',
+      mysql2: 'require("mysql2")'
+    },
     module: {
       // Removes these errors: "Critical dependency: require function is used in a way in which dependencies cannot be statically extracted"
       // https://github.com/AnalyticalGraphicsInc/cesium-webpack-example/issues/6

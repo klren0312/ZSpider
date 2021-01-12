@@ -210,16 +210,16 @@ export default {
     },
     seeTree () {
       if (JSON.stringify(this.treeObj) === '{}') {
-        remote.dialog.showMessageBox({
+        const res = remote.dialog.showMessageBoxSync({
           type: 'info',
           title: '提示',
+          cancelId: -1,
           message: '暂无数据, 是否开始采集?',
           buttons: ['ok', 'no']
-        }, index => {
-          if (!index) {
-            this.start()
-          }
         })
+        if (res === 0) {
+          this.start()
+        }
         return
       }
       this.treeTitleArr = Object.keys(this.treeObj)

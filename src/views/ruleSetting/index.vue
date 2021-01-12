@@ -100,17 +100,16 @@ export default {
       this.clear()
     },
     cancel () {
-      remote.dialog.showMessageBox({
+      const res = remote.dialog.showMessageBoxSync({
         type: 'info',
         title: '提示',
         message: '确定要离开?离开后数据将不会保存',
         buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
-          this.clear()
-        } else {
-        }
       })
+      if (res === 0) {
+        this.clear()
+      } else {
+      }
     },
     clear () {
       clearRule()

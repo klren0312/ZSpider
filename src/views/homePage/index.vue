@@ -114,36 +114,36 @@ export default {
      */
     getRemoteApp () {
       this.remoteLoading = false
-      remote.dialog.showMessageBox({
+      const res = remote.dialog.showMessageBoxSync({
         type: 'info',
         title: '提示',
+        cancelId: -1,
         message: '拉取远程应用, 若与本地相同, 将覆盖本地应用, 是否继续?',
         buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
-          getRemoteApp()
-            .then(res => {
-              res.data.forEach(v => {
-                const localApp = getAppById(v.localId)
-                if (localApp) {
-                  const remoteApp = JSON.parse(JSON.stringify(v))
-                  remoteApp.id = remoteApp.localId
-                  editAppById(v.localId, remoteApp)
-                } else {
-                  const remoteApp = JSON.parse(JSON.stringify(v))
-                  remoteApp.id = remoteApp.localId
-                  addApp(remoteApp)
-                  this.getAppList()
-                }
-              })
-              this.remoteLoading = false
-            })
-            .catch(e => {
-              this.remoteLoading = false
-            })
-        } else {
-        }
       })
+      if (res === 0) {
+        getRemoteApp()
+          .then(res => {
+            res.data.forEach(v => {
+              const localApp = getAppById(v.localId)
+              if (localApp) {
+                const remoteApp = JSON.parse(JSON.stringify(v))
+                remoteApp.id = remoteApp.localId
+                editAppById(v.localId, remoteApp)
+              } else {
+                const remoteApp = JSON.parse(JSON.stringify(v))
+                remoteApp.id = remoteApp.localId
+                addApp(remoteApp)
+                this.getAppList()
+              }
+            })
+            this.remoteLoading = false
+          })
+          .catch(e => {
+            this.remoteLoading = false
+          })
+      } else {
+      }
     },
     importApp () {
       const filePath = remote.dialog.showOpenDialog({
@@ -169,18 +169,17 @@ export default {
       }
     },
     deleteApp (id) {
-      remote.dialog.showMessageBox({
+      const res = remote.dialog.showMessageBoxSync({
         type: 'info',
         title: '提示',
+        cancelId: -1,
         message: '确定要删除该应用?',
         buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
-          deleteApp(id)
-          this.getAppList()
-        } else {
-        }
       })
+      if (res === 0) {
+        deleteApp(id)
+        this.getAppList()
+      }
     },
     toDetails (data) {
       if (data.type === 'rule') {
