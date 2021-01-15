@@ -210,7 +210,7 @@ export default {
   flex-wrap: wrap;
   align-items: center;
   .card-block {
-    width: 15%;
+    width: 180px;
     .card-item {
       position: relative;
       width: 150px;

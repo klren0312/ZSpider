@@ -22,18 +22,19 @@ protocol.registerSchemesAsPrivileged([
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    width: 1024,
     height: 600,
     focusable: true, // 聚焦
     frame: false, // 无外框架
     transparent: true, // 透明
     backgroundColor: '#00ffffff', // 防止开发者工具关闭会出现白边
-    alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false, // 跨域
       enableRemoteModule: true // 可以使用remote
-    }
+    },
+    // eslint-disable-next-line no-undef
+    icon: path.resolve(__static, 'logo.png')
   })
   // win.setAlwaysOnTop(true)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -63,7 +64,6 @@ function createWindow () {
  */
 // eslint-disable-next-line no-unused-vars
 let isLeaveTray = null
-
 function createTray () {
   // eslint-disable-next-line no-undef
   tray = new Tray(path.resolve(__static, 'logo.png'))
@@ -76,14 +76,6 @@ function createTray () {
         } else {
           win.show()
         }
-      }
-    }),
-    new MenuItem({
-      label: '前置窗口',
-      type: 'checkbox',
-      checked: true,
-      click: (v) => {
-        win.setAlwaysOnTop(v.checked)
       }
     }),
     new MenuItem({
