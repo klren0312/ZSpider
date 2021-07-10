@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import App from './App'
+import App from './App.vue'
 import router from './router'
 import store from './store'
 import { Button, Form, FormItem, Input, InputNumber, Select, Option, Dialog, Row, Col, Icon, Tooltip, Table, TableColumn, Progress, Autocomplete, Tag, Dropdown, DropdownMenu, DropdownItem } from 'element-ui'
