@@ -1,12 +1,26 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  ipcMain,
+  Tray,
+  Menu,
+  MenuItem
+} from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import path from 'path'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
+// 主窗口
+let win = null
+
+// 托盘
+let tray = null
+
+// 是否关闭
+let isQuit = false
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -23,7 +37,9 @@ function createWindow () {
     transparent: true, // 透明
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    // eslint-disable-next-line no-undef
+    icon: path.join(__static, 'icon.png')
   })
   // win.setAlwaysOnTop(true)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -38,6 +54,61 @@ function createWindow () {
 
   win.on('closed', () => {
     win = null
+  })
+  // 窗口关闭触发
+  // 若isQuit为false, 则不退出, 只是缩小到托盘
+  win.on('close', e => {
+    if (isQuit) {
+      win = null
+    } else {
+      e.preventDefault()
+      win.hide()
+    }
+  })
+}
+
+/**
+ * 创建托盘
+ */
+function createTray () {
+  // eslint-disable-next-line no-undef
+  tray = new Tray(path.resolve(__static, 'icon.png'))
+  const contextMenu = Menu.buildFromTemplate([
+    new MenuItem({
+      label: '显示主程序',
+      click: () => {
+        if (win.isVisible()) {
+          win.focus()
+        } else {
+          win.show()
+        }
+      }
+    }),
+    new MenuItem({
+      label: '前置窗口',
+      type: 'checkbox',
+      checked: false,
+      click: (v) => {
+        win.setAlwaysOnTop(v.checked)
+      }
+    }),
+    new MenuItem({
+      label: '退出程序',
+      click: () => {
+        isQuit = true
+        app.exit()
+      }
+    })
+  ])
+  tray.setToolTip('治电采集器')
+  tray.setContextMenu(contextMenu)
+
+  tray.on('click', () => {
+    if (win.isVisible()) {
+      win.focus()
+    } else {
+      win.show()
+    }
   })
 }
 
@@ -62,8 +133,36 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  createWindow()
+  // 处理透明背景后, 出现黑边问题, 加个延时
+  // https://github.com/electron/electron/issues/15947#issuecomment-571136404
+  setTimeout(() => {
+    createWindow()
+    createTray()
+  }, 400)
 })
+
+// 只允许单个实例
+// https://www.electronjs.org/docs/api/app#apprequestsingleinstancelock
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, argv) => {
+    if (process.platform === 'win32') {
+      console.log('window 准备执行网页端调起客户端逻辑')
+      if (win) {
+        if (win.isMinimized()) {
+          win.restore()
+        }
+        if (win.isVisible()) {
+          win.focus()
+        } else {
+          win.show()
+        }
+      }
+    }
+  })
+}
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

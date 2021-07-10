@@ -1,8 +1,10 @@
 <template>
   <div class="home-page">
     <div class="filter">
-      <el-dropdown split-button type="primary" size="mini" trigger="click" @command="handleCreate">
-        新建应用
+      <el-dropdown trigger="click" @command="handleCreate">
+        <el-button type="primary" size="mini">
+          新建应用
+        </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="rule">规则应用</el-dropdown-item>
           <el-dropdown-item command="code">代码应用</el-dropdown-item>
