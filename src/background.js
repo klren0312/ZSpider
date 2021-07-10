@@ -22,12 +22,6 @@ let tray = null
 // 是否关闭
 let isQuit = false
 
-// 托盘
-let tray
-
-// 是否关闭
-let isQuit = false
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -61,55 +55,6 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
 
-  // 窗口关闭触发
-  // 若isQuit为false, 则不退出, 只是缩小到托盘
-  win.on('close', e => {
-    if (isQuit) {
-      win = null
-    } else {
-      e.preventDefault()
-      win.hide()
-    }
-  })
-}
-
-/**
- * 创建托盘
- */
-// eslint-disable-next-line no-unused-vars
-let isLeaveTray = null
-function createTray () {
-  // eslint-disable-next-line no-undef
-  tray = new Tray(path.resolve(__static, 'logo.png'))
-  const contextMenu = Menu.buildFromTemplate([
-    new MenuItem({
-      label: '显示主程序',
-      click: () => {
-        if (win.isVisible()) {
-          win.focus()
-        } else {
-          win.show()
-        }
-      }
-    }),
-    new MenuItem({
-      label: '退出程序',
-      click: () => {
-        isQuit = true
-        app.exit()
-      }
-    })
-  ])
-  tray.setToolTip('ZSpider')
-  tray.setContextMenu(contextMenu)
-
-  tray.on('click', () => {
-    if (win.isVisible()) {
-      win.focus()
-    } else {
-      win.show()
-    }
-  })
   // 窗口关闭触发
   // 若isQuit为false, 则不退出, 只是缩小到托盘
   win.on('close', e => {
