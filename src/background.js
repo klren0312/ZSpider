@@ -1,6 +1,5 @@
 'use strict'
 
-<<<<<<< HEAD
 import {
   app,
   protocol,
@@ -10,15 +9,11 @@ import {
   Menu,
   MenuItem
 } from 'electron'
-=======
-import { app, protocol, BrowserWindow, ipcMain, Tray, Menu, MenuItem } from 'electron'
->>>>>>> 0ceeaa64665ed7c4f8a1ff0348d30f3161c5b52b
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // 主窗口
-<<<<<<< HEAD
 let win = null
 
 // 托盘
@@ -26,9 +21,6 @@ let tray = null
 
 // 是否关闭
 let isQuit = false
-=======
-let win
->>>>>>> 0ceeaa64665ed7c4f8a1ff0348d30f3161c5b52b
 
 // 托盘
 let tray
@@ -51,19 +43,12 @@ function createWindow () {
     transparent: true, // 透明
     backgroundColor: '#00ffffff', // 防止开发者工具关闭会出现白边
     webPreferences: {
-<<<<<<< HEAD
-      nodeIntegration: true
-    },
-    // eslint-disable-next-line no-undef
-    icon: path.join(__static, 'icon.png')
-=======
       nodeIntegration: true,
       webSecurity: false, // 跨域
       enableRemoteModule: true // 可以使用remote
     },
     // eslint-disable-next-line no-undef
-    icon: path.resolve(__static, 'logo.png')
->>>>>>> 0ceeaa64665ed7c4f8a1ff0348d30f3161c5b52b
+    icon: path.resolve(__static, 'icon.png')
   })
   // win.setAlwaysOnTop(true)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -217,11 +202,7 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
 } else {
-<<<<<<< HEAD
   app.on('second-instance', (event, argv) => {
-=======
-  app.on('second-instance', () => {
->>>>>>> 0ceeaa64665ed7c4f8a1ff0348d30f3161c5b52b
     if (process.platform === 'win32') {
       console.log('window 准备执行网页端调起客户端逻辑')
       if (win) {
