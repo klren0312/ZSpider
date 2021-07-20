@@ -147,14 +147,15 @@ export default {
       } else {
       }
     },
-    importApp () {
-      const filePath = remote.dialog.showOpenDialog({
+    async importApp () {
+      const filePath = remote.dialog.showOpenDialogSync({
         title: '选择zpk文件',
         filters: [{
           name: 'zpk文件',
           extensions: ['zpk']
         }]
       })
+      console.log(filePath)
       if (filePath) {
         /* eslint-disable */
         fs.readFile(filePath[0], 'utf8', (e, res) => {

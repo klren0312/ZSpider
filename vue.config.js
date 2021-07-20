@@ -7,7 +7,8 @@ module.exports = {
   configureWebpack: {
     externals: {
       vm2: 'require("vm2")',
-      mysql2: 'require("mysql2")'
+      mysql2: 'require("mysql2")',
+      'puppeteer-core': 'require("puppeteer-core")'
     },
     module: {
       // Removes these errors: "Critical dependency: require function is used in a way in which dependencies cannot be statically extracted"
