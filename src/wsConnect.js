@@ -13,30 +13,34 @@ if (!originMac) {
 let socket = null
 let interval = null
 let reConnectNum = 0
-function wsConnect () {
+function wsConnect() {
   socket = new WebSocket(`${store.state.WSUrl}`)
   socket.onopen = () => {
     reConnectNum = 0
     console.log('socket 连接成功')
-    socket.send(JSON.stringify({
-      type: 'heart',
-      msg: JSON.stringify({
-        originMac: originMac,
-        mac: mac,
-        isChange: macChange
-      })
-    }))
-    interval = setInterval(() => {
-      socket.send(JSON.stringify({
+    socket.send(
+      JSON.stringify({
         type: 'heart',
         msg: JSON.stringify({
           originMac: originMac,
           mac: mac,
-          isChange: macChange
+          isChange: macChange,
+        }),
+      })
+    )
+    interval = setInterval(() => {
+      socket.send(
+        JSON.stringify({
+          type: 'heart',
+          msg: JSON.stringify({
+            originMac: originMac,
+            mac: mac,
+            isChange: macChange,
+          }),
         })
-      }))
+      )
     }, 60000)
-    socket.onmessage = msg => {
+    socket.onmessage = (msg) => {
       const data = JSON.parse(msg.data)
       if (data.type === 'heart') {
         EventBus.$emit('online', true)
@@ -60,7 +64,7 @@ function wsConnect () {
   }
 }
 
-function reConnect () {
+function reConnect() {
   socket && socket.close()
   wsConnect()
 }

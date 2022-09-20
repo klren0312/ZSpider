@@ -3,10 +3,18 @@
     <div class="rule-header-block">
       <div class="rule-header">
         <div class="steps">
-          <div class="step" :class="{active: step}" @click="step = 1">获取内容页</div>
-          <div class="step" :class="{active: step > 1}" @click="step = 2">配置数据参数</div>
-          <div class="step" :class="{active: step > 2}" @click="step = 3">开始爬取</div>
-          <div class="step" :class="{active: step > 3}" @click="step = 4">数据发布</div>
+          <div class="step" :class="{ active: step }" @click="step = 1">
+            获取内容页
+          </div>
+          <div class="step" :class="{ active: step > 1 }" @click="step = 2">
+            配置数据参数
+          </div>
+          <div class="step" :class="{ active: step > 2 }" @click="step = 3">
+            开始爬取
+          </div>
+          <div class="step" :class="{ active: step > 3 }" @click="step = 4">
+            数据发布
+          </div>
         </div>
         <el-form :inline="true">
           <el-form-item>
@@ -36,92 +44,96 @@ import StartSpider from './StartSpider.vue'
 import DataPublish from './DataPublish.vue'
 import EventBus from '@/utils/EventBus'
 import { editAppById, addApp } from '@/service/global.service'
-import { clearRule, getConfig, getContentUrls, getPublishConfig } from '@/service/rule.service'
-const { remote } = require('electron')
+import {
+  clearRule,
+  getConfig,
+  getContentUrls,
+  getPublishConfig,
+} from '@/service/rule.service'
+
 export default {
   name: 'RuleSetting',
   components: {
     LandingPage,
     DetailsPage,
     StartSpider,
-    DataPublish
+    DataPublish,
   },
-  data () {
+  data() {
     return {
       step: 1,
       appName: '',
       id: '',
-      isEdit: false
+      isEdit: false,
     }
   },
-  mounted () {
+  mounted() {
     // eslint-disable-next-line no-prototype-builtins
     if (this.$route.query.hasOwnProperty('id')) {
       this.appName = this.$route.query.appName
       this.id = this.$route.query.id
       this.isEdit = true
     }
-    EventBus.$on('toStep', step => {
+    EventBus.$on('toStep', (step) => {
       this.step = step
     })
   },
   methods: {
-    save () {
+    save() {
       if (!this.appName) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请输入应用名称',
-          buttons: ['ok']
+        this.$alert('请输入应用名称', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
-      if (this.isEdit) { // 编辑
+      if (this.isEdit) {
+        // 编辑
         editAppById(this.id, {
           appName: this.appName,
           ruleConfig: JSON.stringify({
             config: getConfig(),
             contentUrls: getContentUrls(),
-            publishConfig: getPublishConfig()
+            publishConfig: getPublishConfig(),
           }),
-          type: 'rule'
+          type: 'rule',
         })
-      } else { // 创建
+      } else {
+        // 创建
         addApp({
           appName: this.appName,
           ruleConfig: JSON.stringify({
             config: getConfig(),
             contentUrls: getContentUrls(),
-            publishConfig: getPublishConfig()
+            publishConfig: getPublishConfig(),
           }),
-          type: 'rule'
+          type: 'rule',
         })
       }
       this.clear()
     },
-    cancel () {
-      const res = remote.dialog.showMessageBoxSync({
-        type: 'info',
-        title: '提示',
-        message: '确定要离开?离开后数据将不会保存',
-        buttons: ['ok', 'no']
+    cancel() {
+      this.$confirm('确定要离开?离开后数据将不会保存', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning',
       })
-      if (res === 0) {
-        this.clear()
-      } else {
-      }
+        .then(() => {
+          this.clear()
+        })
+        .catch(() => {})
     },
-    clear () {
+    clear() {
       clearRule()
       this.isEdit = false
       this.$router.push('/')
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
 .rule-setting {
-  height:100%;
+  height: 100%;
   .rule-header-block {
     padding-top: 10px;
     height: 40px;
@@ -148,7 +160,7 @@ export default {
   .setting-content {
     overflow-y: auto;
     height: calc(100vh - 145px);
-    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
+    transition: height 0.2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
     &.small {
       height: calc(100vh - 313px);
     }

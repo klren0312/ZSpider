@@ -5,7 +5,7 @@
       <i class="el-icon-arrow-up" v-else></i>
     </div>
     <div class="log-list" :class="ctrl ? '' : 'close'" ref="logList">
-      <p class="log-line" v-for="(v, i) in logs" :key="i">{{v}}</p>
+      <p class="log-line" v-for="(v, i) in logs" :key="i">{{ v }}</p>
     </div>
   </div>
 </template>
@@ -16,16 +16,16 @@ const fs = require('fs')
 const path = require('path')
 export default {
   name: 'SystemLog',
-  data () {
+  data() {
     return {
-      logs: []
+      logs: [],
     }
   },
   computed: mapState({
-    ctrl: state => state.logCtrl
+    ctrl: (state) => state.logCtrl,
   }),
-  mounted () {
-    EventBus.$on('logs', v => {
+  mounted() {
+    EventBus.$on('logs', (v) => {
       if (this.logs.length >= 100) {
         this.logs.pop()
       }
@@ -34,10 +34,10 @@ export default {
     })
   },
   methods: {
-    ctrlLog () {
+    ctrlLog() {
       this.$store.dispatch('CTRL_LOG', !this.ctrl)
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>
@@ -53,7 +53,7 @@ export default {
     cursor: pointer;
     background: #fff;
     &:hover {
-      background: #dfdfdf
+      background: #dfdfdf;
     }
   }
 }
@@ -65,7 +65,7 @@ export default {
   overflow-y: auto;
   list-style-type: none;
   background: #323232;
-  transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);;
+  transition: height 0.2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
   &.close {
     height: 0;
   }

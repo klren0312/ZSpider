@@ -8,21 +8,21 @@ export default new Router({
     {
       path: '/',
       name: 'HomePage',
-      component: require('@/views/homePage/index').default
+      component: require('@/views/homePage/index').default,
     },
     {
       path: '/ruleSetting',
       name: 'RuleSetting',
-      component: require('@/views/ruleSetting/index').default
+      component: require('@/views/ruleSetting/index').default,
     },
     {
       path: '/codeRule',
       name: 'CodeRule',
-      component: require('@/views/codeRule/index').default
+      component: require('@/views/codeRule/index').default,
     },
     {
       path: '*',
-      redirect: '/'
-    }
-  ]
+      redirect: '/',
+    },
+  ],
 })

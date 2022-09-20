@@ -5,37 +5,65 @@
         <el-form label-width="80px">
           <el-form-item label="页面地址">
             <div class="main-url">
-              <el-input ref="MainUrlInput" class="main-url-input" type="text" v-model="mainUrl"  size="mini" clearable/>
-              <el-button type="text" size="mini" @click="insert('input', 'MainUrlInput', '[分页位置]')">[分页位置]</el-button>
+              <el-input
+                ref="MainUrlInput"
+                class="main-url-input"
+                type="text"
+                v-model="mainUrl"
+                size="mini"
+                clearable
+              />
+              <el-button
+                type="text"
+                size="mini"
+                @click="insert('input', 'MainUrlInput', '[分页位置]')"
+                >[分页位置]</el-button
+              >
             </div>
-            <el-button type="primary" @click="openInBrowser" size="mini">从浏览器打开</el-button>
+            <el-button type="primary" @click="openInBrowser" size="mini"
+              >从浏览器打开</el-button
+            >
           </el-form-item>
           <el-form-item label="选择器">
-            <el-input v-model="linkRule" size="mini"/>
+            <el-input v-model="linkRule" size="mini" />
           </el-form-item>
           <el-form-item label="爬取页数">
-            <el-input-number v-model="page" size="mini"/>
+            <el-input-number v-model="page" size="mini" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="start" size="mini" v-if="!startStatus">开始测试</el-button>
-            <el-button type="danger" @click="stop" size="mini" v-else>结束测试</el-button>
-            <el-button :disabled="JSON.stringify(treeObj) === '{}'" @click="seeTree" size="mini">查看数据</el-button>
+            <el-button
+              type="primary"
+              @click="start"
+              size="mini"
+              v-if="!startStatus"
+              >开始测试</el-button
+            >
+            <el-button type="danger" @click="stop" size="mini" v-else
+              >结束测试</el-button
+            >
+            <el-button
+              :disabled="JSON.stringify(treeObj) === '{}'"
+              @click="seeTree"
+              size="mini"
+              >查看数据</el-button
+            >
             <!-- <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
               <el-button  type="primary" plain :disabled="JSON.stringify(treeObj) === '{}'" @click="gotoDetails" size="mini">配置详情页</el-button>
             </el-tooltip> -->
             <!-- <el-button  type="primary" plain @click="gotoDetails" size="mini">配置详情页</el-button> -->
           </el-form-item>
         </el-form>
-        <el-dialog
-          title="查看数据"
-          :visible.sync="dataDialog"
-          width="700px">
-          <el-button circle icon="el-icon-refresh" @click="refreshData"></el-button>
+        <el-dialog title="查看数据" :visible.sync="dataDialog" width="700px">
+          <el-button
+            circle
+            icon="el-icon-refresh"
+            @click="refreshData"
+          ></el-button>
           <div class="result-list">
             <details v-for="(v, i) in treeTitleArr" :key="i">
-              <summary>{{v}}</summary>
+              <summary>{{ v }}</summary>
               <ul>
-                <li v-for="(u, i) in treeObj[v]" :key="i">{{u}}</li>
+                <li v-for="(u, i) in treeObj[v]" :key="i">{{ u }}</li>
               </ul>
             </details>
           </div>
@@ -50,15 +78,14 @@ import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
 import { getConfig, setContentUrls } from '@/service/rule.service'
+import { shell } from 'electron'
 const puppeteer = require('puppeteer-core')
-const { remote } = require('electron')
-const BrowserWindow = require('electron').remote.BrowserWindow
 
 let browser = null
 let page = null
 export default {
   name: 'landing-page',
-  data () {
+  data() {
     return {
       dataDialog: false,
       mainUrl: 'http://hf.rent.house365.com/district/dl_p[分页位置].html',
@@ -67,20 +94,20 @@ export default {
       page: 20,
       treeObj: {},
       treeTitleArr: [],
-      startStatus: false
+      startStatus: false,
     }
   },
   computed: mapState({
-    chromePath: state => state.chromePath
+    chromePath: (state) => state.chromePath,
   }),
-  mounted () {
+  mounted() {
     this.initData()
   },
   methods: {
     /**
      * 初始化数据
      */
-    initData () {
+    initData() {
       const config = getConfig()
       if (config) {
         this.mainUrl = config.mainUrl ? config.mainUrl : ''
@@ -91,17 +118,17 @@ export default {
     /**
      * 往指定的input中光标位置插入指定值
      */
-    insert (type, el, text) {
+    insert(type, el, text) {
       const dom = this.$refs[el]
       insertText(dom.$refs[type], text)
     },
     /**
      * 前往详情页
      */
-    refreshData () {
+    refreshData() {
       this.treeTitleArr = Object.keys(this.treeObj)
     },
-    stop () {
+    stop() {
       browser.close()
       this.writeLog('结束, 关闭浏览器')
       page = null
@@ -111,20 +138,18 @@ export default {
     /**
      * 开始爬
      */
-    async start () {
+    async start() {
       if (!this.mainUrl) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请输入主页面网址',
-          buttons: ['ok']
+        this.$alert('请输入主页面网址', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
       this.$store.dispatch('SET_RULE', {
         mainUrl: this.mainUrl,
         page: this.page,
-        linkRule: this.linkRule
+        linkRule: this.linkRule,
       })
       this.startStatus = true
       this.treeObj = {}
@@ -132,14 +157,15 @@ export default {
       browser = await puppeteer.launch({
         headless: true,
         executablePath: this.chromePath,
-        args: [ // 禁用一些功能
+        args: [
+          // 禁用一些功能
           '--no-sandbox', // 沙盒模式
           '--disable-setuid-sandbox', // uid沙盒
           '--disable-dev-shm-usage', // 创建临时文件共享内存
           '--disable-accelerated-2d-canvas', // canvas渲染
-          '--disable-gpu' // GPU硬件加速
+          '--disable-gpu', // GPU硬件加速
         ],
-        ignoreDefaultArgs: ['--enable-automation']
+        ignoreDefaultArgs: ['--enable-automation'],
       })
       this.writeLog('browser init')
       page = await browser.newPage()
@@ -149,13 +175,11 @@ export default {
     /**
      * 前往主页面
      */
-    async gotoMain () {
+    async gotoMain() {
       if (!this.mainUrl) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请输入主页面网址',
-          buttons: ['ok']
+        this.$alert('请输入主页面网址', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
@@ -171,8 +195,8 @@ export default {
         } catch (e) {
           this.writeLog(e)
         }
-        const urls = await page.$$eval(this.linkRule, a =>
-          a.map(v => {
+        const urls = await page.$$eval(this.linkRule, (a) =>
+          a.map((v) => {
             return v.href
           })
         )
@@ -190,10 +214,10 @@ export default {
     /**
      * 存储内容页链接
      */
-    saveContentUrls (obj) {
+    saveContentUrls(obj) {
       const arr = Object.keys(obj)
       let urls = []
-      arr.forEach(v => {
+      arr.forEach((v) => {
         urls = [...urls, ...obj[v]]
       })
       if (urls.length > 50) {
@@ -205,101 +229,95 @@ export default {
     /**
      * 打印日志
      */
-    writeLog (v) {
+    writeLog(v) {
       EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
     },
-    seeTree () {
+    seeTree() {
       if (JSON.stringify(this.treeObj) === '{}') {
-        const res = remote.dialog.showMessageBoxSync({
-          type: 'info',
-          title: '提示',
-          cancelId: -1,
-          message: '暂无数据, 是否开始采集?',
-          buttons: ['ok', 'no']
+        this.$confirm('暂无数据, 是否开始采集?', '提示', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning',
         })
-        if (res === 0) {
-          this.start()
-        }
+          .then(() => {
+            this.start()
+          })
+          .catch(() => {})
         return
       }
       this.treeTitleArr = Object.keys(this.treeObj)
-      this.$nextTick(_ => {
+      this.$nextTick(() => {
         this.dataDialog = true
       })
     },
-    openInBrowser () {
+    openInBrowser() {
       if (!this.mainUrl) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请输入主页面网址',
-          buttons: ['ok']
+        this.$alert('请输入主页面网址', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
-      let win = new BrowserWindow({ width: 800, height: 600, show: false, frame: true })
-      win.on('closed', function () {
-        win = null
-      })
-      win.loadURL(this.mainUrl.replace(/\[分页位置\]/g, 1))
-      win.show()
-    }
-  }
+      shell.openExternal(this.mainUrl.replace(/\[分页位置\]/g, 1))
+    },
+  },
 }
 </script>
 
 <style lang="scss">
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  body { font-family: 'Source Sans Pro', sans-serif; }
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
 
-  ul {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-    li {
-      padding-left: 20px;
-    }
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  li {
+    padding-left: 20px;
   }
+}
 
-  #logo {
-    height: auto;
-    margin-bottom: 20px;
-    width: 420px;
-  }
+#logo {
+  height: auto;
+  margin-bottom: 20px;
+  width: 420px;
+}
 
-  main {
-    display: flex;
-    justify-content: space-between;
-  }
+main {
+  display: flex;
+  justify-content: space-between;
+}
 
-  .left-side {
-    display: flex;
-    flex-direction: column;
-  }
+.left-side {
+  display: flex;
+  flex-direction: column;
+}
 
-  .right-side {
-    width: 78%;
-  }
+.right-side {
+  width: 78%;
+}
 
-  .result-list {
-    max-height: 250px;
-    overflow: auto;
+.result-list {
+  max-height: 250px;
+  overflow: auto;
+}
+.main-url {
+  .main-url-input {
+    width: 500px;
   }
-  .main-url {
-    .main-url-input {
-      width: 500px;
-    }
-  }
-  .el-input__inner {
-    font-size: 14px;
-    letter-spacing: 1px;
-    font-weight: bold;
-  }
+}
+.el-input__inner {
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
 </style>

@@ -3,11 +3,10 @@ import LodashId from 'lodash-id'
 import FileSync from 'lowdb/adapters/FileSync'
 import path from 'path'
 import fs from 'fs-extra'
-import { app, remote } from 'electron'
+import { ipcRenderer } from 'electron'
 
-const APP = process.type === 'renderer' ? remote.app : app
-
-const STORE_PATH = APP.getPath('userData')
+let STORE_PATH = ipcRenderer.sendSync('getUserDataPath')
+console.log(STORE_PATH)
 
 if (process.type !== 'renderer') {
   if (!fs.pathExistsSync(STORE_PATH)) {

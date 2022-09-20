@@ -9,51 +9,56 @@ export default {
   props: {
     initData: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
       editor: null,
-      code: ''
+      code: '',
     }
   },
   model: {
-    event: 'change'
+    event: 'change',
   },
-  mounted () {
+  mounted() {
     this.editor = monaco.editor.create(this.$refs.editor, {
       value: this.code,
       language: 'javascript',
-      theme: 'vs'
+      theme: 'vs',
     })
-    this.editor.onDidChangeModelContent(e => {
+    this.editor.onDidChangeModelContent(() => {
       const content = this.editor.getValue()
       this.$emit('change', content)
     })
   },
   methods: {
-    addText (text) {
+    addText(text) {
       var position = this.editor.getPosition()
       this.editor.executeEdits('', [
         {
-          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+          range: new monaco.Range(
+            position.lineNumber,
+            position.column,
+            position.lineNumber,
+            position.column
+          ),
           text: text,
-          forceMoveMarkers: true
-        }
+          forceMoveMarkers: true,
+        },
       ])
-    }
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.editor && this.editor.dispose()
   },
   watch: {
-    initData () {
+    initData() {
       if (this.initData !== this.code) {
         this.editor.setValue(this.initData)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

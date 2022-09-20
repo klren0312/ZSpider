@@ -2,23 +2,37 @@
   <div class="home-page">
     <div class="filter">
       <el-dropdown trigger="click" @command="handleCreate">
-        <el-button type="primary" size="mini">
-          新建应用
-        </el-button>
+        <el-button type="primary" size="mini"> 新建应用 </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="rule">规则应用</el-dropdown-item>
           <el-dropdown-item command="code">代码应用</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-button style="margin-left: 20px" size="mini" type="primary" @click="importApp">导入应用</el-button>
-      <el-button size="mini" type="success" @click="getRemoteApp" :loading="remoteLoading">拉取远程应用</el-button>
+      <el-button
+        style="margin-left: 20px"
+        size="mini"
+        type="primary"
+        @click="importApp"
+        >导入应用</el-button
+      >
+      <el-button
+        size="mini"
+        type="success"
+        @click="getRemoteApp"
+        :loading="remoteLoading"
+        >拉取远程应用</el-button
+      >
     </div>
     <div class="card-container">
       <div class="card-block" v-for="v in appList" :key="v.id">
         <div class="card-item">
           <div class="subscript" v-if="v.hasOwnProperty('localId')">远程</div>
           <div class="card-header">
-            <el-dropdown size="mini" trigger="click" @command="handleCtrl($event, v)">
+            <el-dropdown
+              size="mini"
+              trigger="click"
+              @command="handleCtrl($event, v)"
+            >
               <button class="ctrl-btn">•••</button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="delete">删除</el-dropdown-item>
@@ -28,8 +42,11 @@
             </el-dropdown>
           </div>
           <div class="card-content" @click="toDetails(v)" :title="v.appName">
-            <div class="card-icon" :class="v.type === 'rule' ? 'rule-icon' : ''"></div>
-            <div class="card-title">{{v.appName}}</div>
+            <div
+              class="card-icon"
+              :class="v.type === 'rule' ? 'rule-icon' : ''"
+            ></div>
+            <div class="card-title">{{ v.appName }}</div>
           </div>
         </div>
       </div>
@@ -37,72 +54,69 @@
   </div>
 </template>
 <script>
-import { getApps, getAppById, editAppById, addApp, uploadApp, getRemoteApp, deleteApp } from '@/service/global.service'
+import {
+  getApps,
+  getAppById,
+  editAppById,
+  addApp,
+  uploadApp,
+  getRemoteApp,
+  deleteApp,
+} from '@/service/global.service'
 import { clearRule, addRule } from '@/service/rule.service'
 import { clearData } from '@/service/data.service'
-import { remote } from 'electron'
 import fs from 'fs'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'HomePage',
-  data () {
+  data() {
     return {
       appList: [],
-      remoteLoading: false
+      remoteLoading: false,
     }
   },
-  mounted () {
+  mounted() {
     this.getAppList()
   },
   methods: {
-    getAppList () {
+    getAppList() {
       this.appList = getApps()
     },
-    handleCtrl ($event, app) {
+    handleCtrl($event, app) {
       if ($event === 'delete') {
         this.deleteApp(app.id)
       } else if ($event === 'upload') {
-        uploadApp(app).then(res => {
-          remote.dialog.showMessageBox({
-            type: 'info',
-            title: '上传结果',
-            message: res.message,
-            buttons: ['ok']
+        uploadApp(app).then((res) => {
+          this.$alert(res.message, '上传结果', {
+            confirmButtonText: '确定',
+            callback: () => {},
           })
         })
       } else if ($event === 'export') {
         const details = getAppById(app.id)
-        const path = remote.dialog.showSaveDialog({
-          title: '选择保存路径',
-          filters: [{
-            name: 'zpk文件',
-            extensions: ['zpk']
-          }],
-          properties: {
-            openFile: true,
-            openDirectory: false,
-            multiSelections: false
-          }
-        })
+        const path = ipcRenderer.sendSync('showSaveDialog')
         if (path) {
-          fs.writeFile(`${path}`, JSON.stringify({
-            ruleConfig: details.ruleConfig,
-            type: app.type
-          }), () => {
-            remote.dialog.showMessageBox({
-              type: 'info',
-              title: '导出结果',
-              message: `导出成功, 路径: ${path}`,
-              buttons: ['ok']
-            })
-          })
+          fs.writeFile(
+            `${path}`,
+            JSON.stringify({
+              ruleConfig: details.ruleConfig,
+              type: app.type,
+            }),
+            () => {
+              this.$alert(`导出成功, 路径: ${path}`, '导出结果', {
+                confirmButtonText: '确定',
+                callback: () => {},
+              })
+            }
+          )
         }
       }
     },
     /**
      * 新建触发
      */
-    handleCreate (command) {
+    handleCreate(command) {
       clearRule()
       clearData()
       if (command === 'rule') {
@@ -114,48 +128,43 @@ export default {
     /**
      * 拉取远程应用
      */
-    getRemoteApp () {
+    getRemoteApp() {
       this.remoteLoading = false
-      const res = remote.dialog.showMessageBoxSync({
-        type: 'info',
-        title: '提示',
-        cancelId: -1,
-        message: '拉取远程应用, 若与本地相同, 将覆盖本地应用, 是否继续?',
-        buttons: ['ok', 'no']
-      })
-      if (res === 0) {
-        getRemoteApp()
-          .then(res => {
-            res.data.forEach(v => {
-              const localApp = getAppById(v.localId)
-              if (localApp) {
-                const remoteApp = JSON.parse(JSON.stringify(v))
-                remoteApp.id = remoteApp.localId
-                editAppById(v.localId, remoteApp)
-              } else {
-                const remoteApp = JSON.parse(JSON.stringify(v))
-                remoteApp.id = remoteApp.localId
-                addApp(remoteApp)
-                this.getAppList()
-              }
+      this.$confirm(
+        '拉取远程应用, 若与本地相同, 将覆盖本地应用, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'info',
+        }
+      )
+        .then(() => {
+          getRemoteApp()
+            .then((res) => {
+              res.data.forEach((v) => {
+                const localApp = getAppById(v.localId)
+                if (localApp) {
+                  const remoteApp = JSON.parse(JSON.stringify(v))
+                  remoteApp.id = remoteApp.localId
+                  editAppById(v.localId, remoteApp)
+                } else {
+                  const remoteApp = JSON.parse(JSON.stringify(v))
+                  remoteApp.id = remoteApp.localId
+                  addApp(remoteApp)
+                  this.getAppList()
+                }
+              })
+              this.remoteLoading = false
             })
-            this.remoteLoading = false
-          })
-          .catch(e => {
-            this.remoteLoading = false
-          })
-      } else {
-      }
+            .catch(() => {
+              this.remoteLoading = false
+            })
+        })
+        .catch(() => {})
     },
-    async importApp () {
-      const filePath = remote.dialog.showOpenDialogSync({
-        title: '选择zpk文件',
-        filters: [{
-          name: 'zpk文件',
-          extensions: ['zpk']
-        }]
-      })
-      console.log(filePath)
+    async importApp() {
+      const filePath = ipcRenderer.sendSync('importAppDialog')
       if (filePath) {
         /* eslint-disable */
         fs.readFile(filePath[0], 'utf8', (e, res) => {
@@ -171,35 +180,36 @@ export default {
         /* eslint-enable */
       }
     },
-    deleteApp (id) {
-      const res = remote.dialog.showMessageBoxSync({
+    deleteApp(id) {
+      this.$confirm('确定要删除该应用?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
         type: 'info',
-        title: '提示',
-        cancelId: -1,
-        message: '确定要删除该应用?',
-        buttons: ['ok', 'no']
       })
-      if (res === 0) {
-        deleteApp(id)
-        this.getAppList()
-      }
+        .then(() => {
+          deleteApp(id)
+          this.getAppList()
+        })
+        .catch(() => {})
     },
-    toDetails (data) {
+    toDetails(data) {
       if (data.type === 'rule') {
         const details = getAppById(data.id)
         if (details) {
           const obj = JSON.parse(details.ruleConfig)
           addRule(obj)
           clearData()
-          this.$nextTick(_ => {
-            this.$router.push(`/ruleSetting?id=${details.id}&appName=${details.appName}`)
+          this.$nextTick(() => {
+            this.$router.push(
+              `/ruleSetting?id=${details.id}&appName=${details.appName}`
+            )
           })
         }
       } else {
         this.$router.push(`/codeRule?id=${data.id}&appName=${data.appName}`)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
@@ -283,7 +293,6 @@ export default {
         background-image: url(data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiPjxwYXRoIGQ9Ik0xNTQuNjg3IDMyOC40MjhsLTEuMjg3LjY0NHYzNjQuODlMNTExLjIxIDg4Mi4yVjUwNi4zN2wtMzU2LjUyNC0xNzcuOTR6IiBmaWxsPSIjRkZGIi8+PHBhdGggZD0iTTg2OC4zOCAzMjguNzVMNTExLjIxIDE0MC44MzQgMTY4LjUyMyAzMjEuMDI4bC0xMy44MzYgNy40TDUxMS4yMSA1MDYuMzdsNC4xODQtMS45MyAzNTMuOTUtMTc1LjA0NXYtLjMyMmwtLjk2NS0uMzIyek01MTUuMzk1IDUwNC40MzhsLTQuMTg0IDEuOTMxIDQuMTg0LTEuOTN6IiBmaWxsPSIjOTFENUZGIi8+PHBhdGggZD0iTTkzOS44MTQgMjk0LjMyYTU5Ljg1IDU5Ljg1IDAgMCAwLTI1LjQyLTI2LjcwN0w1MzguNTYxIDY4Ljc1N2E1OC44ODUgNTguODg1IDAgMCAwLTU0LjcwMSAwbC0zNzUuNTEgMTk3LjU3YTU4LjI0MSA1OC4yNDEgMCAwIDAtMTUuNDQ1IDEzLjgzNSA2NC4zNTUgNjQuMzU1IDAgMCAwLTkuNjUzIDEyLjU1IDU5Ljg1IDU5Ljg1IDAgMCAwLTYuNDM2IDI1Ljc0MXYzODYuMTI4YTU5LjIwNiA1OS4yMDYgMCAwIDAgMzIuMTc4IDUyLjEyOGwzNzUuNTEgMTk3LjU2OEE1OS4yMDYgNTkuMjA2IDAgMCAwIDUxMS4yMSA5NjJoNC41MDVhNTYuMzEgNTYuMzEgMCAwIDAgMjIuODQ2LTYuMTE0bDM3NS41MS0xOTcuNTY5YTU5LjIwNiA1OS4yMDYgMCAwIDAgMzIuMTc3LTUyLjEyN1YzMTguNDUzYTU2LjYzMiA1Ni42MzIgMCAwIDAtNi40MzUtMjQuMTMzem0tNzAuNDY5IDM1LjA3NGwtMzUzLjk1IDE3NS4wNDQtNC4xODQgMi4yNTNWODgyLjJMMTUzLjA3OCA2OTMuOTYyVjMyOS4wNzJsMTMuODM2LTcuNCAzNDQuMjk3LTE4MC44MzhMODY4LjM4IDMyOC43NXoiIGZpbGw9IiM0MEE5RkYiLz48L3N2Zz4=);
       }
     }
-
   }
 }
 </style>

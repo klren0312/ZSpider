@@ -3,8 +3,12 @@
     <div class="rule-header-block">
       <div class="rule-header">
         <div class="steps">
-          <el-button size="mini" type="success" @click="testCode">运行代码</el-button>
-          <el-button size="mini" @click="dialogVisible = true">查看可调用接口文档</el-button>
+          <el-button size="mini" type="success" @click="testCode">
+            运行代码
+          </el-button>
+          <el-button size="mini" @click="dialogVisible = true">
+            查看可调用接口文档
+          </el-button>
           <el-dropdown split-button size="mini" @command="selectCode">
             插入代码段
             <el-dropdown-menu slot="dropdown">
@@ -29,12 +33,13 @@
       </div>
     </div>
     <div class="setting-content">
-      <code-editor ref="codeEditor" v-model="code" :initData="initCode"></code-editor>
+      <code-editor
+        ref="codeEditor"
+        v-model="code"
+        :initData="initCode"
+      ></code-editor>
     </div>
-    <el-dialog
-      title="相关可调用文档"
-      :visible.sync="dialogVisible"
-      width="90%">
+    <el-dialog title="相关可调用文档" :visible.sync="dialogVisible" width="90%">
       <el-table :data="classData">
         <el-table-column property="name" label="类库名称"></el-table-column>
         <el-table-column property="info" label="说明"></el-table-column>
@@ -51,14 +56,13 @@ import { ruleDb, dataDb, globalDb } from '@/dataStore'
 import CodeEditor from '@/components/CodeEditor/index.vue'
 import EventBus from '@/utils/EventBus'
 import { sampleDict } from './sample'
-import { remote } from 'electron'
 
 export default {
   name: 'CodeRule',
   components: {
-    CodeEditor
+    CodeEditor,
   },
-  data () {
+  data() {
     return {
       step: 1,
       appName: '',
@@ -75,16 +79,16 @@ export default {
         { name: 'cheerio-tableparser', info: 'HTML表格解析的Cheerio插件' },
         { name: 'mysql2', info: 'MySQL操作库' },
         { name: 'puppeteer-core', info: '操作Chrome库' },
-        { name: 'electron', info: '操作Electron窗体相关API' }
+        { name: 'electron', info: '操作Electron窗体相关API' },
       ],
       funcData: [
         { name: 'dataDb', info: '操作本地JSON数据存储, 用于本地存储数据' },
-        { name: 'chromePath', info: '本地Chrome安装路径' }
+        { name: 'chromePath', info: '本地Chrome安装路径' },
       ],
-      dialogVisible: false
+      dialogVisible: false,
     }
   },
-  mounted () {
+  mounted() {
     // eslint-disable-next-line no-prototype-builtins
     if (this.$route.query.hasOwnProperty('id')) {
       this.appName = this.$route.query.appName
@@ -96,65 +100,61 @@ export default {
     }
   },
   methods: {
-    save () {
+    save() {
       if (!this.appName) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请输入应用名称',
-          buttons: ['ok']
+        this.$alert('请输入应用名称', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
       const collection = globalDb.defaults({ apps: [] }).get('apps')
-      if (this.isEdit) { // 编辑
+      if (this.isEdit) {
+        // 编辑
         collection
           .find({ id: this.id })
           .assign({
             appName: this.appName,
             ruleConfig: this.code,
-            type: 'code'
+            type: 'code',
           })
           .write()
-      } else { // 创建
+      } else {
+        // 创建
         collection
           .insert({
             appName: this.appName,
             ruleConfig: this.code,
-            type: 'code'
+            type: 'code',
           })
           .write()
       }
       this.isEdit = false
       this.$router.push('/')
     },
-    cancel () {
-      const res = remote.dialog.showMessageBoxSync({
-        type: 'info',
-        title: '提示',
-        cancelId: -1,
-        message: '确定要离开?离开后数据将不会保存',
-        buttons: ['ok', 'no']
+    cancel() {
+      this.$confirm('确定要离开?离开后数据将不会保存?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning',
       })
-      if (res === 0) {
-        ruleDb.set('config', {}).write()
-        ruleDb.set('contentUrls', {}).write()
-        ruleDb.set('publishConfig', []).write()
-        this.isEdit = false
-        this.$router.push('/')
-      } else {
-      }
+        .then(() => {
+          ruleDb.set('config', {}).write()
+          ruleDb.set('contentUrls', {}).write()
+          ruleDb.set('publishConfig', []).write()
+          this.isEdit = false
+          this.$router.push('/')
+        })
+        .catch(() => {})
     },
     /**
      * 测试代码运行, 使用虚拟机
      */
-    testCode () {
+    testCode() {
       if (!this.code) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: '请编写代码后, 再运行',
-          buttons: ['ok']
+        this.$alert('请编写代码后, 再运行', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
         return
       }
@@ -168,7 +168,7 @@ export default {
           console: 'redirect',
           sandbox: {
             dataDb: collection,
-            chromePath: this.$store.state.chromePath
+            chromePath: this.$store.state.chromePath,
           },
           require: {
             builtin: ['fs', 'path'],
@@ -180,13 +180,13 @@ export default {
                 'request',
                 'mysql2',
                 'puppeteer-core',
-                'electron'
+                'electron',
               ],
-              transitive: true
-            }
-          }
+              transitive: true,
+            },
+          },
         })
-        vm.on('console.log', msg => {
+        vm.on('console.log', (msg) => {
           if (typeof msg !== 'string') {
             this.writeLog(JSON.stringify(msg))
           } else {
@@ -199,31 +199,31 @@ export default {
     /**
      * 打印日志
      */
-    writeLog (v) {
+    writeLog(v) {
       EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
     },
     /**
      * 插入代码
      */
-    appendCode (text) {
+    appendCode(text) {
       this.$refs.codeEditor.addText(text + '')
     },
     /**
      * 选取代码片段
      */
-    selectCode (e) {
+    selectCode(e) {
       try {
         this.appendCode(sampleDict[e])
       } catch (error) {
         this.appendCode("console.log('hello ZSpider')")
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
 .code-rule-setting {
-  height:100%;
+  height: 100%;
   .rule-header-block {
     padding-top: 10px;
     height: 50px;
@@ -250,7 +250,7 @@ export default {
   .setting-content {
     height: calc(100vh - 154px);
     padding-top: 20px;
-    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
+    transition: height 0.2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
     box-sizing: border-box;
     overflow-y: auto;
     &.small {

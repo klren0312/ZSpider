@@ -13,49 +13,49 @@ const state = {
   rule: {
     mainUrl: '',
     page: 0,
-    linkRule: ''
+    linkRule: '',
   },
   contentParams: [],
-  logCtrl: false
+  logCtrl: false,
 }
 
 const mutations = {
-  SET_RULE (state, rule) {
+  SET_RULE(state, rule) {
     state.rule = rule
   },
-  SET_PARAM (state, params) {
+  SET_PARAM(state, params) {
     state.contentParams = JSON.parse(JSON.stringify(params))
   },
-  CTRL_LOG (state, ctrl) {
+  CTRL_LOG(state, ctrl) {
     state.logCtrl = ctrl
   },
-  SET_CHROME (state, chromePath) {
+  SET_CHROME(state, chromePath) {
     state.chromePath = chromePath
-  }
+  },
 }
 
 const actions = {
-  SET_RULE ({ commit }, rule) {
+  SET_RULE({ commit }, rule) {
     ruleDb.set('config.mainUrl', rule.mainUrl).write()
     ruleDb.set('config.page', rule.page).write()
     ruleDb.set('config.linkRule', rule.linkRule).write()
     commit('SET_RULE', rule)
   },
-  SET_PARAM ({ commit }, params) {
+  SET_PARAM({ commit }, params) {
     ruleDb.set('config.params', params).write()
     commit('SET_PARAM', params)
   },
-  CTRL_LOG ({ commit }, ctrl) {
+  CTRL_LOG({ commit }, ctrl) {
     commit('CTRL_LOG', ctrl)
   },
-  SET_CHROME ({ commit }, chromePath) {
+  SET_CHROME({ commit }, chromePath) {
     globalDb.set('chromePath', chromePath).write()
     commit('SET_CHROME', chromePath)
-  }
+  },
 }
 export default new Vuex.Store({
   state,
   mutations,
   actions,
-  strict: process.env.NODE_ENV !== 'production'
+  strict: process.env.NODE_ENV !== 'production',
 })

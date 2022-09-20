@@ -7,7 +7,8 @@ import {
   ipcMain,
   Tray,
   Menu,
-  MenuItem
+  MenuItem,
+  dialog,
 } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
@@ -24,10 +25,10 @@ let isQuit = false
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
+  { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1024,
@@ -38,11 +39,11 @@ function createWindow () {
     backgroundColor: '#00ffffff', // 防止开发者工具关闭会出现白边
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       webSecurity: false, // 跨域
-      enableRemoteModule: true // 可以使用remote
     },
     // eslint-disable-next-line no-undef
-    icon: path.resolve(__static, 'icon.png')
+    icon: path.resolve(__static, 'icon.png'),
   })
   // win.setAlwaysOnTop(true)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -57,7 +58,7 @@ function createWindow () {
 
   // 窗口关闭触发
   // 若isQuit为false, 则不退出, 只是缩小到托盘
-  win.on('close', e => {
+  win.on('close', (e) => {
     if (isQuit) {
       win = null
     } else {
@@ -70,7 +71,7 @@ function createWindow () {
 /**
  * 创建托盘
  */
-function createTray () {
+function createTray() {
   // eslint-disable-next-line no-undef
   tray = new Tray(path.resolve(__static, 'icon.png'))
   const contextMenu = Menu.buildFromTemplate([
@@ -82,7 +83,7 @@ function createTray () {
         } else {
           win.show()
         }
-      }
+      },
     }),
     new MenuItem({
       label: '前置窗口',
@@ -90,15 +91,15 @@ function createTray () {
       checked: false,
       click: (v) => {
         win.setAlwaysOnTop(v.checked)
-      }
+      },
     }),
     new MenuItem({
       label: '退出程序',
       click: () => {
         isQuit = true
         app.exit()
-      }
-    })
+      },
+    }),
   ])
   tray.setToolTip('治电采集器')
   tray.setContextMenu(contextMenu)
@@ -147,7 +148,7 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, argv) => {
+  app.on('second-instance', () => {
     if (process.platform === 'win32') {
       console.log('window 准备执行网页端调起客户端逻辑')
       if (win) {
@@ -180,16 +181,73 @@ if (isDevelopment) {
 }
 
 // 关闭窗口
-ipcMain.on('close', (e, arg) => {
+ipcMain.on('close', () => {
   app.quit()
 })
 
 // 最小化
-ipcMain.on('min', (e, arg) => {
+ipcMain.on('min', () => {
   win.minimize()
 })
 
 // 最大化
-ipcMain.on('max', (e, arg) => {
+ipcMain.on('max', () => {
   win.maximize()
+})
+
+// 获取userData路径
+ipcMain.on('getUserDataPath', (event) => {
+  event.returnValue = app.getPath('userData')
+})
+
+// 打开保存zpk弹框
+ipcMain.on('showSaveDialog', (event) => {
+  const path = dialog.showSaveDialog({
+    title: '选择保存路径',
+    filters: [
+      {
+        name: 'zpk文件',
+        extensions: ['zpk'],
+      },
+    ],
+    properties: {
+      openFile: true,
+      openDirectory: false,
+      multiSelections: false,
+    },
+  })
+  event.returnValue = path
+})
+
+// 打开保存json弹框
+ipcMain.on('showSaveJsonDialog', (event) => {
+  const path = dialog.showSaveDialog({
+    title: '选择保存路径',
+    filters: [
+      {
+        name: 'JSON文件',
+        extensions: ['json'],
+      },
+    ],
+    properties: {
+      openFile: true,
+      openDirectory: false,
+      multiSelections: false,
+    },
+  })
+  event.returnValue = path
+})
+
+// 选择文件弹框
+ipcMain.on('importAppDialog', (event) => {
+  const path = dialog.showOpenDialogSync({
+    title: '选择zpk文件',
+    filters: [
+      {
+        name: 'zpk文件',
+        extensions: ['zpk'],
+      },
+    ],
+  })
+  event.returnValue = path
 })

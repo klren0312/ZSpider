@@ -1,72 +1,75 @@
 <template>
   <main class="data-publish">
     <div class="filter">
-      <el-button type="primary" size="mini" @click="createDialog=true" icon="el-icon-plus">新建发布</el-button>
-      <el-button type="success" size="mini" @click="exportExcel" icon="el-icon-download">导出EXCEL</el-button>
-      <el-button type="success" size="mini" @click="exportJSON" icon="el-icon-download">导出JSON</el-button>
-      <div class="data-total">当前数据总数: <strong>{{datas.length}}</strong>条</div>
+      <el-button
+        type="primary"
+        size="mini"
+        @click="createDialog = true"
+        icon="el-icon-plus"
+        >新建发布</el-button
+      >
+      <el-button
+        type="success"
+        size="mini"
+        @click="exportExcel"
+        icon="el-icon-download"
+        >导出EXCEL</el-button
+      >
+      <el-button
+        type="success"
+        size="mini"
+        @click="exportJSON"
+        icon="el-icon-download"
+        >导出JSON</el-button
+      >
+      <div class="data-total">
+        当前数据总数: <strong>{{ datas.length }}</strong
+        >条
+      </div>
     </div>
-    <el-table
-      border
-      :data="publishData"
-      style="width: 100%">
-      <el-table-column
-        label="ID"
-        type="index"
-        width="40px">
-      </el-table-column>
+    <el-table border :data="publishData" style="width: 100%">
+      <el-table-column label="ID" type="index" width="40px"> </el-table-column>
       <el-table-column
         label="发布名称"
         prop="name"
         show-overflow-tooltip
-        width="130px">
+        width="130px"
+      >
       </el-table-column>
-      <el-table-column
-        label="数据库地址"
-        prop="host">
-      </el-table-column>
-      <el-table-column
-        label="端口"
-        prop="port">
-      </el-table-column>
-      <el-table-column
-        label="用户名"
-        prop="user">
-      </el-table-column>
-      <el-table-column
-        label="密码"
-        prop="password"
-        width="80px">
+      <el-table-column label="数据库地址" prop="host"> </el-table-column>
+      <el-table-column label="端口" prop="port"> </el-table-column>
+      <el-table-column label="用户名" prop="user"> </el-table-column>
+      <el-table-column label="密码" prop="password" width="80px">
         <template>
           <div>******</div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="数据库"
-        prop="database">
-      </el-table-column>
-      <el-table-column
-        label="数据表"
-        prop="table">
-      </el-table-column>
-      <el-table-column
-        label="发布结果">
+      <el-table-column label="数据库" prop="database"> </el-table-column>
+      <el-table-column label="数据表" prop="table"> </el-table-column>
+      <el-table-column label="发布结果">
         <template slot-scope="scope">
           <div>
-            <el-tag effect="dark" type="success">{{scope.row.success}}</el-tag>
-            <el-tag effect="dark" type="danger">{{scope.row.fail}}</el-tag>
+            <el-tag effect="dark" type="success">{{
+              scope.row.success
+            }}</el-tag>
+            <el-tag effect="dark" type="danger">{{ scope.row.fail }}</el-tag>
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作"
-        fixed="right"
-        width="300px">
+      <el-table-column label="操作" fixed="right" width="300px">
         <template slot-scope="scope">
-          <el-button @click="edit(scope.row)" type="primary" size="mini">编辑</el-button>
-          <el-button @click="publish(scope.row)" type="success" size="mini">发布</el-button>
-          <el-button @click="clear(scope.row)" type="warning" size="mini">清空表</el-button>
-          <el-button @click="deletePublish(scope.row)" type="danger" size="mini">删除</el-button>
+          <el-button @click="edit(scope.row)" type="primary" size="mini"
+            >编辑</el-button
+          >
+          <el-button @click="publish(scope.row)" type="success" size="mini"
+            >发布</el-button
+          >
+          <el-button @click="clear(scope.row)" type="warning" size="mini"
+            >清空表</el-button
+          >
+          <el-button @click="deletePublish(scope.row)" type="danger" size="mini"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -77,9 +80,18 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      width="60%">
-      <div class="tips">测试数据库连接后, 才能{{isEdit ? "编辑" : "创建"}}发布</div>
-      <el-form class="form-block" label-width="100px" ref="publishForm" :model="form" :rules="formRules">
+      width="60%"
+    >
+      <div class="tips">
+        测试数据库连接后, 才能{{ isEdit ? '编辑' : '创建' }}发布
+      </div>
+      <el-form
+        class="form-block"
+        label-width="100px"
+        ref="publishForm"
+        :model="form"
+        :rules="formRules"
+      >
         <div class="left-form">
           <el-form-item label="发布名称:" prop="name">
             <el-input v-model="form.name" size="mini"></el-input>
@@ -88,13 +100,21 @@
             <el-input v-model="form.host" size="mini"></el-input>
           </el-form-item>
           <el-form-item label="端口:" prop="port">
-            <el-input-number v-model="form.port" controls-position="right"  size="mini"></el-input-number>
+            <el-input-number
+              v-model="form.port"
+              controls-position="right"
+              size="mini"
+            ></el-input-number>
           </el-form-item>
           <el-form-item label="用户名:" prop="user">
             <el-input v-model="form.user" size="mini"></el-input>
           </el-form-item>
           <el-form-item label="密码:" prop="password">
-            <el-input v-model="form.password" type="password" size="mini"></el-input>
+            <el-input
+              v-model="form.password"
+              type="password"
+              size="mini"
+            ></el-input>
           </el-form-item>
           <el-form-item label="数据库:" prop="database">
             <el-input v-model="form.database" size="mini"></el-input>
@@ -103,11 +123,17 @@
             <el-input v-model="form.table" size="mini"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button plain size="small" @click="testConnect(form)">测试连接</el-button>
+            <el-button plain size="small" @click="testConnect(form)"
+              >测试连接</el-button
+            >
           </el-form-item>
         </div>
         <div class="right-form">
-          <el-form-item v-for="(v, i) in form.params" :key="i" :label="`${v.name}:`">
+          <el-form-item
+            v-for="(v, i) in form.params"
+            :key="i"
+            :label="`${v.name}:`"
+          >
             <el-select v-model="v.dbParam">
               <el-option v-for="v in dbParams" :key="v" :value="v"></el-option>
             </el-select>
@@ -115,22 +141,35 @@
         </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="createDialog = false, isEdit = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="save" size="small" :disabled="!isTest">确 定</el-button>
+        <el-button
+          @click=";(createDialog = false), (isEdit = false)"
+          size="small"
+          >取 消</el-button
+        >
+        <el-button type="primary" @click="save" size="small" :disabled="!isTest"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </main>
 </template>
 <script>
-import { getConfig, getPublishConfig, addPublish, editPublishById, deletePublish } from '@/service/rule.service'
+import {
+  getConfig,
+  getPublishConfig,
+  addPublish,
+  editPublishById,
+  deletePublish,
+} from '@/service/rule.service'
 import { getDatas } from '@/service/data.service'
+import { ipcRenderer } from 'electron'
 const mysql = require('mysql2')
-const { remote } = require('electron')
+
 const fs = require('fs')
 
 export default {
   name: 'DataPublish',
-  data () {
+  data() {
     return {
       publishData: [],
       form: {
@@ -141,24 +180,34 @@ export default {
         password: '',
         database: '',
         table: '',
-        params: ''
+        params: '',
       },
       formRules: {
-        host: [{ required: true, message: '请填写数据库地址', trigger: 'blur' }],
-        port: [{ required: true, message: '请填写数据库端口', trigger: 'blur' }],
-        user: [{ required: true, message: '请填写数据库用户名', trigger: 'blur' }],
-        database: [{ required: true, message: '请填写数据库名称', trigger: 'blur' }],
-        table: [{ required: true, message: '请填写数据库表名', trigger: 'blur' }]
+        host: [
+          { required: true, message: '请填写数据库地址', trigger: 'blur' },
+        ],
+        port: [
+          { required: true, message: '请填写数据库端口', trigger: 'blur' },
+        ],
+        user: [
+          { required: true, message: '请填写数据库用户名', trigger: 'blur' },
+        ],
+        database: [
+          { required: true, message: '请填写数据库名称', trigger: 'blur' },
+        ],
+        table: [
+          { required: true, message: '请填写数据库表名', trigger: 'blur' },
+        ],
       },
       createDialog: false,
       isTest: false,
       dbParams: [],
       publishStatus: false,
       isEdit: false,
-      datas: []
+      datas: [],
     }
   },
-  mounted () {
+  mounted() {
     this.getPublish()
     this.getParams()
     this.datas = getDatas()
@@ -167,23 +216,24 @@ export default {
     /**
      * 获取发布配置
      */
-    getPublish () {
+    getPublish() {
       const arr = getPublishConfig()
       this.publishData = JSON.parse(JSON.stringify(arr))
     },
     /**
      * 获取参数
      */
-    getParams () {
+    getParams() {
       this.form.params = getConfig().params
-      this.form.params && this.form.params.forEach(v => {
-        v.dbParam = ''
-      })
+      this.form.params &&
+        this.form.params.forEach((v) => {
+          v.dbParam = ''
+        })
     },
     /**
      * 测试数据库连接
      */
-    testConnect (form) {
+    testConnect(form) {
       this.$refs.publishForm.validate(async (valid) => {
         if (valid) {
           try {
@@ -192,35 +242,34 @@ export default {
               port: form.port,
               user: form.user,
               password: form.password,
-              database: form.database
+              database: form.database,
             })
             if (conn.connection.authorized) {
-              remote.dialog.showMessageBox({
-                type: 'info',
-                title: '成功',
-                message: '数据库连接成功!',
-                buttons: ['ok']
+              this.$alert('数据库连接成功', '提示', {
+                confirmButtonText: '确定',
+                callback: () => {},
               })
             } else {
               return false
             }
             this.isTest = true
-            conn.query(`select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`, (e, r) => {
-              if (e) throw e
-              this.dbParams = r.map(v => v.column_name)
-              this.form.params.forEach(v => {
-                if (this.dbParams.indexOf(v.name) !== -1) {
-                  v.dbParam = v.name
-                }
-              })
-            })
+            conn.query(
+              `select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`,
+              (e, r) => {
+                if (e) throw e
+                this.dbParams = r.map((v) => v.column_name)
+                this.form.params.forEach((v) => {
+                  if (this.dbParams.indexOf(v.name) !== -1) {
+                    v.dbParam = v.name
+                  }
+                })
+              }
+            )
             conn.end()
           } catch (error) {
-            remote.dialog.showMessageBox({
-              type: 'error',
-              title: '错误',
-              message: error.message,
-              buttons: ['ok']
+            this.$alert(error.message, '错误', {
+              confirmButtonText: '确定',
+              callback: () => {},
             })
           }
         }
@@ -229,7 +278,7 @@ export default {
     /**
      * 编辑发布
      */
-    edit (row) {
+    edit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.isEdit = true
       this.createDialog = true
@@ -237,7 +286,7 @@ export default {
     /**
      * 保存发布
      */
-    save () {
+    save() {
       if (!this.form.name && !this.isEdit) {
         this.form.name = this.generateGuid()
       }
@@ -263,34 +312,35 @@ export default {
     /**
      * 生成guid
      */
-    generateGuid () {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0
-        const v = c === 'x' ? r : (r & 0x3 | 0x8)
-        return v.toString(16)
-      })
+    generateGuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+        /[xy]/g,
+        function (c) {
+          const r = (Math.random() * 16) | 0
+          const v = c === 'x' ? r : (r & 0x3) | 0x8
+          return v.toString(16)
+        }
+      )
     },
     /**
      * 删除发布
      */
-    deletePublish (row) {
-      remote.dialog.showMessageBox({
+    deletePublish(row) {
+      this.$confirm('确定要删除该发布配置?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
         type: 'info',
-        title: '提示',
-        message: '确定要删除该发布配置?',
-        buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
+      })
+        .then(() => {
           deletePublish(row.id)
           this.getPublish()
-        } else {
-        }
-      })
+        })
+        .catch(() => {})
     },
     /**
      * 发布数据
      */
-    async publish (row) {
+    async publish(row) {
       this.publishStatus = true
       try {
         const conn = await mysql.createConnectionPromise({
@@ -298,7 +348,7 @@ export default {
           port: row.port,
           user: row.user,
           password: row.password,
-          database: row.database
+          database: row.database,
         })
         for (let i = 0, len = this.datas.length; i < len; i++) {
           const d = this.datas[i]
@@ -312,11 +362,9 @@ export default {
         }
         conn.end()
       } catch (error) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: error.message,
-          buttons: ['ok']
+        this.$alert(error.message, '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
       }
       this.publishStatus = false
@@ -325,36 +373,32 @@ export default {
     /**
      * 清空表
      */
-    async clear (row) {
+    async clear(row) {
       try {
         const conn = await mysql.createConnectionPromise({
           host: row.host,
           port: row.port,
           user: row.user,
           password: row.password,
-          database: row.database
+          database: row.database,
         })
         await conn.query(`truncate table ${row.table}`)
         conn.end()
-        remote.dialog.showMessageBox({
-          type: 'info',
-          title: '提示',
-          message: `已清空数据表(${row.table})`,
-          buttons: ['ok']
+        this.$alert(`已清空数据表(${row.table})`, '提示', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
       } catch (error) {
-        remote.dialog.showMessageBox({
-          type: 'error',
-          title: '错误',
-          message: error.message,
-          buttons: ['ok']
+        this.$alert(error.message, '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
         })
       }
     },
     /**
      * 导出excel
      */
-    exportExcel () {
+    exportExcel() {
       // const headers = getConfig().params
       // if (Array.isArray(headers) && headers.length) {
       //   this.datas = getDatas()
@@ -422,32 +466,19 @@ export default {
     /**
      * 导出JSON
      */
-    exportJSON () {
+    exportJSON() {
       this.datas = getDatas()
-      const path = remote.dialog.showSaveDialog({
-        title: '选择保存路径',
-        filters: [{
-          name: 'JSON文件',
-          extensions: ['json']
-        }],
-        properties: {
-          openFile: true,
-          openDirectory: false,
-          multiSelections: false
-        }
-      })
+      const path = ipcRenderer.sendSync('showSaveJsonDialog')
       if (path) {
         fs.writeFile(`${path}`, JSON.stringify(this.datas), () => {
-          remote.dialog.showMessageBox({
-            type: 'info',
-            title: '导出结果',
-            message: `导出成功, 路径: ${path}`,
-            buttons: ['ok']
+          this.$alert(`导出成功, 路径: ${path}`, '导出结果', {
+            confirmButtonText: '确定',
+            callback: () => {},
           })
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

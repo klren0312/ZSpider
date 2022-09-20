@@ -2,8 +2,16 @@
   <div id="app" :class="isLight ? '' : 'black'">
     <div class="frame-header-block">
       <div class="frame-header">
-        <div class="frame-title">ZSpider (<span class="online-status" :class="online ? 'online' : 'outline'">{{online ? '已连接' : '未连接'}}</span>)</div>
-        <div class="tips" v-if="this.$route.name === 'RuleSetting'">每个页面都必须进行测试, 才会保存配置</div>
+        <div class="frame-title">
+          ZSpider (<span
+            class="online-status"
+            :class="online ? 'online' : 'outline'"
+            >{{ online ? '已连接' : '未连接' }}</span
+          >)
+        </div>
+        <div class="tips" v-if="this.$route.name === 'RuleSetting'">
+          每个页面都必须进行测试, 才会保存配置
+        </div>
         <div class="frame-ctrl-group">
           <ctrl-btn-group></ctrl-btn-group>
         </div>
@@ -13,8 +21,20 @@
       <div class="total-header">
         <system-info></system-info>
         <div class="theme-btn">
-          <el-button @click="isLight = !isLight" size="mini" v-if="isLight" icon="el-icon-sunny" circle></el-button>
-          <el-button @click="isLight = !isLight" size="mini" v-else icon="el-icon-moon" circle></el-button>
+          <el-button
+            @click="isLight = !isLight"
+            size="mini"
+            v-if="isLight"
+            icon="el-icon-sunny"
+            circle
+          ></el-button>
+          <el-button
+            @click="isLight = !isLight"
+            size="mini"
+            v-else
+            icon="el-icon-moon"
+            circle
+          ></el-button>
         </div>
       </div>
     </div>
@@ -32,60 +52,50 @@ import CtrlBtnGroup from './components/CtrlBtnGroup/index.vue'
 import { mapState } from 'vuex'
 import { globalDb } from '@/dataStore'
 import EventBus from '@/utils/EventBus'
-const {
-  remote
-} = require('electron')
-const BrowserWindow = require('electron').remote.BrowserWindow
-// const { shell } = require('electron')
+const { shell } = require('electron')
 
 export default {
   name: 'ZSpider',
   components: {
     SystemLog,
     SystemInfo,
-    CtrlBtnGroup
+    CtrlBtnGroup,
   },
-  data () {
+  data() {
     return {
       isLight: true,
-      online: false
+      online: false,
     }
   },
-  mounted () {
+  mounted() {
     if (process.env.NODE_ENV !== 'development') {
       if (!globalDb.get('hasTips').value()) {
         this.showInstallInfo()
       }
     }
-    EventBus.$on('online', msg => {
+    EventBus.$on('online', (msg) => {
       this.online = msg
     })
   },
   computed: mapState({
-    ctrl: state => state.logCtrl,
-    chromePath: state => state.chromePath
+    ctrl: (state) => state.logCtrl,
+    chromePath: (state) => state.chromePath,
   }),
   methods: {
-    showInstallInfo () {
-      remote.dialog.showMessageBox({
-        type: 'info',
-        title: '提示',
-        message: '请确定您已安装Chrome?',
-        buttons: ['ok', 'no']
-      }, index => {
-        if (index === 0) {
-          globalDb.set('hasTips', true).write()
-        } else {
-          let win = new BrowserWindow({ width: 800, height: 600, show: false })
-          win.on('closed', function () {
-            win = null
-          })
-          win.loadURL('https://www.google.cn/chrome/')
-          win.show()
-        }
+    showInstallInfo() {
+      this.$confirm('请确定您已安装Chrome?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning',
       })
-    }
-  }
+        .then(() => {
+          globalDb.set('hasTips', true).write()
+        })
+        .catch(() => {
+          shell.openExternal('https://www.google.cn/chrome/')
+        })
+    },
+  },
 }
 </script>
 <style lang="scss">
@@ -94,7 +104,9 @@ export default {
 body {
   padding: 0;
   margin: 0;
-  font-family: "PingFang SC", "Lantinghei SC", "Lucida Grande", "\5FAE\8F6F\96C5\9ED1", "Microsoft YaHei", FreeSans, "WenQuanYi Micro Hei", "Hiragino Sans GB", "Hiragino Sans GB W3", SimSun, sans-serif, tahoma, arial;
+  font-family: 'PingFang SC', 'Lantinghei SC', 'Lucida Grande',
+    '\5FAE\8F6F\96C5\9ED1', 'Microsoft YaHei', FreeSans, 'WenQuanYi Micro Hei',
+    'Hiragino Sans GB', 'Hiragino Sans GB W3', SimSun, sans-serif, tahoma, arial;
   border: 1px solid #323232;
   box-sizing: border-box;
   background: #fff;
@@ -162,7 +174,7 @@ body {
   .content {
     height: calc(100vh - 104px);
     overflow-y: auto;
-    transition: height .2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
+    transition: height 0.2s cubic-bezier(0.35, 0.9, 0.62, 1.22);
     // &.small {
     //   height: calc(100vh - 30px - 220px);
     // }

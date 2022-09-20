@@ -3,8 +3,15 @@
     <div class="items">
       <div class="item mem-item">
         <div class="name">内存:</div>
-        <div class="value">{{ usemem | byteFormat }} / {{ totalmem | byteFormat }}</div>
-        <el-progress :text-inside="false" :stroke-width="10" :percentage="percentage" color="#f56c6c"></el-progress>
+        <div class="value">
+          {{ usemem | byteFormat }} / {{ totalmem | byteFormat }}
+        </div>
+        <el-progress
+          :text-inside="false"
+          :stroke-width="10"
+          :percentage="percentage"
+          color="#f56c6c"
+        ></el-progress>
       </div>
       <div class="item sys-item">
         <div class="name">系统:</div>
@@ -16,11 +23,12 @@
 
 <script>
 export default {
-  data () {
+  name: 'SystemInfo',
+  data() {
     return {
       platform: require('os').platform(),
       totalmem: require('os').totalmem(),
-      freemem: require('os').freemem()
+      freemem: require('os').freemem(),
     }
   },
   computed: {
@@ -28,8 +36,8 @@ export default {
       return this.totalmem - this.freemem
     },
     percentage: function () {
-      return parseInt(this.usemem * 100 / this.totalmem)
-    }
+      return parseInt((this.usemem * 100) / this.totalmem)
+    },
   },
   filters: {
     byteFormat: function (size) {
@@ -46,18 +54,18 @@ export default {
         ++pos
       }
       return size.toFixed(2) + unit[pos]
-    }
+    },
   },
-  mounted () {
+  mounted() {
     setTimeout(() => this.refreshMem(), 5000)
   },
   methods: {
-    refreshMem () {
+    refreshMem() {
       this.totalmem = require('os').totalmem()
       this.freemem = require('os').freemem()
       setTimeout(() => this.refreshMem(), 5000)
-    }
-  }
+    },
+  },
 }
 </script>
 
