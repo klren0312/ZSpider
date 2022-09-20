@@ -2,54 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import {
-  Button,
-  Form,
-  FormItem,
-  Input,
-  InputNumber,
-  Select,
-  Option,
-  Dialog,
-  Row,
-  Col,
-  Icon,
-  Tooltip,
-  Table,
-  TableColumn,
-  Progress,
-  Autocomplete,
-  Tag,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-} from 'element-ui'
+import '@/utils/elementUI'
 import getChrome from './chromePath'
 import socket from './wsConnect'
-;[
-  Button,
-  Form,
-  FormItem,
-  Input,
-  InputNumber,
-  Select,
-  Option,
-  Dialog,
-  Row,
-  Col,
-  Icon,
-  Tooltip,
-  Table,
-  TableColumn,
-  Progress,
-  Autocomplete,
-  Tag,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-].forEach((v) => {
-  Vue.use(v)
-})
 
 Vue.prototype.$store = store
 Vue.prototype.$socket = socket

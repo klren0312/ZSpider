@@ -9,7 +9,7 @@
           <el-button size="mini" @click="dialogVisible = true">
             查看可调用接口文档
           </el-button>
-          <el-dropdown split-button size="mini" @command="selectCode">
+          <el-dropdown size="mini" @command="selectCode">
             插入代码段
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :command="1">MySQL连接</el-dropdown-item>
