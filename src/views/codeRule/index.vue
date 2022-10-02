@@ -9,8 +9,10 @@
           <el-button size="mini" @click="dialogVisible = true">
             查看可调用接口文档
           </el-button>
-          <el-dropdown size="mini" @command="selectCode">
-            插入代码段
+          <el-dropdown trigger="click" size="mini" @command="selectCode">
+            <el-button size="mini">
+              插入代码段<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :command="1">MySQL连接</el-dropdown-item>
               <el-dropdown-item :command="2">Cheerio爬虫</el-dropdown-item>

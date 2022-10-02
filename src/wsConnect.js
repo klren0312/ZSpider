@@ -69,6 +69,6 @@ function reConnect() {
   wsConnect()
 }
 
-wsConnect()
+// wsConnect()
 
 export default socket
