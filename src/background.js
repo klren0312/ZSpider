@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   dialog,
+  session,
 } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
@@ -134,6 +135,10 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  // 加载vue开发者插件
+  if (isDevelopment && !process.env.IS_TEST) {
+    session.defaultSession.loadExtension(path.resolve('vueDevtool'))
+  }
   // 处理透明背景后, 出现黑边问题, 加个延时
   // https://github.com/electron/electron/issues/15947#issuecomment-571136404
   setTimeout(() => {

@@ -7,9 +7,9 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  // Menu,
-  // Submenu,
-  // MenuItem,
+  Menu,
+  Submenu,
+  MenuItem,
   // MenuItemGroup,
   Input,
   InputNumber,
@@ -60,10 +60,10 @@ import {
   // Cascader,
   // ColorPicker,
   // Transfer,
-  // Container,
+  Container,
   // Header,
-  // Aside,
-  // Main,
+  Aside,
+  Main,
   // Footer,
   // Timeline,
   // TimelineItem,
@@ -87,9 +87,9 @@ Vue.use(Autocomplete)
 Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
-// Vue.use(Menu)
-// Vue.use(Submenu)
-// Vue.use(MenuItem)
+Vue.use(Menu)
+Vue.use(Submenu)
+Vue.use(MenuItem)
 // Vue.use(MenuItemGroup)
 Vue.use(Input)
 Vue.use(InputNumber)
@@ -141,10 +141,10 @@ Vue.use(Progress)
 // Vue.use(Cascader)
 // Vue.use(ColorPicker);
 // Vue.use(Transfer);
-// Vue.use(Container)
+Vue.use(Container)
 // Vue.use(Header)
-// Vue.use(Aside)
-// Vue.use(Main)
+Vue.use(Aside)
+Vue.use(Main)
 // Vue.use(Footer)
 // Vue.use(Image)
 // Vue.use(Divider)
