@@ -30,7 +30,8 @@
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0",
-    "xlsx": "^0.17.0"
+    "xlsx": "^0.17.0",
+    "z-chobitsu": "^0.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",

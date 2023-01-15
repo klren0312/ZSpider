@@ -11,6 +11,10 @@ export default {
       type: String,
       default: '',
     },
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -19,13 +23,16 @@ export default {
     }
   },
   model: {
+    prop: 'initData',
     event: 'change',
   },
   mounted() {
+    this.code = this.initData
     this.editor = monaco.editor.create(this.$refs.editor, {
       value: this.code,
       language: 'javascript',
       theme: 'vs',
+      readOnly: this.readOnly,
     })
     this.editor.onDidChangeModelContent(() => {
       const content = this.editor.getValue()
@@ -55,6 +62,7 @@ export default {
   watch: {
     initData() {
       if (this.initData !== this.code) {
+        this.code = this.initData
         this.editor.setValue(this.initData)
       }
     },

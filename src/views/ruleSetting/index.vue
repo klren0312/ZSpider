@@ -1,22 +1,40 @@
 <template>
-  <el-container class="rule-setting">
-    <el-aside width="160px">
-      <el-menu default-active="currentSelect" @select="menuSelect">
-        <el-menu-item
-          v-for="item in menuList"
-          :index="item.name"
-          :key="item.id"
+  <el-container is-vertical class="rule-setting">
+    <el-header>
+      <el-form :inline="true">
+        <el-form-item>
+          <el-input size="mini" v-model="appName"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="mini" type="primary" @click="save">保存</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="mini" @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-header>
+    <el-container>
+      <el-aside width="160px">
+        <el-menu
+          :default-active="currentSelect"
+          @select="(name) => (currentSelect = name)"
         >
-          <i class="el-icon-menu"></i>
-          <span slot="title">{{ item.name }}</span>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
-    <el-main>
-      <LandingPage v-show="currentSelect === '内容页获取'" />
-      <DetailsPage v-show="currentSelect === '数据抓取参数'" />
-      <DataPublish v-show="currentSelect === '数据发布'" />
-    </el-main>
+          <el-menu-item
+            v-for="item in menuList"
+            :index="item.name"
+            :key="item.id"
+          >
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{ item.name }}</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <LandingPage v-show="currentSelect === '内容页获取'" />
+        <DetailsPage v-show="currentSelect === '数据抓取参数'" />
+        <DataPublish v-show="currentSelect === '数据发布'" />
+      </el-main>
+    </el-container>
   </el-container>
 </template>
 <script>
@@ -74,9 +92,9 @@ export default {
     })
   },
   methods: {
-    menuSelect(name) {
-      this.currentSelect = name
-    },
+    // menuSelect(name) {
+    //   this.currentSelect = name
+    // },
     save() {
       if (!this.appName) {
         this.$alert('请输入应用名称', '错误', {
@@ -132,5 +150,13 @@ export default {
 <style lang="scss">
 .rule-setting {
   height: 100%;
+}
+.el-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  .el-form-item {
+    margin-bottom: 0 !important;
+  }
 }
 </style>

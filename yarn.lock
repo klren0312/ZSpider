@@ -11211,3 +11211,8 @@ yorkie@^2.0.0:
     is-ci "^1.0.10"
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
+
+z-chobitsu@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.npmmirror.com/z-chobitsu/-/z-chobitsu-0.3.3.tgz#f4ead369402661ad1afc3f0a94a64322077a6165"
+  integrity sha512-lNp7Fw1KZJzhPiJaygzgoF9yo1w8nCzEsCnEGyW1GYFUZDp+JflHPsc5XvXl8o11IdElgWMxs16S/YSCa0jVIQ==

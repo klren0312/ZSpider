@@ -67,8 +67,10 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
+      preload: 'src/preload.js',
       nodeIntegration: true, // render进程中可以使用node
       builderOptions: {
+        extraResources: ['src'],
         appId: 'com.zzes.spider',
         productName: 'ZSpider',
         copyright: 'Copyright © ZZES Co,Ltd',

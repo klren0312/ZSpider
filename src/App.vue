@@ -180,8 +180,46 @@ body {
     // }
   }
   #wrapper {
-    min-height: calc(100vh - 145px);
-    padding: 20px 20px;
+    min-height: calc(100vh - 205px);
+    // padding: 20px 20px;
+  }
+  .el-dialog__body {
+    padding: 10px 20px;
+  }
+
+  .el-dialog {
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: calc(100% - 30px);
+    max-width: calc(100% - 30px);
+    .el-dialog__title {
+      color: #fff;
+      font-size: 16px;
+      line-height: normal;
+    }
+    .el-dialog__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px;
+      background: #0042a2;
+      color: #fff;
+    }
+    .el-dialog__headerbtn {
+      position: static;
+      .el-dialog__close {
+        color: #fff;
+      }
+    }
+    .el-dialog__body {
+      flex: 1;
+      overflow: auto;
+    }
   }
 }
 </style>

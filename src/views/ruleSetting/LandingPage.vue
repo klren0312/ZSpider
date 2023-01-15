@@ -17,12 +17,13 @@
                 type="text"
                 size="mini"
                 @click="insert('input', 'MainUrlInput', '[分页位置]')"
-                >[分页位置]</el-button
               >
+                [分页位置]
+              </el-button>
             </div>
-            <el-button type="primary" @click="openInBrowser" size="mini"
-              >从浏览器打开</el-button
-            >
+            <el-button type="primary" @click="openSource" size="mini">
+              查看页面源代码
+            </el-button>
           </el-form-item>
           <el-form-item label="选择器">
             <el-input v-model="linkRule" size="mini" />
@@ -36,21 +37,19 @@
               @click="start"
               size="mini"
               v-if="!startStatus"
-              >开始测试</el-button
             >
-            <el-button type="danger" @click="stop" size="mini" v-else
-              >结束测试</el-button
-            >
+              开始测试
+            </el-button>
+            <el-button type="danger" @click="stop" size="mini" v-else>
+              结束测试
+            </el-button>
             <el-button
               :disabled="JSON.stringify(treeObj) === '{}'"
               @click="seeTree"
               size="mini"
-              >查看数据</el-button
             >
-            <!-- <el-tooltip class="item" effect="dark" content="等产生详情页链接后才能进行配置" placement="bottom">
-              <el-button  type="primary" plain :disabled="JSON.stringify(treeObj) === '{}'" @click="gotoDetails" size="mini">配置详情页</el-button>
-            </el-tooltip> -->
-            <!-- <el-button  type="primary" plain @click="gotoDetails" size="mini">配置详情页</el-button> -->
+              查看数据
+            </el-button>
           </el-form-item>
         </el-form>
         <el-dialog title="查看数据" :visible.sync="dataDialog" width="700px">
@@ -68,6 +67,19 @@
             </details>
           </div>
         </el-dialog>
+        <el-dialog
+          title="查看页面源代码（ctrl+F搜索, 查看想爬取内容是否存在）"
+          :visible.sync="sourceDialog"
+          width="700px"
+        >
+          <div class="source-code-block">
+            <code-editor
+              ref="codeEditor"
+              v-model="pageSource"
+              :readOnly="true"
+            ></code-editor>
+          </div>
+        </el-dialog>
       </div>
     </main>
   </div>
@@ -78,13 +90,17 @@ import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
 import insertText from '@/utils/InsertText'
 import { getConfig, setContentUrls } from '@/service/rule.service'
-import { shell } from 'electron'
-const puppeteer = require('puppeteer-core')
+import rp from 'request-promise'
+import puppeteer from 'puppeteer-core'
+import CodeEditor from '@/components/CodeEditor/index.vue'
 
 let browser = null
 let page = null
 export default {
   name: 'landing-page',
+  components: {
+    CodeEditor,
+  },
   data() {
     return {
       dataDialog: false,
@@ -95,6 +111,8 @@ export default {
       treeObj: {},
       treeTitleArr: [],
       startStatus: false,
+      sourceDialog: false,
+      pageSource: '',
     }
   },
   computed: mapState({
@@ -250,7 +268,7 @@ export default {
         this.dataDialog = true
       })
     },
-    openInBrowser() {
+    async openSource() {
       if (!this.mainUrl) {
         this.$alert('请输入主页面网址', '错误', {
           confirmButtonText: '确定',
@@ -258,7 +276,9 @@ export default {
         })
         return
       }
-      shell.openExternal(this.mainUrl.replace(/\[分页位置\]/g, 1))
+      const url = this.mainUrl.replace(/\[分页位置\]/g, 1)
+      this.pageSource = await rp({ uri: url })
+      this.sourceDialog = true
     },
   },
 }
@@ -319,5 +339,8 @@ main {
   font-size: 14px;
   letter-spacing: 1px;
   font-weight: bold;
+}
+.source-code-block {
+  height: 500px;
 }
 </style>

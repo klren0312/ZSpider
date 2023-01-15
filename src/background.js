@@ -29,6 +29,9 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 
+/**
+ * 创建主窗口
+ */
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -67,6 +70,37 @@ function createWindow() {
       win.hide()
     }
   })
+}
+
+/**
+ * 创建预览弹窗
+ */
+let reviewPageWin = null
+async function createReviewPageWindow(arg) {
+  if (reviewPageWin) {
+    await reviewPageWin.loadURL(arg)
+    return
+  }
+  reviewPageWin = new BrowserWindow({
+    parent: win,
+    width: 1024,
+    height: 600,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false, // 跨域
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    // eslint-disable-next-line no-undef
+    icon: path.resolve(__static, 'icon.png'),
+  })
+  reviewPageWin.on('close', () => {
+    reviewPageWin = null
+  })
+
+  reviewPageWin.loadURL(arg)
+  reviewPageWin.webContents.openDevTools()
 }
 
 /**
@@ -131,14 +165,17 @@ app.on('activate', () => {
   }
 })
 
+app.whenReady().then(async () => {
+  // 加载vue开发者插件
+  if (isDevelopment) {
+    await session.defaultSession.loadExtension(path.resolve('vueDevtool'))
+  }
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  // 加载vue开发者插件
-  if (isDevelopment && !process.env.IS_TEST) {
-    session.defaultSession.loadExtension(path.resolve('vueDevtool'))
-  }
   // 处理透明背景后, 出现黑边问题, 加个延时
   // https://github.com/electron/electron/issues/15947#issuecomment-571136404
   setTimeout(() => {
@@ -184,6 +221,16 @@ if (isDevelopment) {
     })
   }
 }
+
+// 打开预览弹框
+ipcMain.on('openReviewPage', (event, args) => {
+  createReviewPageWindow(args)
+})
+
+// 接受css选择器结果, 并发送到主页面
+ipcMain.on('domSelectorData', (event, args) => {
+  win.webContents.send('domSelectorData', args)
+})
 
 // 关闭窗口
 ipcMain.on('close', () => {
