@@ -6,8 +6,7 @@ Vue.use(Vuex)
 
 const state = {
   /* eslint-disable */
-  ServerUrl: 'http://localhost:1200',
-  WSUrl: 'ws://localhost:1200/exchange',
+  ServerUrl: 'https://api.github.com/repos/klren0312/zspider',
   /* eslint-enable */
   chromePath: '',
   rule: {

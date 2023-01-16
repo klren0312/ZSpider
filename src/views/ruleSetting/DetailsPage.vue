@@ -1,101 +1,82 @@
 <template>
-  <div class="details-page">
-    <main>
-      <div>
-        <el-form label-width="100px">
-          <el-form-item label="内容页链接">
-            <el-autocomplete
-              size="mini"
-              class="content-select"
-              v-model="contentForm.url"
-              :fetch-suggestions="querySearch"
-              placeholder="请输入内容页链接"
-            ></el-autocomplete>
-            <el-button type="primary" @click="openInBrowser" size="mini"
-              >从浏览器打开</el-button
-            >
-          </el-form-item>
-          <el-form-item label="字段配置">
-            <el-button type="primary" @click="addParam" size="mini"
-              >添加参数</el-button
-            >
-            <el-button
-              type="danger"
-              @click="contentForm.paramsInput = []"
-              size="mini"
-              >清空参数</el-button
-            >
-            <div class="params-list">
-              <el-row v-for="(v, i) in contentForm.paramsInput" :key="i">
-                <el-col :span="4">
-                  <el-input
-                    v-model="v.name"
-                    placeholder="请输入参数名称"
-                    size="mini"
-                  ></el-input>
-                </el-col>
-                <el-col class="line" :span="1">-</el-col>
-                <el-col :span="4">
-                  <el-input
-                    v-model="v.param"
-                    placeholder="请输入参数选择器"
-                    size="mini"
-                  ></el-input>
-                </el-col>
-                <el-col class="line" :span="1">-</el-col>
-                <el-col :span="4">
-                  <el-input
-                    v-model="v.attr"
-                    placeholder="请输入属性名, 不使用则不填"
-                    size="mini"
-                  ></el-input>
-                </el-col>
-                <el-col class="line" :span="1">-</el-col>
-                <el-col :span="3">
-                  <el-input
-                    v-model="v.note"
-                    placeholder="请输入备注"
-                    size="mini"
-                  ></el-input>
-                </el-col>
-                <el-col class="line" :span="1">-</el-col>
-                <el-col :span="3">
-                  <el-input
-                    v-model="v.value"
-                    placeholder="获取值"
-                    size="mini"
-                  ></el-input>
-                </el-col>
-                <el-col :span="1" class="close-btn">
-                  <el-button
-                    type="danger"
-                    @click="deleteParam(v)"
-                    icon="el-icon-close"
-                    circle
-                    size="mini"
-                  ></el-button>
-                </el-col>
-              </el-row>
-            </div>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="start"
-              size="mini"
-              v-if="!startStatus"
-              >测试数据获取</el-button
-            >
-            <el-button type="danger" @click="stop" size="mini" v-else
-              >结束</el-button
-            >
-            <!-- <el-button type="success" @click="startAll" size="mini" :disabled="startStatus">进入采集准备</el-button>
-            <el-button type="warning" @click="gotoHome" size="mini" :disabled="startStatus">返回首页</el-button> -->
-          </el-form-item>
-          <el-form-item> </el-form-item>
-        </el-form>
+  <div id="wrapper" class="details-page">
+    <el-form label-position="top">
+      <el-form-item label="内容页链接">
+        <el-autocomplete
+          class="content-select"
+          v-model="contentForm.url"
+          :fetch-suggestions="querySearch"
+          placeholder="请输入内容页链接"
+        ></el-autocomplete>
+        <el-button
+          type="primary"
+          @click="openSource"
+          :loading="openSourceLoading"
+        >
+          查看源代码
+        </el-button>
+      </el-form-item>
+      <el-form-item label="字段配置">
+        <el-button type="primary" @click="addParam"> 添加参数 </el-button>
+        <el-button type="danger" @click="contentForm.paramsInput = []">
+          清空参数
+        </el-button>
+        <el-button type="primary" @click="start" v-if="!startStatus">
+          测试数据获取
+        </el-button>
+        <el-button type="danger" @click="stop" v-else> 结束 </el-button>
+        <div class="params-list">
+          <el-row
+            :gutter="10"
+            v-for="(v, i) in contentForm.paramsInput"
+            :key="i"
+          >
+            <el-col :span="4">
+              <el-input v-model="v.name" placeholder="参数名称"></el-input>
+            </el-col>
+            <el-col :span="5">
+              <selector-input
+                v-model="v.param"
+                :contentUrl="contentForm.url"
+              ></selector-input>
+            </el-col>
+            <el-col :span="5">
+              <el-input
+                v-model="v.attr"
+                placeholder="属性名, 不使用则不填"
+              ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-input v-model="v.note" placeholder="备注"></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-input v-model="v.value" placeholder="值" readonly></el-input>
+            </el-col>
+            <el-col :span="1" class="close-btn">
+              <el-button
+                type="danger"
+                @click="deleteParam(v)"
+                icon="el-icon-close"
+                circle
+              ></el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </el-form-item>
+    </el-form>
+    <el-dialog
+      title="查看页面源代码（Ctrl+F搜索, 查看想爬取内容是否存在）"
+      :visible.sync="sourceDialog"
+      width="700px"
+    >
+      <div class="source-code-block">
+        <code-editor
+          ref="codeEditor"
+          v-model="pageSource"
+          :readOnly="true"
+        ></code-editor>
       </div>
-    </main>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -103,108 +84,31 @@ import { mapState } from 'vuex'
 import EventBus from '@/utils/EventBus'
 import { dataDb, ruleDb } from '@/dataStore'
 import { shell } from 'electron'
-const puppeteer = require('puppeteer-core')
+import puppeteer from 'puppeteer-core'
+import CodeEditor from '@/components/CodeEditor/index.vue'
+import SelectorInput from '@/components/SelectorInput'
+import rp from 'request-promise'
 
 let browser = null
 let page = null
 
 export default {
   name: 'DetailsPage',
+  components: {
+    CodeEditor,
+    SelectorInput,
+  },
   data() {
     return {
+      sourceDialog: false,
+      openSourceLoading: false,
+      pageSource: '',
       url: [],
       logs: [],
       startStatus: false,
       contentForm: {
         url: '',
-        /* eslint-disable */
-          paramsInput: [
-            {
-              name: 'title',
-              param: '.detailHead > .detailHead__title.fl.clearfix > p',
-              attr: '',
-              note: '标题',
-              value: ''
-            },
-            {
-              name: 'phone',
-              param: '.infoDetail.fr > div.adviser > div.clearfix.btnBar > div',
-              attr: 'telno',
-              note: '电话',
-              value: ''
-            },
-            {
-              name: 'name',
-              param: '.infoDetail.fr > div.adviser > div.clearfix.adviserPs > div.fl > div > div.adviserName.fl',
-              attr: '',
-              note: '姓名',
-              value: ''
-            },
-            {
-              name: 'price',
-              param: '.infoDetail.fr > div.infoDetail__title',
-              attr: '',
-              note: '价格',
-              value: ''
-            },
-            {
-              name: 'size',
-              param: '.infoDetail.fr > .infoDetail__content > div:nth-child(2) > div:nth-child(1)',
-              attr: '',
-              note: '面积',
-              value: ''
-            },
-            {
-              name: 'decoration',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(1) > div:nth-child(2)',
-              attr: '',
-              note: '装修',
-              value: ''
-            },
-            {
-              name: 'floor',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(2) > div:nth-child(2)',
-              attr: '',
-              note: '楼层',
-              value: ''
-            },
-            {
-              name: 'location',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(6) > div',
-              attr: '',
-              note: '地址',
-              value: ''
-            },
-            {
-              name: 'community',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(5) > div > a.infoDetail__item__local.line1',
-              attr: '',
-              note: '小区',
-              value: ''
-            },
-            {
-              name: 'time',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(7) > div',
-              attr: '',
-              note: '时间',
-              value: ''
-            },
-            {
-              name: 'propertyCosts',
-              param: '.infoDetail.fr > div.infoDetail__content > div:nth-child(3) > div:nth-child(2)',
-              attr: '',
-              note: '物业费',
-              value: ''
-            },
-            {
-              name: 'description',
-              param: '.detail__mainCotetn.clearfix > div.detail__mainCotetnL.fl > div.detail__mainCotetn__intro',
-              attr: '',
-              note: '装修',
-              value: ''
-            }
-          ]
-          /* eslint-enable */
+        paramsInput: [],
       },
     }
   },
@@ -363,6 +267,20 @@ export default {
     writeLog(v) {
       EventBus.$emit('logs', `${new Date().toLocaleString()}: ${v}`)
     },
+    async openSource() {
+      if (!this.contentForm.url) {
+        this.$alert('请输入主页面网址', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
+        })
+        return
+      }
+      this.openSourceLoading = true
+      const url = this.contentForm.url.replace(/\[分页位置\]/g, 1)
+      this.pageSource = await rp({ uri: url })
+      this.sourceDialog = true
+      this.openSourceLoading = false
+    },
   },
   watch: {
     'contentForm.paramsInput'() {
@@ -372,17 +290,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-main {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-}
-
 .params-list {
-  height: 400px;
+  margin-top: 20px;
+  max-height: 400px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
-
 .line,
 .close-btn {
   text-align: center;

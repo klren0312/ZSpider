@@ -13,20 +13,22 @@
         size="mini"
         type="primary"
         @click="importApp"
-        >导入应用</el-button
       >
+        导入应用
+      </el-button>
       <el-button
         size="mini"
         type="success"
         @click="getRemoteApp"
         :loading="remoteLoading"
-        >拉取远程应用</el-button
       >
+        拉取远程应用
+      </el-button>
     </div>
     <div class="card-container">
       <div class="card-block" v-for="v in appList" :key="v.id">
         <div class="card-item">
-          <div class="subscript" v-if="v.hasOwnProperty('localId')">远程</div>
+          <div class="subscript" v-if="v.isRemote">远程</div>
           <div class="card-header">
             <el-dropdown
               size="mini"
@@ -142,15 +144,15 @@ export default {
         .then(() => {
           getRemoteApp()
             .then((res) => {
-              res.data.forEach((v) => {
-                const localApp = getAppById(v.localId)
+              res.forEach((item) => {
+                const remoteApp = JSON.parse(item.body)
+                remoteApp.appName = item.title
+                remoteApp.isRemote = true
+                const localApp = getAppById(remoteApp.id)
                 if (localApp) {
-                  const remoteApp = JSON.parse(JSON.stringify(v))
-                  remoteApp.id = remoteApp.localId
-                  editAppById(v.localId, remoteApp)
+                  remoteApp.id = localApp.id
+                  editAppById(remoteApp.id, remoteApp)
                 } else {
-                  const remoteApp = JSON.parse(JSON.stringify(v))
-                  remoteApp.id = remoteApp.localId
                   addApp(remoteApp)
                   this.getAppList()
                 }

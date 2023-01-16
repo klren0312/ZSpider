@@ -49,27 +49,28 @@
       <el-table-column label="发布结果">
         <template slot-scope="scope">
           <div>
-            <el-tag effect="dark" type="success">{{
-              scope.row.success
-            }}</el-tag>
+            <el-tag effect="dark" type="success">
+              {{ scope.row.success }}
+            </el-tag>
             <el-tag effect="dark" type="danger">{{ scope.row.fail }}</el-tag>
           </div>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="300px">
         <template slot-scope="scope">
-          <el-button @click="edit(scope.row)" type="primary" size="mini"
-            >编辑</el-button
+          <el-button @click="edit(scope.row)" type="primary" size="mini">
+            编辑
+          </el-button>
+          <el-button @click="clear(scope.row)" type="warning" size="mini">
+            清空表
+          </el-button>
+          <el-button
+            @click="deletePublish(scope.row)"
+            type="danger"
+            size="mini"
           >
-          <el-button @click="publish(scope.row)" type="success" size="mini"
-            >发布</el-button
-          >
-          <el-button @click="clear(scope.row)" type="warning" size="mini"
-            >清空表</el-button
-          >
-          <el-button @click="deletePublish(scope.row)" type="danger" size="mini"
-            >删除</el-button
-          >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -123,9 +124,9 @@
             <el-input v-model="form.table" size="mini"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button plain size="small" @click="testConnect(form)"
-              >测试连接</el-button
-            >
+            <el-button plain size="small" @click="testConnect(form)">
+              测试连接
+            </el-button>
           </el-form-item>
         </div>
         <div class="right-form">
@@ -253,21 +254,21 @@ export default {
               return false
             }
             this.isTest = true
-            conn.query(
-              `select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`,
-              (e, r) => {
-                if (e) throw e
-                this.dbParams = r.map((v) => v.column_name)
-                this.form.params.forEach((v) => {
-                  if (this.dbParams.indexOf(v.name) !== -1) {
-                    v.dbParam = v.name
-                  }
-                })
-              }
+            // 连接成功后, 对字段进行遍历, 用于映射选择
+            const result = await conn.query(
+              `select column_name,column_comment,data_type from information_schema.columns where table_name='${form.table}'`
             )
+            if (result.length > 0) {
+              this.dbParams = result[0].map((v) => v.COLUMN_NAME)
+              this.form.params.forEach((v) => {
+                if (this.dbParams.indexOf(v.name) !== -1) {
+                  v.dbParam = v.name
+                }
+              })
+            }
             conn.end()
           } catch (error) {
-            this.$alert(error.message, '错误', {
+            this.$alert('数据库连接失败:' + error.message, '错误', {
               confirmButtonText: '确定',
               callback: () => {},
             })

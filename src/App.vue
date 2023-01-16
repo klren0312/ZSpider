@@ -6,7 +6,7 @@
           治采天机-ZSpider (<span
             class="online-status"
             :class="online ? 'online' : 'outline'"
-            >{{ online ? '已连接' : '未连接' }}</span
+            >Github{{ online ? '已登录' : '未登录' }}</span
           >)
         </div>
         <div class="tips" v-if="this.$route.name === 'RuleSetting'">
@@ -23,16 +23,7 @@
         <div class="theme-btn">
           <el-button
             @click="isLight = !isLight"
-            size="mini"
-            v-if="isLight"
-            icon="el-icon-sunny"
-            circle
-          ></el-button>
-          <el-button
-            @click="isLight = !isLight"
-            size="mini"
-            v-else
-            icon="el-icon-moon"
+            :icon="isLight ? 'el-icon-sunny' : 'el-icon-moon'"
             circle
           ></el-button>
         </div>
@@ -177,8 +168,8 @@ body {
     // }
   }
   #wrapper {
-    min-height: calc(100vh - 205px);
-    // padding: 20px 20px;
+    height: calc(100vh - 205px);
+    overflow-y: auto;
   }
   .el-dialog__body {
     padding: 10px 20px;
@@ -217,6 +208,26 @@ body {
       flex: 1;
       overflow: auto;
     }
+  }
+  // 滚动条样式
+  ::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 7px;
+    /*高宽分别对应横竖滚动条的尺寸*/
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 2px;
+    background-color: #dcdee2;
+  }
+
+  ::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    border-radius: 2px;
+    //      background: #F8F8F9;
+    background: transparent;
   }
 }
 </style>

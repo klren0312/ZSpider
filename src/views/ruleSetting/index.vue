@@ -152,6 +152,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  border-bottom: 1px solid #ddd;
   .el-form-item {
     margin-bottom: 0 !important;
   }

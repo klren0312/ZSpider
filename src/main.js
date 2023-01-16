@@ -4,10 +4,8 @@ import router from './router'
 import store from './store'
 import '@/utils/elementUI'
 import getChrome from './chromePath'
-import socket from './wsConnect'
 
 Vue.prototype.$store = store
-Vue.prototype.$socket = socket
 
 Vue.config.productionTip = false
 

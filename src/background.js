@@ -101,7 +101,7 @@ async function createReviewPageWindow(arg) {
   })
 
   reviewPageWin.loadURL(arg)
-  reviewPageWin.webContents.openDevTools()
+  // reviewPageWin.webContents.openDevTools()
 }
 
 /**

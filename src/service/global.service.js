@@ -34,6 +34,7 @@ export function editAppById(id, app) {
  * @param {Object} app 应用配置
  */
 export function addApp(app) {
+  console.log(app)
   return appCollection.insert({ ...app }).write()
 }
 
@@ -60,7 +61,9 @@ export function uploadApp(app) {
  * 拉取远程应用
  */
 export function getRemoteApp() {
-  return fetch(`${store.state.ServerUrl}/apps`).then((res) => res.json())
+  return fetch(`${store.state.ServerUrl}/issues?labels=templateTask`).then(
+    (res) => res.json()
+  )
 }
 
 /**
