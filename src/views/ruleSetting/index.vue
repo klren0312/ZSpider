@@ -3,13 +3,13 @@
     <el-header>
       <el-form :inline="true">
         <el-form-item>
-          <el-input size="mini" v-model="appName"></el-input>
+          <el-input v-model="appName"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" type="primary" @click="save">保存</el-button>
+          <el-button type="primary" @click="save">保存</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" @click="cancel">取消</el-button>
+          <el-button @click="cancel">取消</el-button>
         </el-form-item>
       </el-form>
     </el-header>
@@ -92,9 +92,6 @@ export default {
     })
   },
   methods: {
-    // menuSelect(name) {
-    //   this.currentSelect = name
-    // },
     save() {
       if (!this.appName) {
         this.$alert('请输入应用名称', '错误', {

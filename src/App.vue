@@ -3,7 +3,7 @@
     <div class="frame-header-block">
       <div class="frame-header">
         <div class="frame-title">
-          ZSpider (<span
+          治采天机-ZSpider (<span
             class="online-status"
             :class="online ? 'online' : 'outline'"
             >{{ online ? '已连接' : '未连接' }}</span
@@ -104,9 +104,6 @@ export default {
 body {
   padding: 0;
   margin: 0;
-  font-family: 'PingFang SC', 'Lantinghei SC', 'Lucida Grande',
-    '\5FAE\8F6F\96C5\9ED1', 'Microsoft YaHei', FreeSans, 'WenQuanYi Micro Hei',
-    'Hiragino Sans GB', 'Hiragino Sans GB W3', SimSun, sans-serif, tahoma, arial;
   border: 1px solid #323232;
   box-sizing: border-box;
   background: #fff;

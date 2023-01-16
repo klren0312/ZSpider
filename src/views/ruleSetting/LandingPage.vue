@@ -1,87 +1,80 @@
 <template>
-  <div id="wrapper">
-    <main>
-      <div class="right-side">
-        <el-form label-width="80px">
-          <el-form-item label="页面地址">
-            <div class="main-url">
-              <el-input
-                ref="MainUrlInput"
-                class="main-url-input"
-                type="text"
-                v-model="mainUrl"
-                size="mini"
-                clearable
-              />
-              <el-button
-                type="text"
-                size="mini"
-                @click="insert('input', 'MainUrlInput', '[分页位置]')"
-              >
-                [分页位置]
-              </el-button>
-            </div>
-            <el-button type="primary" @click="openSource" size="mini">
-              查看页面源代码
-            </el-button>
-          </el-form-item>
-          <el-form-item label="选择器">
-            <el-input v-model="linkRule" size="mini" />
-          </el-form-item>
-          <el-form-item label="爬取页数">
-            <el-input-number v-model="page" size="mini" />
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="start"
-              size="mini"
-              v-if="!startStatus"
-            >
-              开始测试
-            </el-button>
-            <el-button type="danger" @click="stop" size="mini" v-else>
-              结束测试
-            </el-button>
-            <el-button
-              :disabled="JSON.stringify(treeObj) === '{}'"
-              @click="seeTree"
-              size="mini"
-            >
-              查看数据
-            </el-button>
-          </el-form-item>
-        </el-form>
-        <el-dialog title="查看数据" :visible.sync="dataDialog" width="700px">
+  <div id="wrapper" class="landing-page">
+    <el-form label-position="top">
+      <el-form-item label="页面地址">
+        <div class="input-block">
+          <el-input
+            ref="MainUrlInput"
+            class="input"
+            type="text"
+            v-model="mainUrl"
+            clearable
+          />
           <el-button
-            circle
-            icon="el-icon-refresh"
-            @click="refreshData"
-          ></el-button>
-          <div class="result-list">
-            <details v-for="(v, i) in treeTitleArr" :key="i">
-              <summary>{{ v }}</summary>
-              <ul>
-                <li v-for="(u, i) in treeObj[v]" :key="i">{{ u }}</li>
-              </ul>
-            </details>
-          </div>
-        </el-dialog>
-        <el-dialog
-          title="查看页面源代码（ctrl+F搜索, 查看想爬取内容是否存在）"
-          :visible.sync="sourceDialog"
-          width="700px"
+            type="text"
+            @click="insert('input', 'MainUrlInput', '[分页位置]')"
+          >
+            [分页位置]
+          </el-button>
+          <el-button
+            type="primary"
+            @click="openSource"
+            :loading="openSourceLoading"
+          >
+            查看页面源代码
+          </el-button>
+        </div>
+      </el-form-item>
+      <el-form-item label="内容页链接CSS选择器">
+        <div class="input-block">
+          <el-input class="input" v-model="linkRule" />
+          <el-button class="selector-btn" type="primary" @click="getSelector">
+            点击获取
+          </el-button>
+        </div>
+      </el-form-item>
+      <el-form-item label="爬取页数">
+        <el-input-number v-model="page" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="start" v-if="!startStatus">
+          开始测试
+        </el-button>
+        <el-button type="danger" @click="stop" v-else> 结束测试 </el-button>
+        <el-button
+          :disabled="JSON.stringify(treeObj) === '{}'"
+          @click="seeTree"
         >
-          <div class="source-code-block">
-            <code-editor
-              ref="codeEditor"
-              v-model="pageSource"
-              :readOnly="true"
-            ></code-editor>
-          </div>
-        </el-dialog>
+          查看数据
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <el-dialog title="查看数据" :visible.sync="dataDialog" width="700px">
+      <el-button circle icon="el-icon-refresh" @click="refreshData"></el-button>
+      <div class="result-list">
+        <details v-for="(v, i) in treeTitleArr" :key="i">
+          <summary>{{ v }}</summary>
+          <ul class="result-list-ul">
+            <li class="result-list-li" v-for="(u, i) in treeObj[v]" :key="i">
+              {{ u }}
+            </li>
+          </ul>
+        </details>
       </div>
-    </main>
+    </el-dialog>
+    <el-dialog
+      title="查看页面源代码（Ctrl+F搜索, 查看想爬取内容是否存在）"
+      :visible.sync="sourceDialog"
+      width="700px"
+    >
+      <div class="source-code-block">
+        <code-editor
+          ref="codeEditor"
+          v-model="pageSource"
+          :readOnly="true"
+        ></code-editor>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -93,6 +86,7 @@ import { getConfig, setContentUrls } from '@/service/rule.service'
 import rp from 'request-promise'
 import puppeteer from 'puppeteer-core'
 import CodeEditor from '@/components/CodeEditor/index.vue'
+import { ipcRenderer } from 'electron'
 
 let browser = null
 let page = null
@@ -112,6 +106,7 @@ export default {
       treeTitleArr: [],
       startStatus: false,
       sourceDialog: false,
+      openSourceLoading: false,
       pageSource: '',
     }
   },
@@ -121,7 +116,28 @@ export default {
   mounted() {
     this.initData()
   },
+  beforeDestroy() {
+    ipcRenderer.removeListener('domSelectorData', this.setSelector)
+  },
   methods: {
+    /**
+     * 打开选择器窗口
+     */
+    getSelector() {
+      if (!this.mainUrl) {
+        this.$alert('请输入主页面网址', '错误', {
+          confirmButtonText: '确定',
+          callback: () => {},
+        })
+        return
+      }
+      const url = this.mainUrl.replace(/\[分页位置\]/g, 1)
+      ipcRenderer.send('openReviewPage', url)
+      ipcRenderer.on('domSelectorData', this.setSelector)
+    },
+    setSelector(e, data) {
+      this.linkRule = data
+    },
     /**
      * 初始化数据
      */
@@ -276,71 +292,45 @@ export default {
         })
         return
       }
+      this.openSourceLoading = true
       const url = this.mainUrl.replace(/\[分页位置\]/g, 1)
       this.pageSource = await rp({ uri: url })
       this.sourceDialog = true
+      this.openSourceLoading = false
     },
   },
 }
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
-ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-  li {
-    padding-left: 20px;
+.landing-page {
+  .result-list {
+    max-height: 250px;
+    overflow: auto;
+    &-ul {
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+    }
+    &-li {
+      padding-left: 20px;
+    }
   }
-}
-
-#logo {
-  height: auto;
-  margin-bottom: 20px;
-  width: 420px;
-}
-
-main {
-  display: flex;
-  justify-content: space-between;
-}
-
-.left-side {
-  display: flex;
-  flex-direction: column;
-}
-
-.right-side {
-  width: 78%;
-}
-
-.result-list {
-  max-height: 250px;
-  overflow: auto;
-}
-.main-url {
-  .main-url-input {
-    width: 500px;
+  .input-block {
+    .input {
+      width: 400px;
+    }
   }
-}
-.el-input__inner {
-  font-size: 14px;
-  letter-spacing: 1px;
-  font-weight: bold;
-}
-.source-code-block {
-  height: 500px;
+  .el-input__inner {
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: bold;
+  }
+  .source-code-block {
+    height: 500px;
+  }
+  .selector-btn {
+    margin-left: 10px;
+  }
 }
 </style>

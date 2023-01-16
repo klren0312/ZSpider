@@ -82,6 +82,7 @@ async function createReviewPageWindow(arg) {
     return
   }
   reviewPageWin = new BrowserWindow({
+    title: '请点击进行选择, 选择好后请自行关闭窗口',
     parent: win,
     width: 1024,
     height: 600,
