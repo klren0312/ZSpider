@@ -218,7 +218,7 @@ export default {
           await page.goto(this.urls[i])
           this.writeLog(`go to ${this.urls[i]}`)
           const arr = this.config.params
-          const house = await page.evaluate((arr) => {
+          const resData = await page.evaluate((arr) => {
             const obj = {}
             arr.length > 0 &&
               arr.forEach((v) => {
@@ -242,17 +242,17 @@ export default {
               })
             return obj
           }, arr)
-          house.sourceUrl = this.urls[i]
-          house.id = i
+          resData.sourceUrl = this.urls[i]
+          resData.id = i
           this.config.params.forEach((v) => {
-            v.value = house[v.name]
+            v.value = resData[v.name]
           })
-          this.writeLog(`${JSON.stringify(house)}`)
-          this.resultTable.push(house)
+          this.writeLog(`${JSON.stringify(resData)}`)
+          this.resultTable.push(resData)
           if (this.resultTable.length > 50) {
             this.resultTable.shift()
           }
-          addData(house)
+          addData(resData)
         } catch (e) {
           this.writeLog('采集报错: ' + e)
           if (

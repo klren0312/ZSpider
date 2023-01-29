@@ -46,16 +46,6 @@
       </el-table-column>
       <el-table-column label="数据库" prop="database"> </el-table-column>
       <el-table-column label="数据表" prop="table"> </el-table-column>
-      <el-table-column label="发布结果">
-        <template slot-scope="scope">
-          <div>
-            <el-tag effect="dark" type="success">
-              {{ scope.row.success }}
-            </el-tag>
-            <el-tag effect="dark" type="danger">{{ scope.row.fail }}</el-tag>
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" fixed="right" width="300px">
         <template slot-scope="scope">
           <el-button @click="edit(scope.row)" type="primary" size="mini">
