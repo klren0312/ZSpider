@@ -254,8 +254,8 @@ ipcMain.on('getUserDataPath', (event) => {
 })
 
 // 打开保存zpk弹框
-ipcMain.on('showSaveDialog', (event) => {
-  const path = dialog.showSaveDialog({
+ipcMain.on('showSaveDialog', async (event) => {
+  const path = dialog.showSaveDialogSync({
     title: '选择保存路径',
     filters: [
       {
@@ -263,11 +263,7 @@ ipcMain.on('showSaveDialog', (event) => {
         extensions: ['zpk'],
       },
     ],
-    properties: {
-      openFile: true,
-      openDirectory: false,
-      multiSelections: false,
-    },
+    properties: ['openFile'],
   })
   event.returnValue = path
 })
