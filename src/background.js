@@ -14,6 +14,7 @@ import {
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const URLSCHEME = 'zspider' // 用户自定义 URL SCHEME
 
 // 主窗口
 let win = null
@@ -28,6 +29,21 @@ let isQuit = false
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
+
+// 设置调用协议
+// remove so we can register each time as we run the app.
+app.removeAsDefaultProtocolClient(URLSCHEME)
+
+// If we are running a non-packaged version of the app && on windows
+if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
+  // Set the path of electron.exe and your app.
+  // These two additional parameters are only available on windows.
+  app.setAsDefaultProtocolClient(URLSCHEME, process.execPath, [
+    path.resolve(process.argv[1]),
+  ])
+} else {
+  app.setAsDefaultProtocolClient(URLSCHEME)
+}
 
 /**
  * 创建主窗口
@@ -58,6 +74,12 @@ function createWindow() {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
+    // 新实例, 判断是否是通过URL SCHEME打开, 如果是则获取数据
+    const argv = process.argv
+    const string = argv[argv.length - 1]
+    if (string.indexOf(URLSCHEME + '://') > -1) {
+      handleUrlFromWeb(string)
+    }
   }
 
   // 窗口关闭触发
@@ -191,7 +213,7 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', () => {
+  app.on('second-instance', (event, argv) => {
     if (process.platform === 'win32') {
       console.log('window 准备执行网页端调起客户端逻辑')
       if (win) {
@@ -204,8 +226,28 @@ if (!gotTheLock) {
           win.show()
         }
       }
+      handleArgvFromWeb(argv)
     }
   })
+}
+
+// window 系统中执行网页调起应用时，处理协议传入的参数
+const handleArgvFromWeb = (argv) => {
+  console.log(argv)
+  const url = argv.find((v) => v.indexOf(`${URLSCHEME}://`) !== -1)
+  console.log(url)
+  if (url) handleUrlFromWeb(url)
+}
+
+// 进行处理网页传来 url 参数，参数自定义，以下为示例
+// 示例调起应用的 url 为 testapp://?token=205bdf49hc97ch4146h8124h8281a81fdcdb
+const handleUrlFromWeb = (urlStr) => {
+  console.log(urlStr)
+  const urlObj = new URL(urlStr)
+  const { searchParams } = urlObj
+  const token = searchParams.get('token')
+  win.webContents.send('token', token)
+  console.log(token)
 }
 
 // Exit cleanly on request from parent process in development mode.

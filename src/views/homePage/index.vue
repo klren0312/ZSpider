@@ -22,7 +22,7 @@
         @click="getRemoteApp"
         :loading="remoteLoading"
       >
-        拉取远程应用
+        拉取线上模板
       </el-button>
     </div>
     <div class="card-container">
@@ -32,13 +32,13 @@
           <div class="card-header">
             <el-dropdown
               size="mini"
-              trigger="click"
+              trigger="hover"
               @command="handleCtrl($event, v)"
             >
               <button class="ctrl-btn">•••</button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="delete">删除</el-dropdown-item>
-                <el-dropdown-item command="upload">上传</el-dropdown-item>
+                <!-- <el-dropdown-item command="upload">上传</el-dropdown-item> -->
                 <el-dropdown-item command="export">导出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>

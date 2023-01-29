@@ -3,11 +3,13 @@
     <div class="frame-header-block">
       <div class="frame-header">
         <div class="frame-title">
-          治采天机-ZSpider (<span
+          治采天机-ZSpider
+          <!-- (<span
+            @click="doLogin"
             class="online-status"
             :class="online ? 'online' : 'outline'"
             >Github{{ online ? '已登录' : '未登录' }}</span
-          >)
+          >) -->
         </div>
         <div class="tips" v-if="this.$route.name === 'RuleSetting'">
           每个页面都必须进行测试, 才会保存配置
