@@ -1,5 +1,16 @@
 # 治电爬虫程序
 
+## 广告
+
+![https://www.smartproxy.cn?invite=HJJQ34](https://www.smartproxy.cn/_nuxt/img/logo1.1af8601.png)  
+
+👆👆👆**点 [点击进入官网](https://www.smartproxy.cn?invite=HJJQ34) 我**\👆👆👆
+
+**本项目 OP 推荐的最具性价比最优秀的代理 IP 网站：[SmartProxy](https://www.smartproxy.cn?invite=HJJQ34)
+代理IP池项目,主打1亿真实住宅IP资源，专业海外http代理商，千万级优质资源，覆盖全球城市，高匿稳定提供100%原生住宅IP，支持社交账户、电商平台、网络数据收集等服务。  
+提供API和账密提取使用方式，动态和静态住宅代理均有，大部分是真人住宅IP，成功率杠杠的。  
+付费套餐选择多样，现在价格很优惠，动态住宅代理只要65折！。**
+
 ### 功能
 
  - 夜间模式
